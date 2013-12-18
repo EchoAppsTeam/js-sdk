@@ -6,8 +6,6 @@ Echo.define({
 			require([module], function(value) {
 				onload(value);
 			});
-		})
-	},
-
-
+		});
+	}
 });
