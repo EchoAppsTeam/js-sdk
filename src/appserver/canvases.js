@@ -236,8 +236,6 @@ var Canvas = function(config) {
 		return;
 	}
 
-	this.attr("initialized", true);
-
 	if (!id) {
 		this.error({
 			"code": "invalid_canvas_config",
@@ -246,20 +244,24 @@ var Canvas = function(config) {
 		return;
 	}
 
-	this.useSecureAPI = Boolean(this.attr("useSecureAPI")) || config.useSecureAPI;
-	this.mode = 0 && Echo.isDebug() && "dev" || this.attr("mode") || "prod";
+	this.attr("initialized", true);
 	this.cssPrefix = "echo-canvas-";
+	this.apps = [];
 	this.callbacks = {
 		"ready": config.ready,
 		"error": config.error
 	};
-
 	this.makeIdsAndClasses(id);
 	this.switchCSS("on");
+
+	var useSecureAPI = Boolean(this.attr("useSecureAPI")) || config.useSecureAPI;
+	var mode = Echo.isDebug() && "dev" || this.attr("mode") || "prod";
+	var context = (useSecureAPI ? "https" : protocol || "http") + "-" + mode;
+	this.url = requireContexts[context].toUrl("canvases/" + this.ids.main);
+
 	this.fetchConfig(function() {
 		var apps = self.data.apps;
 		var count = 0;
-		self.apps = [];
 		var done = function(app) {
 			app && self.apps.push(app);
 			if (++count === apps.length) {
@@ -279,8 +281,6 @@ var Canvas = function(config) {
 
 Canvas.prototype.fetchConfig = function(callback) {
 	var self = this;
-	var context = (this.useSecureAPI ? "https" : protocol || "http") + "-" + this.mode;
-	this.url = requireContexts[context].toUrl("canvases/" + this.ids.main);
 	Echo.require([this.url], function(config) {
 		if (!config || !config.apps || !config.apps.length) {
 			self.error({
@@ -527,7 +527,7 @@ var isArray = Array.isArray || function(obj) {
 };
 
 var isPlainObject = function(obj) {
-	return typeof obj === "object" && !isArray(obj) && !obj.nodeType && !obj.jquery;
+	return obj && typeof obj === "object" && !isArray(obj) && !obj.nodeType && !obj.jquery;
 };
 
 // specially crafted version (always deep cloning) of jQuery's v2.1.0-pre "extend"
