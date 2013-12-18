@@ -1,8 +1,8 @@
 Echo.Tests.Units.push(function(callback) {
 	Echo.require([
 		"jquery",
-		"echo/streamserver/user",
-		"echo/utils"
+		"loadFrom![echo/streamserver.pack]echo/streamserver/user",
+		"loadFrom![echo/apps.sdk]echo/utils"
 	], function($, User, Utils) {
 
 	"use strict";

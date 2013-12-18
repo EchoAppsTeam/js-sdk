@@ -1,10 +1,10 @@
 Echo.Tests.Units.push(function(callback) {
 	Echo.require([
 		"jquery",
-		"echo/streamserver/bundled-apps/stream/client-widget",
-		"echo/utils",
-		"echo/streamserver/api",
-		"echo/api"
+		"loadFrom![echo/streamserver.pack]echo/streamserver/bundled-apps/stream/client-widget",
+		"loadFrom![echo/apps.sdk]echo/utils",
+		"loadFrom![echo/streamserver.pack]echo/streamserver/api",
+		"loadFrom![echo/apps.sdk]echo/api"
 	], function($, Stream, Utils, StreamServerAPI, API) {
 
 	"use strict";

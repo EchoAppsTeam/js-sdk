@@ -1,8 +1,8 @@
 Echo.Tests.Units.push(function(callback) {
 	Echo.require([
 		"jquery",
-		"echo/streamserver/bundled-apps/stream/item/client-widget",
-		"echo/streamserver/bundled-apps/stream/item/media-gallery/client-widget"
+		"loadFrom![echo/streamserver.pack]echo/streamserver/bundled-apps/stream/item/client-widget",
+		"loadFrom![echo/streamserver/plugins/pinboard-visualization]echo/streamserver/bundled-apps/stream/item/media-gallery/client-widget"
 	], function($, Item, MediaGallery) {
 
 	"use strict";

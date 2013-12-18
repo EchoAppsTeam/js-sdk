@@ -1,7 +1,7 @@
 Echo.Tests.Units.push(function(callback) {
 	Echo.require([
 		"jquery",
-		"echo/events",
+		"loadFrom![echo/apps.sdk]echo/events",
 	], function($, Events) {
 
 	"use strict";

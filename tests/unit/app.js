@@ -1,10 +1,10 @@
 Echo.Tests.Units.push(function(callback) {
 	Echo.require([
 		"jquery",
-		"echo/app",
-		"echo/utils",
-		"echo/events",
-		"echo/labels"
+		"loadFrom![echo/apps.sdk]echo/app",
+		"loadFrom![echo/apps.sdk]echo/utils",
+		"loadFrom![echo/apps.sdk]echo/events",
+		"loadFrom![echo/apps.sdk]echo/labels"
 		
 	], function($, App, Utils, Events, Labels) {
 

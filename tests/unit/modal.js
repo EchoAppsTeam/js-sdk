@@ -1,8 +1,8 @@
 Echo.Tests.Units.push(function(callback) {
 	Echo.require([
 		"jquery",
-		"echo/gui/modal",
-		"echo/utils"
+		"loadFrom![echo/gui.pack]echo/gui/modal",
+		"loadFrom![echo/apps.sdk]echo/utils"
 	], function($, GUIModal, Utils) {
 
 	"use strict";

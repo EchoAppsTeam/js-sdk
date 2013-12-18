@@ -1,7 +1,7 @@
 Echo.Tests.Units.push(function(callback) {
 	Echo.require([
 		"jquery",
-		"echo/gui/tabs"
+		"loadFrom![echo/gui.pack]echo/gui/tabs"
 	], function($, GUITabs) {
 
 	"use strict";

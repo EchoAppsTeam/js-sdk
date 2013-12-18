@@ -1,8 +1,8 @@
 Echo.Tests.Units.push(function(callback) {
 	Echo.require([
 		"jquery",
-		"echo/streamserver/bundled-apps/stream/client-widget",
-		"echo/streamserver/bundled-apps/stream/plugins/infinite-scroll"
+		"loadFrom![echo/streamserver.pack]echo/streamserver/bundled-apps/stream/client-widget",
+		"loadFrom![echo/streamserver.pack]echo/streamserver/bundled-apps/stream/plugins/infinite-scroll"
 	], function($, Stream) {
 
 	"use strict";

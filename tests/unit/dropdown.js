@@ -1,7 +1,7 @@
 Echo.Tests.Units.push(function(callback) {
 	Echo.require([
 		"jquery",
-		"echo/gui/dropdown"
+		"loadFrom![echo/gui.pack]echo/gui/dropdown"
 	], function($, GUIDropdown) {
 
 	"use strict";

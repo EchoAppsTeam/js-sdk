@@ -1,8 +1,8 @@
 Echo.Tests.Units.push(function(callback) {
 	Echo.require([
 		"jquery",
-		"echo/streamserver/bundled-apps/auth/client-widget",
-		"echo/events"
+		"loadFrom![echo/streamserver.pack]echo/streamserver/bundled-apps/auth/client-widget",
+		"loadFrom![echo/apps.sdk]echo/events"
 	], function($, Auth, Events) {
 
 	"use strict";

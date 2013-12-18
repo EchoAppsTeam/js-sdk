@@ -1,7 +1,7 @@
 Echo.Tests.Units.push(function(callback) {
 	Echo.require([
 		"jquery",
-		"echo/streamserver/bundled-apps/stream/item/plugins/reply"
+		"loadFrom![echo/streamserver.pack]echo/streamserver/bundled-apps/stream/item/plugins/reply"
 	], function($) {
 
 	"use strict";

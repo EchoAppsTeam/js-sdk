@@ -1,8 +1,8 @@
 Echo.Tests.Units.push(function(callback) {
 	Echo.require([
 		"jquery",
-		"echo/streamserver/bundled-apps/facepile/client-widget",
-		"echo/streamserver/api"
+		"loadFrom![echo/streamserver.pack]echo/streamserver/bundled-apps/facepile/client-widget",
+		"loadFrom![echo/streamserver.pack]echo/streamserver/api"
 	], function($, FacePile, API) {
 
 	"use strict";

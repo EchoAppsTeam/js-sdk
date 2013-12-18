@@ -1,7 +1,7 @@
 Echo.Tests.Units.push(function(callback) {
 	Echo.require([
 		"jquery",
-		"echo/labels"
+		"loadFrom![echo/apps.sdk]echo/labels"
 	], function($, Labels) {
 
 	"use strict";
