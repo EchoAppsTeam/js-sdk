@@ -1,9 +1,9 @@
 Echo.define({
 	"load": function(name, require, onload, config) {
-		var libUrl = name.split("]")[0].replace("[", ""),
-			module = name.split("]")[1];
-		require([libUrl], function() {
-			require([module], function(value) {
+		"use strict";
+		var parts = name.split(/\[|\]/);
+		require([parts[1]], function() {
+			require([parts[2]], function(value) {
 				onload(value);
 			});
 		});

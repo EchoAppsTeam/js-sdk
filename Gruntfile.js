@@ -359,6 +359,7 @@ module.exports = function(grunt) {
 			"grunt": ["Gruntfile.js", "tools/grunt/**/*.js"],
 			"source": [
 				"<%= dirs.src %>/!(backplane).js",
+				"<%= dirs.src %>/third-party/requirejs/loadFrom.js",
 				"<%= dirs.src %>/appserver/*.js",
 				"<%= dirs.src %>/streamserver/*.js",
 				"<%= dirs.src %>/tests/harness/*.js"
