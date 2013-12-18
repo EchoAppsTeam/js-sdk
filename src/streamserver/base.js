@@ -28,9 +28,9 @@ var onDataInvalidate = function() {
 };
 
 Base.events = {
-	// we need two subscriptions here, because the "Echo.Control.onDataInvalidate" event
-	// may be published by the nested controls (in this case the event is not broadcasted
-	// to the "global" context) and by the standalone control to notify other controls
+	// we need two subscriptions here, because the "Echo.App.onDataInvalidate" event
+	// may be published by the nested apps (in this case the event is not broadcasted
+	// to the "global" context) and by the standalone app to notify other apps
 	// (not related directly) about the need to invalidate the data (in this case
 	// the "global" context is used)
 	"Echo.App.onDataInvalidate": [{
