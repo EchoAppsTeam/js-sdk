@@ -1,7 +1,7 @@
 Echo.define([
 	// FIXME: __DEPRECATED__
 	// remove this after full require js compatible implementation
-	"echo/utils"
+	"loadFrom![echo/apps.sdk]echo/utils"
 ], function(Utils) {
 
 "use strict";
