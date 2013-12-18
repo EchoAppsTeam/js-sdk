@@ -92,6 +92,9 @@ require.config({
 		"*": {
 			// this is a css plugin it calls this way: "css!path/to/css/file"
 			"css": "echo/third-party/requirejs/css",
+			// this is a plugin to load single module from pack.
+			// It can be used this way: loadFrom![url/to/pack]single/module/name
+			"loadFrom": "echo/third-party/requirejs/loadFrom",
 			// for * modules we use jquery-noconflict instead of jquery
 			"jquery": "jquery-noconflict"
 		},

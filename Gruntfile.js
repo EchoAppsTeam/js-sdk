@@ -173,12 +173,13 @@ module.exports = function(grunt) {
 		}
 	};
 
-	var requireModuleBandles = [{
+	var requirejsPacks = [{
 		"name": "loader",
 		"create": false,
 		"include": [
 			"third-party/requirejs/require",
-			"third-party/requirejs/css"
+			"third-party/requirejs/css",
+			"third-party/requirejs/loadFrom"
 		]
 	}, {
 		"name": "third-party/jquery.pack",
@@ -585,43 +586,15 @@ module.exports = function(grunt) {
 				"optimize": "none",
 				"wrap": false,
 				"namespace": "Echo",
-				"removeCombined": false,
+				"removeCombined": true,
 				"useStrict": true,
 				"skipDirOptimize": true
 			},
 			"common": {
 				"options": {
-					"modules": requireModuleBandles,
-					"onModuleBundleComplete": function (data) {
-						if (!config.requirejs.options.modulesPaths) {
-							config.requirejs.options.modulesPaths = "";
-						}
-						if (data.name === "loader") {
-							return;
-						}
-						for (var i = 0; i < data.included.length; i++) {
-							config.requirejs.options.modulesPaths += "\"echo/" + data.included[i].replace(/\.[^.]+$/, "") + "\":echoURL+\"/" + data.name + "\",";
-						}
-					},
-					"fileExclusionRegExp": /\/images\//
-				}
-			},//FIXME: we shouldn`t run it once again! we don`t need loader task at all
-			"loader": {
-				"options": {
-					"removeCombined": true,
-					"modules": requireModuleBandles,
-					"onBuildWrite": function (moduleName, path, contents) {
-						if (moduleName === "loader" && !!config.requirejs.options.modulesPaths) {
-							contents += "(function() {"
-								+ "var echoURL = Echo.require.toUrl(\"echo\");"
-								+ "Echo.require.config({"
-								+ "\"paths\":{"
-								+ config.requirejs.options.modulesPaths + "}"
-								+ "});"
-								+ "})();";
-						} else {
-							contents =  contents.replace("Echo.define(\'", "Echo.define(\'echo/");
-						}
+					"modules": requirejsPacks,
+					"onBuildWrite": function(moduleName, path, contents) {
+						contents = contents.replace("Echo.define(\'", "Echo.define(\'echo/");
 						return contents;
 					},
 					"fileExclusionRegExp": /\/images\//
