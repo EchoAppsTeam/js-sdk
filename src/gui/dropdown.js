@@ -1,7 +1,7 @@
 Echo.define([
 	"jquery",
 	"echo/gui",
-	"echo/utils"
+	"loadFrom![echo/apps.sdk]echo/utils"
 ], function($, GUI, Utils) {
 
 /**

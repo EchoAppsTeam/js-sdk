@@ -1,9 +1,9 @@
 Echo.define([
 	"jquery",
-	"echo/configuration",
+	"loadFrom![echo/apps.sdk]echo/configuration",
 	// FIXME: __DEPRECATED__
 	// remove this after full require js compatible implementation
-	"echo/utils",
+	"loadFrom![echo/apps.sdk]echo/utils",
 	"css!echo/gui.pack"
 ], function($, Configuration, Utils) {
 
