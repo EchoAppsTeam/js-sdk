@@ -1,5 +1,7 @@
 # About
 
+[![Built with Grunt](https://cdn.gruntjs.com/builtwith.png)](http://gruntjs.com/)
+
 Echo offers a collection of [powerful Cloud Services](http://aboutecho.com/WhatWeOffer/EchoPlatform) that do the heavy lifting for real-time, social applications. This SDK is designed to make it easy for JavaScript app developers to consume these cloud services while producing more interoperable and consistent apps by addressing the following general app development challenges:
 
 + JS API - Easier access to server-side APIs via the client side
