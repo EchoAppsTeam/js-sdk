@@ -12,13 +12,6 @@
 	"--no-ext4-events": true,
 	"--warnings": ["-no_doc_member", "-image_unused"],
 	"--welcome": "../docs/welcome.html",
-	"--head-html": "<link type=\"text/css\" href=\"resources/css/echo.css\" rel=\"stylesheet\"><script>Docs.initEventTracking = function() { Ext.getCmp('north-region').setHeight(80); Ext.getCmp('north-region').items.first().setHeight(53); };</script>",
-	"--body-html": [
-		"<script type='text/javascript'>",
-		"Docs.otherProducts = [",
-		"{text: 'Echo JS SDK 3.0', href: 'http://echoappsteam.github.io/js-sdk/docs/'},",
-		"{text: 'Echo JS SDK 3.1', href: '../../docs/[VERSION]'},",
-		"];",
-		"</script>"
-	]
+	"--head-html": "<link type=\"text/css\" href=\"resources/css/echo.css\" rel=\"stylesheet\">",
+	"--body-html": "<script type=\"text/javascript\" src=\"resources/echo.js\"></script>"
 }
