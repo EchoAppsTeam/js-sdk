@@ -45,7 +45,7 @@
 			"busName": "jskit"
 		};
 
-		Echo.require(["echo/streamserver/bundled-apps/auth/client-widget"], function(App) {
+		Echo.require(["loadFrom![echo/streamserver.pack]echo/streamserver/bundled-apps/auth/client-widget"], function(App) {
 			new App({
 				"backplane": backplane,
 				"target": document.getElementById("auth"),
@@ -56,7 +56,7 @@
 				}
 			});
 		});
-		Echo.require(["echo/streamserver/bundled-apps/stream/client-widget"], function(App) {
+		Echo.require(["loadFrom![echo/streamserver.pack]echo/streamserver/bundled-apps/stream/client-widget"], function(App) {
 			new App({
 				"backplane": backplane,
 				"target": document.getElementById("stream"),

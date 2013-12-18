@@ -1,8 +1,8 @@
 Echo.define([
 	"jquery",
-	"echo/app",
-	"echo/streamserver/bundled-apps/stream/client-widget",
-	"echo/streamserver/bundled-apps/submit/client-widget"
+	"loadFrom![echo/apps.sdk]echo/app",
+	"loadFrom![echo/streamserver.pack]echo/streamserver/bundled-apps/stream/client-widget",
+	"loadFrom![echo/streamserver.pack]echo/streamserver/bundled-apps/submit/client-widget"
 ], function($, App, Stream, Submit) {
 
 "use strict";
