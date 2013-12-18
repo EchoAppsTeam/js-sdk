@@ -1,7 +1,7 @@
 Echo.define([
 	"jquery",
-	"echo/utils",
-	"echo/gui/modal",
+	"loadFrom![echo/apps.sdk]echo/utils",
+	"loadFrom![echo/gui.pack]echo/gui/modal",
 	"echo/streamserver/base"
 ], function($, Utils, GUIModal, App) {
 

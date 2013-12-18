@@ -1,7 +1,7 @@
 Echo.define([
 	"jquery",
-	"echo/app",
-	"echo/utils"
+	"loadFrom![echo/apps.sdk]echo/app",
+	"loadFrom![echo/apps.sdk]echo/utils"
 ], function($, App, Utils) {
 
 "use strict";

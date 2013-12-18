@@ -1,8 +1,8 @@
 Echo.define([
 	"jquery",
-	"echo/plugin",
-	"echo/utils",
-	"echo/variables",
+	"loadFrom![echo/apps.sdk]echo/plugin",
+	"loadFrom![echo/apps.sdk]echo/utils",
+	"loadFrom![echo/apps.sdk]echo/variables",
 	"echo/streamserver/bundled-apps/submit/client-widget",
 	"echo/streamserver/bundled-apps/stream/plugins/reply",
 	"echo/streamserver/bundled-apps/submit/plugins/reply"

@@ -1,6 +1,6 @@
 Echo.define([
 	"jquery",
-	"echo/utils",
+	"loadFrom![echo/apps.sdk]echo/utils",
 	"echo/streamserver/base"
 ], function($, Utils, App) {
 

@@ -3,7 +3,7 @@ Echo.define([
 	"echo/streamserver/api",
 	"echo/streamserver/base",
 	"echo/streamserver/bundled-apps/stream/item/client-widget",
-	"echo/utils"
+	"loadFrom![echo/apps.sdk]echo/utils"
 ], function($, API, App, Item, Utils) {
 
 "use strict";

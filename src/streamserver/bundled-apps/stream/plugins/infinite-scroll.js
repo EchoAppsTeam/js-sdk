@@ -1,6 +1,6 @@
 Echo.define([
 	"jquery",
-	"echo/plugin"
+	"loadFrom![echo/apps.sdk]echo/plugin"
 ], function($, Plugin) {
 
 "use strict";

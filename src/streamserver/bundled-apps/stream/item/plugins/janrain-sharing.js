@@ -1,7 +1,7 @@
 Echo.define([
 	"jquery",
-	"echo/plugin",
-	"echo/gui",
+	"loadFrom![echo/apps.sdk]echo/plugin",
+	"loadFrom![echo/gui.pack]echo/gui",
 	"echo/streamserver/bundled-apps/submit/client-widget",
 	"echo/streamserver/bundled-apps/submit/plugins/janrain-sharing"
 ], function($, Plugin, GUI, Submit) {

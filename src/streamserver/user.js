@@ -1,11 +1,11 @@
 Echo.define("echo/streamserver/user", [
 	"jquery",
-	"echo/utils",
+	"loadFrom![echo/apps.sdk]echo/utils",
 	"echo/backplane",
-	"echo/configuration",
-	"echo/api",
+	"loadFrom![echo/apps.sdk]echo/configuration",
+	"loadFrom![echo/apps.sdk]echo/api",
 	"echo/streamserver/api",
-	"echo/events"
+	"loadFrom![echo/apps.sdk]echo/events"
 ], function($, Utils, Backplane, Configuration, API, StreamServerAPI, Events) {
 
 "use strict";

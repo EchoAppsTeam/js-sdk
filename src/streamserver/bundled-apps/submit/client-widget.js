@@ -1,12 +1,12 @@
 Echo.define([
 	"jquery",
 	"require",
-	"echo/utils",
+	"loadFrom![echo/apps.sdk]echo/utils",
 	"echo/streamserver/api",
 	"echo/streamserver/base",
-	"echo/gui/button",
-	"echo/events", 
-	"echo/gui/modal"
+	"loadFrom![echo/gui.pack]echo/gui/button",
+	"loadFrom![echo/apps.sdk]echo/events",
+	"loadFrom![echo/gui.pack]echo/gui/modal"
 ], function($, require, Utils, API, App, GUIButton, Events, GUIModal) {
 
 "use strict";

@@ -1,10 +1,10 @@
 Echo.define([
 	"jquery",
-	"echo/api",
-	"echo/configuration",
-	"echo/events",
-	"echo/utils",
-	"echo/labels"
+	"loadFrom![echo/apps.sdk]echo/api",
+	"loadFrom![echo/apps.sdk]echo/configuration",
+	"loadFrom![echo/apps.sdk]echo/events",
+	"loadFrom![echo/apps.sdk]echo/utils",
+	"loadFrom![echo/apps.sdk]echo/labels"
 ], function($, API, Configuration, Events, Utils, Labels) {
 
 "use strict";

@@ -1,8 +1,8 @@
 Echo.define([
 	"jquery",
-	"echo/plugin",
-	"echo/utils",
-	"echo/variables"
+	"loadFrom![echo/apps.sdk]echo/plugin",
+	"loadFrom![echo/apps.sdk]echo/utils",
+	"loadFrom![echo/apps.sdk]echo/variables"
 ], function($, Plugin, Utils, Variables, Submit) {
 
 "use strict";

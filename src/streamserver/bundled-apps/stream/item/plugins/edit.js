@@ -1,6 +1,6 @@
 Echo.define([
 	"jquery",
-	"echo/plugin",
+	"loadFrom![echo/apps.sdk]echo/plugin",
 	"echo/streamserver/bundled-apps/submit/client-widget",
 	"echo/streamserver/bundled-apps/submit/plugins/edit"
 ], function($, Plugin, Submit) {

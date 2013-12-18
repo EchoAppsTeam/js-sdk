@@ -1,8 +1,8 @@
 Echo.define([
 	"jquery",
-	"echo/utils",
-	"echo/app-client-widget",
-	"echo/streamserver/user"
+	"loadFrom![echo/apps.sdk]echo/utils",
+	"loadFrom![echo/apps.sdk]echo/app-client-widget",
+	"loadFrom![echo/apps.sdk]echo/streamserver/user"
 ], function($, Utils, App, User) {
 "use strict";
 

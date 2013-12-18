@@ -1,6 +1,6 @@
 Echo.define([
 	"jquery",
-	"echo/plugin",
+	"loadFrom![echo/apps.sdk]echo/plugin",
 	"echo/streamserver/bundled-apps/facepile/client-widget",
 	"echo/streamserver/api"
 ], function($, Plugin, FacePile, API) {
