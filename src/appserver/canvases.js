@@ -5,16 +5,19 @@ Echo.define(function() {
 var canvasList = [];
 var appOverrides = {};
 var errorMessages = {
-	"no_apps": "No applications defined for this canvas",
+	"no_apps": "No applications are defined for this canvas",
 	"no_config": "Unable to retrieve Canvas config",
-	"incomplete_app_config": "Unable to init an app (config is incomplete)",
-	"missing_app": "Unable to init an app (component not found)",
-	"app_init_failed": "Unable to init an app (JS error)",
 	"canvas_already_initialized": "Canvas has been initialized already",
-	"invalid_canvas_config": "Canvas with invalid configuration found"
+	"invalid_canvas_config": "Canvas with invalid configuration found",
+	"incomplete_app_config": "Unable to init an app (config is incomplete)",
+	"app_init_failed": "Unable to init an app (JS error)"
 };
 var protocol = (/^https?/.test(window.location.protocol) ? window.location.protocol : "http:").replace(":", "");
 
+// we always request canvases requiring "canvases/some-id" modules,
+// but "canvases" prefix must resolve in several URLs depending
+// whether it's debug or production mode and http/https scheme.
+// So we create 4 require contexts for module name mapping.
 var requireContexts = {};
 (function() {
 	var protocols = ["http", "https"];
@@ -68,7 +71,7 @@ var Canvases = {};
  * provide some way to register a "onReady" callback themselves.
  *
  * @param {Object} config.onCanvasReady.params
- * Object which is returned from the callback.
+ * Object which is passed to the callback.
  *
  * @param {String} config.onCanvasReady.params.ids
  *
@@ -89,6 +92,27 @@ var Canvases = {};
  * @param {String} config.onCanvasReady.params.dataURL
  * URL to the canvas data in the storage. It's exposed mostly for
  * testing purposes.
+ *
+ * @param {Function} [config.onCanvasError]
+ * Callback which is executed for each failed canvas.
+ *
+ * @param {Object} config.onCanvasError.data
+ * Object which is passed to the callback.
+ *
+ * @param {String} config.onCanvasError.data.code
+ * Error code, one of the following values:
+ *
+ * + canvas_already_initialized
+ * + invalid_canvas_config
+ * + no_apps
+ * + no_config
+ *
+ * @param {String} config.onCanvasError.data.message
+ * Human-readable string related to the error code.
+ *
+ * @param {String} config.onCanvasError.data.extra
+ * Object of arbitrary structure with additional information about error
+ * (possibly canvas target, config, etc).
  *
  * @param {Function} [config.onCanvasComplete]
  * Callback which is executed once all the canvases are ready.
@@ -361,7 +385,7 @@ function initApplication(params, callback) {
 		if (!App) {
 			logError({
 				"code": "incomplete_app_config",
-				"args": {"config": params.config}
+				"extra": {"config": params.config}
 			});
 			callback();
 			return;
@@ -372,7 +396,7 @@ function initApplication(params, callback) {
 		} catch(e) {
 			logError({
 				"code": "app_init_failed",
-				"args": {
+				"extra": {
 					"config": params.config,
 					"error": e
 				}
