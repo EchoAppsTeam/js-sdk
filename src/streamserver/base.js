@@ -57,7 +57,6 @@ Base.methods._initUser = function(next) {
 };
 
 Base.methods._initBackplane = function(next) {
-	var app = this;
 	var config = this.config.get("backplane");
 	if (config.serverBaseURL && config.busName) {
 		Echo.require(["echo/backplane"], function(Backplane) {

@@ -127,7 +127,6 @@ API.Transports.WebSockets.prototype.unsubscribe = function unsubscribe(arg) {
 };
 
 API.Transports.WebSockets.prototype.abort = function(force) {
-	var self = this;
 	var socket = API.Transports.WebSockets.socketByURI[this.config.get("uri")];
 	$.map(["onData", "onOpen", "onError"], $.proxy(this.unsubscribe, this));
 	if (socket) {
@@ -200,7 +199,8 @@ API.Transports.WebSockets.prototype._prepareTransportObject = function() {
 
 	this._clearTimers();
 
-	var socket = new (window.WebSocket || window.MozWebSocket)(this._prepareURL(), this.config.get("settings.protocols"));
+	var Socket = window.WebSocket || window.MozWebSocket;
+	var socket = new Socket(this._prepareURL(), this.config.get("settings.protocols"));
 	socket.onopen = function() {
 		// send ping immediately to make sure the server is responding
 		self._ping(function() {
@@ -234,8 +234,6 @@ API.Transports.WebSockets.prototype._clearTimers = function() {
 };
 
 API.Transports.WebSockets.prototype._clear = function() {
-	var self = this;
-	var socket = API.Transports.WebSockets.socketByURI[this.config.get("uri")];
 	var context = this.config.get("uri").replace(/\//g, "-");
 	this._clearTimers();
 	this.unsubscribe();
@@ -409,7 +407,7 @@ API.Transports.XDomainRequest.prototype._getTransportObject = function() {
 			var userType = (userOptions.dataType || "").toLowerCase();
 			return {
 				"send": function(headers, complete) {
-					xdr = new XDomainRequest();
+					xdr = new window.XDomainRequest();
 					if (/^\d+$/.test(userOptions.timeout)) {
 						xdr.timeout = userOptions.timeout;
 					}
@@ -434,7 +432,7 @@ API.Transports.XDomainRequest.prototype._getTransportObject = function() {
 									status.message = "parseerror";
 								}
 							} else if ((userType === "xml") || ((userType !== "text") && xmlRegEx.test(xdr.contentType))) {
-								var doc = new ActiveXObject("Microsoft.XMLDOM");
+								var doc = new window.ActiveXObject("Microsoft.XMLDOM");
 								doc.async = false;
 								try {
 									doc.loadXML(xdr.responseText);
@@ -779,7 +777,7 @@ API.Request.prototype._getTransport = function() {
 	var userDefinedTransport = this.config.get("transport");
 	var transport = API.Transports[userDefinedTransport] && API.Transports[userDefinedTransport].available()
 		? userDefinedTransport
-		: function() {
+		: (function() {
 			var transport;
 			$.each(["WebSockets", "AJAX", "XDomainRequest", "JSONP"], function(i, name) {
 				var available = API.Transports[name].available({
@@ -792,7 +790,7 @@ API.Request.prototype._getTransport = function() {
 				}
 			});
 			return transport;
-		}();
+		})();
 	return new API.Transports[transport](this._getTransportConfig());
 };
 

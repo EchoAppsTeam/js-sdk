@@ -5,7 +5,7 @@
 	"forin": true,
 	"immed": true,
 	"latedef": true,
-	"newcap": true,
+	"newcap": false,
 	"noarg": true,
 	"nonew": true,
 	"smarttabs": true,
@@ -13,7 +13,7 @@
 	"sub": true,
 	"trailing": true,
 	"undef": true,
-	"unused": true,
+	"unused": "vars",
 	"browser": true,
 	"scripturl": true,
 	"jquery": true,
@@ -22,6 +22,8 @@
 	"node": true,
 	"globals": {
 		"Echo": false,
-		"QUnit": false
+		"Backplane": true,
+		"QUnit": false,
+		"sinon": false
 	}
 }

@@ -76,7 +76,7 @@ function controlSecureEndpoints() {
 		Echo.API.Request.prototype._isSecureRequest.restore();
 		Backplane.request.restore();
 	});
-};
+}
 
 // TODO: get rid of this function when all tests use new format
 function runLegacyTests() {
@@ -98,7 +98,7 @@ function runLegacyTests() {
 		});
 		suite.run();
 	});
-};
+}
 
 (function() {
 	var ua = navigator.userAgent.toLowerCase();

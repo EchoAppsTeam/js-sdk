@@ -51,12 +51,12 @@ function getURL(url, devVersion) {
 		: "http:";
 	var cdnBaseURL = protocol + "{%=baseURLs.cdn%}/";
 	if (typeof devVersion === "undefined") devVersion = true;
-	return /^https?:\/\/|^\/\//.test(url)
+	return (/^(?:https?:)?\/\//).test(url)
 		? url
 		: cdnBaseURL + "sdk/v" + metaInfo.version +
 			(devVersion && Echo.isDebug() ? "/dev" : "") +
 			(!url || url.charAt(0) === "/" ? "" : "/") + url;
-};
+}
 
 function generatePaths(paths) {
 	var res = {};
@@ -66,7 +66,7 @@ function generatePaths(paths) {
 		}
 	}
 	return res;
-};
+}
 
 var paths = [{
 	"path": getURL("", false),
@@ -99,7 +99,7 @@ require.config({
 			"jquery": "jquery-noconflict"
 		},
 		// for jquery-noconflict module we use real jquery
-		"jquery-noconflict": {"jquery": "jquery"},
+		"jquery-noconflict": {"jquery": "jquery"}
 	},
 	"shim": {
 		"echo/backplane": {

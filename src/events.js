@@ -122,7 +122,7 @@ Events.unsubscribe = function(params) {
 		params.context = _initContext(params.topic, params.context);
 	}
 	if (params.handlerId || params.topic) {
-		var obj = _executeForDeepestContext(params.topic, params.context, function(obj, lastContext) {
+		_executeForDeepestContext(params.topic, params.context, function(obj, lastContext) {
 			if (params.handlerId) {
 				$.each(obj[lastContext].handlers, function(i, data) {
 					if (data.id === params.handlerId) {

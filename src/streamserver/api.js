@@ -181,7 +181,7 @@ StreamServerAPI.Request.prototype._search = function(force) {
 			self.liveUpdates.start(force);
 		}
 		self.requestType = "secondary";
-	}
+	};
 	if (!this.config.get("skipInitialRequest")
 		|| this.config.get("skipInitialRequest") && this.requestType !== "initial") {
 		this.request().progress(start);
@@ -265,7 +265,7 @@ StreamServerAPI.Request.prototype._prepareURL = function() {
 };
 
 StreamServerAPI.Request.prototype._initLiveUpdates = function(data) {
-	var ws, self = this;
+	var ws;
 	var polling = this.liveUpdates = StreamServerAPI.Polling.init(
 		$.extend(true, this._getLiveUpdatesConfig("polling"), {
 			"request": {
@@ -321,13 +321,13 @@ StreamServerAPI.Request.prototype._getLiveUpdatesConfig = function(name) {
 	};
 
 	var mapped = Utils.foldl({}, map[name], function(from, acc, to) {
-		var value = function fetch(key) {
-			var parts, val = self.config.get(key);
+		var value = (function fetch(key) {
+			var val = self.config.get(key);
 			if (typeof val === "undefined" && key) {
 				return fetch(key.split(".").slice(1).join("."));
 			}
 			return val;
-		}(from);
+		})(from);
 		Utils.set(acc, to, value);
 	});
 	return mapped;
@@ -342,7 +342,7 @@ StreamServerAPI.Request.prototype._liveUpdatesWatcher = function(polling, ws) {
 			}
 			self.liveUpdates = inst;
 			self.liveUpdates.start();
-		}
+		};
 	};
 	ws.on("close", function() {
 		var timeout, config = self.config.get("liveUpdates.websockets.fallback");
@@ -601,7 +601,7 @@ StreamServerAPI.Polling.prototype.start = function(force) {
 };
 
 StreamServerAPI.Polling.prototype.on = function(event, fn) {
-	var event = "on" + Utils.capitalize(event);
+	event = "on" + Utils.capitalize(event);
 	var handler = this.requestObject.transport.config.get(event, $.noop);
 	this.requestObject.transport.config.set(event, function() {
 		handler.apply(null, arguments);
@@ -620,7 +620,7 @@ StreamServerAPI.Polling.prototype._changeTimeout = function(data) {
 	if (typeof data === "string") {
 		data = {"liveUpdatesTimeout": data};
 	}
-	data.liveUpdatesTimeout = parseInt(data.liveUpdatesTimeout);
+	data.liveUpdatesTimeout = +data.liveUpdatesTimeout;
 	var applyServerDefinedTimeout = function(timeout) {
 		if (!timeout && self.originalTimeout !== self.config.get("timeout")) {
 			self.config.set("timeout", self.originalTimeout);
@@ -637,7 +637,7 @@ StreamServerAPI.Polling.prototype._changeTimeout = function(data) {
 		return;
 	}
 	var currentTimeout = this.config.get("timeout");
-	var since = parseInt(this.config.get("request.data.since"));
+	var since = +this.config.get("request.data.since");
 	var currentTime = Math.floor((new Date()).getTime() / 1000);
 	// calculate the delay before starting next request:
 	//   - have new data but still behind and need to catch up - use minimum timeout

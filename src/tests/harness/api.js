@@ -62,7 +62,7 @@ Echo.Tests.renderersTest = function(component, params, config) {
 		var handler = function() {
 			var instance = this;
 			ready.call(instance);
-			_checkRenderers.call(instance, {
+			_checkRenderers({
 				"instance": instance,
 				"renderers": instance.renderers,
 				"cssPrefix": instance.cssPrefix
@@ -83,7 +83,9 @@ Echo.Tests.renderersTest = function(component, params, config) {
 		};
 		params.target = params.target || $("#qunit-fixture");
 		var Component = Echo.Utils.getComponent(component);
+		/* jshint nonew:false */
 		new Component(params);
+		/* jshint nonew:true */
 	}, config);
 };
 
@@ -112,16 +114,18 @@ Echo.Tests.pluginRenderersTest = function(plugin, params, config) {
 				? instance.threads[0].getPlugin(plugin)
 				: instance.getPlugin(plugin);
 			ready.call(instance);
-			_checkRenderers.call(pluginInstance, {
+			_checkRenderers({
 				"instance": pluginInstance.component,
 				"renderers": pluginInstance._definition("renderers"),
-				"cssPrefix": pluginInstance.cssPrefix
+				"cssPrefix": pluginInstance.cssPrefix,
+				"context": pluginInstance
 			});
-			_checkRenderers.call(pluginInstance, {
+			_checkRenderers({
 				"instance": pluginInstance.component,
 				"renderers": pluginInstance._definition("component").renderers,
 				"cssPrefix": pluginInstance.component.cssPrefix,
-				"statPrefix": "component."
+				"statPrefix": "component.",
+				"context": pluginInstance
 			});
 			instance.destroy();
 			QUnit.start();
@@ -139,7 +143,9 @@ Echo.Tests.pluginRenderersTest = function(plugin, params, config) {
 		};
 		params.target = params.target || $("#qunit-fixture");
 		var Component = Echo.Utils.getComponent(component);
+		/* jshint nonew:false */
 		new Component(params);
+		/* jshint nonew:true */
 	}, config);
 };
 
@@ -253,7 +259,7 @@ function _testSetup() {
 	Echo.Events._dataByHandlerId = {};
 	// clear qunit-fixture
 	$("#qunit-fixture").empty();
-};
+}
 
 function _testTeardown() {
 	var meta = QUnit.config.current.moduleTestEnvironment.meta;
@@ -262,7 +268,7 @@ function _testTeardown() {
 	$.each(meta.functions, function(i, name) {
 		Echo.Tests.Stats.markFunctionTested(meta.className + "." + name);
 	});
-};
+}
 
 function _normalizeTestConfig(config) {
 	return $.extend(true, {
@@ -273,32 +279,43 @@ function _normalizeTestConfig(config) {
 	}, config || {});
 }
 
-function _checkSingleRenderer(name, element, rendererFn, suffix) {
+function _checkSingleRenderer(name, element, rendererFn, context, suffix) {
 	suffix = suffix || "";
 	if (!element) {
 		QUnit.ok(true, "Note: the test for the " + " \"" + name + "\"" + " renderer was not executed, because the template doesn't contain the respective element. This renderer works for another type of template." + suffix);
 		return;
 	}
 	var oldElement = element.clone(true, true);
-	var renderedElement = rendererFn.call(this, element);
+	var renderedElement = rendererFn.call(context, element);
 	_testElementsConsistencyAfterRendering(name, oldElement, renderedElement, suffix);
 }
 
 function _checkRenderers(config) {
-	var self = this;
 	var instance = config.instance;
 	var renderers = config.renderers;
+	var context = config.context || instance;
 	config.statPrefix = config.statPrefix || "";
 	$.each(renderers, function(name, renderer) {
 		QUnit.config.current.moduleTestEnvironment.meta.functions.push(config.statPrefix + "renderers." + name);
-		_checkSingleRenderer.call(self, name, (config.statPrefix ? instance : self).view.get(name), renderers[name]);
+		_checkSingleRenderer(
+			name,
+			(config.statPrefix ? instance : context).view.get(name),
+			renderers[name],
+			context
+		);
 	});
 	var oldElements = Echo.Utils.foldl({}, instance.view._elements, function(element, acc, name) {
 		acc[name] = element.clone(true, true);
 	});
 	instance.render();
 	$.each(renderers, function(name, element) {
-		_checkSingleRenderer.call(self, name, oldElements[config.cssPrefix + name], renderers[name], " (recursive rerendering case)");
+		_checkSingleRenderer(
+			name,
+			oldElements[config.cssPrefix + name],
+			renderers[name],
+			context,
+			" (recursive rerendering case)"
+		);
 	});
 }
 
@@ -329,7 +346,7 @@ function _testElementsConsistencyAfterRendering(name, oldElement, renderedElemen
 		oldText,
 		prefix + "check that text representation of the element is still the same after second rendering" + suffix
 	);
-};
+}
 // TODO: remove this line when all tests use new format
 Echo.Tests._testElementsConsistencyAfterRendering = _testElementsConsistencyAfterRendering;
 

@@ -171,10 +171,9 @@ Configuration.prototype._clearCacheByPrefix = function(prefix) {
 };
 
 Configuration.prototype._merge = function(master, slave, keepRefsFor) {
-	var self = this, target, src, options;
+	var self = this, target, src;
 	var inputs = [master, slave];
-	for (var i = 0; i < inputs.length; i++) {
-		options = inputs[i];
+	$.each(inputs, function(i, options) {
 		if ($.isPlainObject(options)) {
 			target = target || {};
 			$.each(options, function(name, copy) {
@@ -196,7 +195,7 @@ Configuration.prototype._merge = function(master, slave, keepRefsFor) {
 		} else if (typeof target === "undefined" && typeof options !== "undefined") {
 			target = options;
 		}
-	}
+	});
 	return target;
 };
 

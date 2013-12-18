@@ -472,7 +472,7 @@ Utils.objectToJSON = function(obj) {
 Utils.htmlTextTruncate = function(text, limit, postfix, forceClosingTags) {
 	if (!limit || text.length < limit) return text;
 
-	var tags = [], count = 0, finalPos = 0;
+	var i, tags = [], count = 0, finalPos = 0;
 	var wordRegex = /(\w)+/;
 	var htmlSpecialCharRegex = /^(\S)+;/;
 	if (!this.cache.standaloneTags) {
@@ -484,7 +484,7 @@ Utils.htmlTextTruncate = function(text, limit, postfix, forceClosingTags) {
 			);
 	}
 
-	for (var i = 0; i < text.length; i++) {
+	for (i = 0; i < text.length; i++) {
 		var symbol = text.charAt(i);
 		if (symbol === "<") {
 			var tail = text.indexOf(">", i);
@@ -525,7 +525,7 @@ Utils.htmlTextTruncate = function(text, limit, postfix, forceClosingTags) {
 				text = text.substring(0, finalPos) + (postfix || "");
 			}
 		}
-		for (var i = tags.length - 1; i >= 0; i--) {
+		for (i = tags.length - 1; i >= 0; i--) {
 			text += "</" + tags[i] + ">";
 		}
 	}
@@ -637,7 +637,8 @@ Utils.getVisibleColor = function(element) {
 		if (color !== "" && color !== "transparent" && !/rgba\((0,\s*){3}0\)/.test(color) || $.nodeName(element.get(0), "body")) {
 			break;
 		}
-	} while (element = element.parent());
+		element = element.parent();
+	} while (element);
 	return color || "transparent";
 };
 
@@ -1279,8 +1280,8 @@ Utils.addCSS(
 	'.echo-image-container.echo-image-position-fill { text-align: center; overflow: hidden; }' +
 	'.echo-image-container.echo-image-position-fill img { max-width: 100%; max-height: 100%; width: auto; height: auto; vertical-align: top; }' +
 	'.echo-image-container.echo-image-position-fill img.echo-image-stretched-horizontally { width: 100%; height: auto; }' +
-	'.echo-image-container.echo-image-position-fill img.echo-image-stretched-vertically { width: auto; height: 100%; }'
-, "echo-common");
+	'.echo-image-container.echo-image-position-fill img.echo-image-stretched-vertically { width: auto; height: 100%; }',
+"echo-common");
 
 // JS SDK can't guarantee proper UI elements rendering in quirks mode
 // because the UI Framework (Twitter Bootstrap) doesn't support this mode.

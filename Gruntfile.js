@@ -356,7 +356,13 @@ module.exports = function(grunt) {
 			"options": {
 				"jshintrc": ".jshintrc"
 			},
-			"grunt": ["Gruntfile.js", "tools/grunt/**/*.js"]
+			"grunt": ["Gruntfile.js", "tools/grunt/**/*.js"],
+			"source": [
+				"<%= dirs.src %>/!(backplane).js",
+				"<%= dirs.src %>/appserver/*.js",
+				"<%= dirs.src %>/streamserver/*.js",
+				"<%= dirs.src %>/tests/harness/*.js"
+			]
 		},
 		"wrap": {
 			"options": {
@@ -588,7 +594,8 @@ module.exports = function(grunt) {
 				"namespace": "Echo",
 				"removeCombined": true,
 				"useStrict": true,
-				"skipDirOptimize": true
+				"skipDirOptimize": true,
+				"normalizeDirDefines": true
 			},
 			"common": {
 				"options": {

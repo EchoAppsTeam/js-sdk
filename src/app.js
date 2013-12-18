@@ -591,11 +591,11 @@ App.prototype.showError = function(params) {
 			var label = self.substitute({
 				"template": params.data.message || "",
 				"instructions": {
-					"seconds": function(sec) {
+					"seconds": (function(sec) {
 						return function() {
 							return sec;
-						}
-					}(secondsLeft)
+						};
+					})(secondsLeft)
 				},
 				"data": $.extend({"seconds": secondsLeft--}, params.data)
 			});
@@ -731,13 +731,13 @@ App.prototype._initializers.events = function() {
 			// publish events with parents prefixes if appropriate flag provided
 			if (params.inherited) {
 				parent = app.constructor.parent;
-				names = function get(parent, acc) {
+				names = (function get(parent, acc) {
 					if (parent && parent.name) {
 						acc.unshift(parent.name);
 						get(parent.constructor.parent, acc);
 					}
 					return acc;
-				}(parent, []);
+				})(parent, []);
 				$.map(names, function(name) {
 					Events.publish(
 						$.extend({}, params, {
@@ -969,13 +969,13 @@ App.prototype._getSubstitutionInstructions = function() {
 			var value, parent;
 			if (key) {
 				parent = app.constructor.parent;
-				value = function get(parent, acc) {
+				value = (function get(parent, acc) {
 					if (parent && parent.cssPrefix) {
 						acc.unshift(parent.cssPrefix + key);
 						get(parent.constructor.parent, acc);
 					}
 					return acc;
-				}(parent, []).join(" ");
+				})(parent, []).join(" ");
 			} else {
 				value = app.cssClass;
 			}
@@ -1004,10 +1004,6 @@ App.prototype._definition = function(key) {
 };
 
 App.prototype._loadPluginScripts = function(callback) {
-	/*
- 	* TODO: It should be done using requireJS
- 	* without Utils.getComponent usage, maybe
- 	*/
 	var app = this;
 	var plugins = this.config.get("pluginsOrder");
 	var scripts = Utils.foldl([], plugins, function(name, acc) {
