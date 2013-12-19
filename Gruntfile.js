@@ -202,7 +202,6 @@ module.exports = function(grunt) {
 			"view",
 			"app",
 			"app-client-widget",
-			"app-dashboard",
 			"plugin",
 			"variables"
 		]
