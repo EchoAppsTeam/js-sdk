@@ -10,8 +10,3 @@ Docs.initEventTracking = function() {
 		}
 	});
 };
-
-Docs.otherProducts = [
-	{"text": "Echo JS SDK 3.0", "href": "http://echoappsteam.github.io/js-sdk/docs/"},
-	{"text": "Echo JS SDK 3.1", "href": "../../docs/[VERSION]"}
-];
