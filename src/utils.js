@@ -1117,6 +1117,7 @@ Utils.safelyExecute = function(fn, args, context) {
 };
 
 /**
+ * @static
  * Method to place an image inside the container.
  *
  * This method removes any container's content and creates a new image HTML element
@@ -1216,7 +1217,7 @@ Utils.random = function(min, max) {
  *    + lastWeek
  *    + lastMonth
  *
- *    numeric representations
+ *    numeric representations:
  *    + second
  *    + minute
  *    + hour
