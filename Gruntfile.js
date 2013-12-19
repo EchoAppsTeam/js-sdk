@@ -213,7 +213,7 @@ module.exports = function(grunt) {
 			"appserver/cookie"
 		]
 	}, {
-		"name": "streamserver.pack",
+		"name": "streamserver.sdk",
 		"create": true,
 		"include": [
 			"streamserver/api",

@@ -7,7 +7,7 @@ Echo.define({
     },
     "apps": [{
         "id": "submit",
-        "script": "{%=baseURLs.sdk%}/streamserver.pack.js",
+        "script": "{%=baseURLs.sdk%}/streamserver.sdk.js",
         "component": "echo/streamserver/bundled-apps/submit/client-widget",
         "config": {
             "appkey": "echo.jssdk.tests.aboutecho.com",
@@ -23,7 +23,7 @@ Echo.define({
         }
     }, {
         "id": "stream",
-        "script": "{%=baseURLs.sdk%}/streamserver.pack.js",
+        "script": "{%=baseURLs.sdk%}/streamserver.sdk.js",
         "component": "echo/streamserver/bundled-apps/stream/client-widget",
         "config": {
             "appkey": "echo.jssdk.tests.aboutecho.com",

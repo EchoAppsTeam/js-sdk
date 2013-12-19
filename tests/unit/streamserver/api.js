@@ -4,8 +4,8 @@ Echo.Tests.Units.push(function(callback) {
 		"loadFrom![echo/apps.sdk]echo/api",
 		"loadFrom![echo/apps.sdk]echo/utils",
 		"loadFrom![echo/apps.sdk]echo/events",
-		"loadFrom![echo/streamserver.pack]echo/streamserver/api",
-		"loadFrom![echo/streamserver.pack]echo/streamserver/user"
+		"loadFrom![echo/streamserver.sdk]echo/streamserver/api",
+		"loadFrom![echo/streamserver.sdk]echo/streamserver/user"
 	], function($, API, Utils, Events, StreamServerAPI, User) {
 
 	"use strict";

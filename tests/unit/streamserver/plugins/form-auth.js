@@ -1,7 +1,7 @@
 Echo.Tests.Units.push(function(callback) {
 	Echo.require([
 		"jquery",
-		"loadFrom![echo/streamserver.pack]echo/streamserver/bundled-apps/submit/plugins/form-auth"
+		"loadFrom![echo/streamserver.sdk]echo/streamserver/bundled-apps/submit/plugins/form-auth"
 	], function($) {
 
 	"use strict";

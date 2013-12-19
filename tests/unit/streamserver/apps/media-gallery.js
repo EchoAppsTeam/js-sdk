@@ -1,7 +1,7 @@
 Echo.Tests.Units.push(function(callback) {
 	Echo.require([
 		"jquery",
-		"loadFrom![echo/streamserver.pack]echo/streamserver/bundled-apps/stream/item/client-widget",
+		"loadFrom![echo/streamserver.sdk]echo/streamserver/bundled-apps/stream/item/client-widget",
 		"loadFrom![echo/streamserver/bundled-apps/stream/plugins/pinboard-visualization]echo/streamserver/bundled-apps/stream/item/media-gallery/client-widget"
 	], function($, Item, MediaGallery) {
 

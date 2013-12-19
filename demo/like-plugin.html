@@ -44,7 +44,7 @@
 			"serverBaseURL": "https://api.echoenabled.com/v1",
 			"busName": "jskit"
 		};
-		Echo.require(["loadFrom![echo/streamserver.pack]echo/streamserver/bundled-apps/auth/client-widget"], function(App) {
+		Echo.require(["loadFrom![echo/streamserver.sdk]echo/streamserver/bundled-apps/auth/client-widget"], function(App) {
 			new App({
 				"backplane": backplane,
 				"target": document.getElementById("auth"),
@@ -55,7 +55,7 @@
 				}
 			});
 		});
-		Echo.require(["loadFrom![echo/streamserver.pack]echo/streamserver/bundled-apps/stream/client-widget"], function(App) {
+		Echo.require(["loadFrom![echo/streamserver.sdk]echo/streamserver/bundled-apps/stream/client-widget"], function(App) {
 			new App({
 				"backplane": backplane,
 				"target": document.getElementById("stream"),

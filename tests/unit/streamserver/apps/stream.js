@@ -1,9 +1,9 @@
 Echo.Tests.Units.push(function(callback) {
 	Echo.require([
 		"jquery",
-		"loadFrom![echo/streamserver.pack]echo/streamserver/bundled-apps/stream/client-widget",
+		"loadFrom![echo/streamserver.sdk]echo/streamserver/bundled-apps/stream/client-widget",
 		"loadFrom![echo/apps.sdk]echo/utils",
-		"loadFrom![echo/streamserver.pack]echo/streamserver/api",
+		"loadFrom![echo/streamserver.sdk]echo/streamserver/api",
 		"loadFrom![echo/apps.sdk]echo/api"
 	], function($, Stream, Utils, StreamServerAPI, API) {
 

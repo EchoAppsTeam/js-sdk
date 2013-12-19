@@ -7,7 +7,7 @@ window.Echo && Echo.Loader && Echo.Loader._storeCanvasConfig && Echo.Loader._sto
     },
     "apps": [{
         "id": "auth",
-        "script": "streamserver.pack.js",
+        "script": "streamserver.sdk.js",
         "component": "Echo.StreamServer.BundledApps.Auth.ClientWidget",
         "config": {
             "appkey": "echo.jssdk.tests.aboutecho.com",
@@ -27,7 +27,7 @@ window.Echo && Echo.Loader && Echo.Loader._storeCanvasConfig && Echo.Loader._sto
     },
     "apps": [{
         "id": "auth",
-        "script": "streamserver.pack.js",
+        "script": "streamserver.sdk.js",
         "component": "Echo.StreamServer.BundledApps.Auth.ClientWidget",
         "config": {
             "appkey": "echo.jssdk.tests.aboutecho.com",
@@ -47,7 +47,7 @@ window.Echo && Echo.Loader && Echo.Loader._storeCanvasConfig && Echo.Loader._sto
     },
     "apps": [{
         "id": "auth",
-        "script": "streamserver.pack.js",
+        "script": "streamserver.sdk.js",
         "component": "Echo.StreamServer.BundledApps.Auth.ClientWidget",
         "config": {
             "appkey": "echo.jssdk.tests.aboutecho.com",
@@ -67,7 +67,7 @@ window.Echo && Echo.Loader && Echo.Loader._storeCanvasConfig && Echo.Loader._sto
     },
     "apps": [{
         "id": "auth",
-        "script": "streamserver.pack.js",
+        "script": "streamserver.sdk.js",
         "component": "Echo.StreamServer.BundledApps.Auth.ClientWidget",
         "config": {
             "appkey": "echo.jssdk.tests.aboutecho.com",
@@ -87,7 +87,7 @@ window.Echo && Echo.Loader && Echo.Loader._storeCanvasConfig && Echo.Loader._sto
     },
     "apps": [{
         "id": "auth",
-        "script": "streamserver.pack.js",
+        "script": "streamserver.sdk.js",
         "component": "Echo.StreamServer.BundledApps.Auth.ClientWidget",
         "config": {
             "appkey": "echo.jssdk.tests.aboutecho.com",

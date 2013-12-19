@@ -1,7 +1,7 @@
 Echo.Tests.Units.push(function(callback) {
 	Echo.require([
 		"jquery",
-		"loadFrom![echo/streamserver.pack]echo/streamserver/bundled-apps/auth/client-widget",
+		"loadFrom![echo/streamserver.sdk]echo/streamserver/bundled-apps/auth/client-widget",
 		"loadFrom![echo/apps.sdk]echo/events"
 	], function($, Auth, Events) {
 

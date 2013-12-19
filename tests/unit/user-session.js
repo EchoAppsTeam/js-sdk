@@ -1,7 +1,7 @@
 Echo.Tests.Units.push(function(callback) {
 	Echo.require([
 		"jquery",
-		"loadFrom![echo/streamserver.pack]echo/streamserver/user",
+		"loadFrom![echo/streamserver.sdk]echo/streamserver/user",
 		"loadFrom![echo/apps.sdk]echo/utils"
 	], function($, User, Utils) {
 
