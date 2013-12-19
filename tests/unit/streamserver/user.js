@@ -1,11 +1,11 @@
 Echo.Tests.Units.push(function(callback) {
+	"use strict";
+
 	Echo.require([
 		"jquery",
 		"loadFrom![echo/streamserver.sdk]echo/streamserver/user",
 		"loadFrom![echo/apps.sdk]echo/utils"
 	], function($, User, Utils) {
-
-	"use strict";
 
 	Echo.Tests.module("Echo.StreamServer.User", {
 		"meta": {
@@ -92,7 +92,6 @@ Echo.Tests.Units.push(function(callback) {
 				QUnit.equal(user.is("logged"), user._isLogged(),
 					"Check \"is\" function delegation using \"logged\" property");
 
-				var avatar = user.get("avatar");
 				var defaultAvatar = "http://example.com/default-avatar.png";
 				QUnit.equal(user.get("avatar", defaultAvatar), defaultAvatar,
 					"Checking get operation with existing attribute and default value via function call delegation (avatar field)");
@@ -181,7 +180,6 @@ Echo.Tests.Units.push(function(callback) {
 	Echo.Tests._asyncTest("error handling", function() {
 		User({
 			"ready": function() {
-				var user = this;
 				QUnit.ok(true, "The \"ready\" callback is executed even when the appkey is missing");
 				QUnit.ok(
 					!this.is("logged"),
@@ -251,7 +249,7 @@ Echo.Tests.Units.push(function(callback) {
 		QUnit.equal(user.get("fake_attr", "default value"), "default value",
 			"Checking get operation with fake attribute and default value");
 
-		var roles = ["role1", "role2", "role3"];	
+		var roles = ["role1", "role2", "role3"];
 		user.set("roles", roles);
 		QUnit.equal(user.get("roles").length, roles.length,
 			"Checking get/set operations with arrays (user roles)");
@@ -264,7 +262,7 @@ Echo.Tests.Units.push(function(callback) {
 		QUnit.ok(!user.has("role", "non-existing-role"),
 			"Checking user.has() function for non-existing role");
 
-		var markers = ["marker1", "marker2", "marker3"];	
+		var markers = ["marker1", "marker2", "marker3"];
 		user.set("markers", markers);
 		QUnit.equal(user.get("markers").length, markers.length,
 			"Checking get/set operations with arrays (user markers)");

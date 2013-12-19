@@ -1,10 +1,10 @@
 Echo.Tests.Units.push(function(callback) {
+	"use strict";
+
 	Echo.require([
 		"jquery",
-		"loadFrom![echo/apps.sdk]echo/events",
+		"loadFrom![echo/apps.sdk]echo/events"
 	], function($, Events) {
-
-	"use strict";
 
 	var published = [];
 	var order;
@@ -193,23 +193,23 @@ Echo.Tests.Units.push(function(callback) {
 
 	Echo.Tests.test("advanced publishing", function() {
 		order = 0;
-		var s1 = subscribe("A.test", "a1/b1/c1", ["propagation.siblings"]);
-		var s2 = subscribe("A.test", "a1", ["bubble"]);
-		var s3 = subscribe("A.test", "a2", ["propagation.children"]);
-		var s4 = subscribe("A.test", "a2/b1");
-		var s5 = subscribe("A.test", "a1/b2/c2");
-		var s6 = subscribe("A.test", "a1/b1/c1");
-		var s7 = subscribe("A.test", "a1/b2");
-		var s8 = subscribe("A.test", "a3/b1", ["propagation"]);
-		var s9 = subscribe("A.test", "a3");
-		var s10 = subscribe("A.test", "a3/b2");
-		var s11 = subscribe("A.test", "a3/b2/c2");
-		var s12 = subscribe("A.test", "a1/b1/c1/d1");
-		var s13 = subscribe("A.test", "a1/b1", ["bubble"]);
+		subscribe("A.test", "a1/b1/c1", ["propagation.siblings"]);
+		subscribe("A.test", "a1", ["bubble"]);
+		subscribe("A.test", "a2", ["propagation.children"]);
+		subscribe("A.test", "a2/b1");
+		subscribe("A.test", "a1/b2/c2");
+		subscribe("A.test", "a1/b1/c1");
+		subscribe("A.test", "a1/b2");
+		subscribe("A.test", "a3/b1", ["propagation"]);
+		subscribe("A.test", "a3");
+		subscribe("A.test", "a3/b2");
+		subscribe("A.test", "a3/b2/c2");
+		subscribe("A.test", "a1/b1/c1/d1");
+		subscribe("A.test", "a1/b1", ["bubble"]);
 		// We need to create context but shouldn't have any handlers for it so we unsubscribe right after subscription
 		var s14 = subscribe("A.test", "a1/b1/c1/d1/e1");
 		unsubscribe("A.test", s14.id, "a1/b1/c1/d1/e1");
-		var s15 = subscribe("A.test", "a1/b2/c3");
+		subscribe("A.test", "a1/b2/c3");
 
 		publish({"topic": "A.test", "context": "a1/b2/c2"});
 		QUnit.deepEqual(published, [5, 7, 2], "Publish: handlers order (topic \"A\", context \"a1/b2/c2\", stop:bubble)");

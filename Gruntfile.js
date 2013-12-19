@@ -365,6 +365,13 @@ module.exports = function(grunt) {
 				"<%= dirs.src %>/appserver/*.js",
 				"<%= dirs.src %>/streamserver/*.js",
 				"<%= dirs.src %>/tests/harness/*.js"
+			],
+			"tests": [
+				"tests/unit/events.js",
+				"tests/unit/labels.js",
+				"tests/unit/utils.js",
+				"tests/unit/appserver/*.js",
+				"tests/unit/streamserver/user.js"
 			]
 		},
 		"wrap": {
