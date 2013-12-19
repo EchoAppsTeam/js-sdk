@@ -31,7 +31,6 @@ If you need to initialize a client widget as a standalone app on a page, you sho
 		});
 	</script>
 
-<span style="color: red;">Check this link</span>
 More information regarding the Echo.require function can be found in RequireJS docs [here](http://requirejs.org/docs/api.html#jsfiles).
 
 ### Initializing a component as an internal one of an app inherited from Echo.App
@@ -83,6 +82,7 @@ More information regarding the Echo.App.initApp function can be found {@link Ech
 ## Initializing plugins
 
 Almost every app built using Echo JS SDK can be extended via [Plugins](#!/guide/how_to_develop_plugin). In order to init a plugin for a given app, you should place the object with the "component" field into the "plugins" array, for example as shown below:
+
 	Echo.require([
 		"echo/streamserver/bundled-apps/stream/client-widget"
 	] , function(Stream) {

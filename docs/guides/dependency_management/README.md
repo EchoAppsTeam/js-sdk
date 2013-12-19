@@ -12,7 +12,7 @@ Usually Javascript files downloaded via &lt;script> tag block page rendering and
 
 <img src="guides/dependency_management/figure1.png" alt="Figure 1. Synchronous scripts loading" width="100%"><br><br>
 
-*Figure 2. Asynchronous scripts loading using Echo.Loader.download method*
+*Figure 2. Asynchronous scripts loading using Echo.require method*
 
 <img src="guides/dependency_management/figure2.png" alt="Figure 2. Asynchronous scripts loading using Echo.require method" width="100%"><br><br>
 

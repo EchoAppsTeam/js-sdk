@@ -18,7 +18,7 @@ Echo offers a collection of [powerful Cloud Services](http://aboutecho.com/WhatW
 A well documented client-side API for interacting with the Echo Cloud Services quickly and easily right from the page using Javascript ({@link Echo.API.Request learn more}).
 
 ### GUI Library - More consistent look and feel between apps
-Echo JS SDK 3.1 uses [Twitter Bootstrap](http://twitter.github.com/bootstrap/) as the new UI framework. By employing an industry-standard UI framework with well defined UI rules, should help the apps look stylish and consistent, yet provide a lot of room for customizations by our publishers ({@link Echo.GUI learn more}).
+Echo JS SDK 3.1 uses [Twitter Bootstrap](http://getbootstrap.com/2.3.2/javascript.html) as the new UI framework. By employing an industry-standard UI framework with well defined UI rules, should help the apps look stylish and consistent, yet provide a lot of room for customizations by our publishers ({@link Echo.GUI learn more}).
 
 ### UI Apps - A Core set of Apps for common app/interaction patterns
 These apps quickly deliver core pieces of App UI based on common feature scenarios such as activity streams, submission, facepiles, counters and more.
@@ -38,7 +38,7 @@ Echo FacePile app displays users (actors) returned in any activity stream and di
 #### Echo.StreamServer.BundledApps.Auth.ClientWidget
 Echo Auth app displays the user login status and allows them sign in using different social identities.
 
-#### [Guide: Building an App](#!/guide/how_to_develop_app)
+[Guide: Building an App](#!/guide/how_to_develop_app)
 
 ### Component Definition - Consistent app architecture for plugin extensibility, consistent configuration handling and app interoperability
 

@@ -142,18 +142,6 @@ To make the UI look nice, we should add some CSS rules. There is a special place
 
 	Comments.css = ".{class:container} > div { margin-bottom: 7px; }";
 
-## Dependencies
-
-If the application depends on some other external component/library (including other Echo components), it's possible to define the dependencies list for the application. In this case the SDK engine will download the dependencies first and launch the application after that. The dependency is an object with the "url" and one of the "plugin", "app" or "loaded" fields. In the "plugin" or "app" fields you should specify the component name. If the component you have specified is not loaded yet, resource you have specified in the "url" will be downloaded. If you need to specify more complex conditions to load resource, you can use the "loaded" field instead. The "loaded" field should be defined as a function which returns 'true' or 'false' and indicate whether the resource should be downloaded or not. Example:
-
-	Comments.dependencies = [{
-		"loaded": function() {
-			return Echo.App.isDefined("Echo.StreamServer.BundledApps.Submit.ClientWidget") &&
-				Echo.App.isDefined("Echo.StreamServer.BundledApps.Stream.ClientWidget");
-		},
-		"url": "{config:cdnBaseURL.sdk}/streamserver.sdk.js"
-	}];
-
 ## Events
 
 Another important aspect is events.
