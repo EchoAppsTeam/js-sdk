@@ -18,7 +18,7 @@ Echo offers a collection of [powerful Cloud Services](http://aboutecho.com/WhatW
 A well documented client-side API for interacting with the Echo Cloud Services quickly and easily right from the page using Javascript ({@link Echo.API.Request learn more}).
 
 ### GUI Library - More consistent look and feel between apps
-Echo JS SDK 3.0 uses [Twitter Bootstrap](http://twitter.github.com/bootstrap/) as the new UI framework. By employing an industry-standard UI framework with well defined UI rules, should help the apps look stylish and consistent, yet provide a lot of room for customizations by our publishers ({@link Echo.GUI learn more}).
+Echo JS SDK 3.1 uses [Twitter Bootstrap](http://twitter.github.com/bootstrap/) as the new UI framework. By employing an industry-standard UI framework with well defined UI rules, should help the apps look stylish and consistent, yet provide a lot of room for customizations by our publishers ({@link Echo.GUI learn more}).
 
 ### UI Apps - A Core set of Apps for common app/interaction patterns
 These apps quickly deliver core pieces of App UI based on common feature scenarios such as activity streams, submission, facepiles, counters and more.
