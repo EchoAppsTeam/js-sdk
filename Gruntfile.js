@@ -1,6 +1,8 @@
 module.exports = function(grunt) {
 	"use strict";
 
+	require("time-grunt")(grunt);
+
 	var shared = require("./tools/grunt/lib.js").init(grunt);
 	var _ = require("lodash");
 	var url = require("url");
