@@ -25,7 +25,7 @@ var _decode = function(s) {
  *
  *     Echo.AppServer.Cookie.set("key2", "value2", {"expires": 7}); // this cookie expires in 7 days
  *
- * @package appserver.pack.js
+ * @package appserver.sdk.js
  * @module
  */
 var Cookie = {};

@@ -42,7 +42,7 @@ var requireContexts = {};
  * @class Echo.AppServer.Canvases
  * Class implementing Canvases mechanics on the client side.
  *
- * @package appserver.pack.js
+ * @package appserver.sdk.js
  * @module
  */
 var Canvases = {};
