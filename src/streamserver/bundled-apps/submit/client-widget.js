@@ -28,7 +28,7 @@ Echo.define([
  *
  * @extends Echo.StreamServer.Base
  *
- * @package streamserver.pack.js
+ * @package streamserver.sdk.js
  * @module
  *
  * @constructor

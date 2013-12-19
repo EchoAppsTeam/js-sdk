@@ -25,7 +25,7 @@ Echo.define([
  *
  * @extends Echo.Plugin
  *
- * @package streamserver.pack.js
+ * @package streamserver.sdk.js
  * @module
  */
 var plugin = Plugin.definition("Moderation", "Echo.StreamServer.BundledApps.Stream.Item.ClientWidget");

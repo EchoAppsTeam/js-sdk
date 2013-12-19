@@ -34,7 +34,7 @@ var StreamServerAPI = {};
  *
  * @extends Echo.API.Request
  *
- * @package streamserver.pack.js
+ * @package streamserver.sdk.js
  * @module
  *
  * @constructor

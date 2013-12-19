@@ -13,7 +13,7 @@ Echo.define([
  * You can find instructions on how to create your App in the
  * ["How to develop an App"](#!/guide/how_to_develop_app) guide.
  *
- * @package streamserver.pack.js
+ * @package streamserver.sdk.js
  * @module
  *
  * @extends Echo.App.ClientWidget

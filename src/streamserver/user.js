@@ -21,7 +21,7 @@ Echo.define("echo/streamserver/user", [
  * 	var user = Echo.StreamServer.User({"appkey": "echo.jssdk.demo.aboutecho.com"});
  * 	user.is("logged"); // returns true or false
  *
- * @package streamserver.pack.js
+ * @package streamserver.sdk.js
  * @module
  *
  * @constructor

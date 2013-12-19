@@ -12,7 +12,7 @@ Echo.define([
  *
  * @extends Echo.StreamServer.Base
  *
- * @package streamserver.pack.js
+ * @package streamserver.sdk.js
  *
  * @constructor
  * Item constructor initializing Echo.StreamServer.BundledApps.Stream.Item.ClientWidget class

@@ -151,7 +151,7 @@ If the application depends on some other external component/library (including o
 			return Echo.App.isDefined("Echo.StreamServer.BundledApps.Submit.ClientWidget") &&
 				Echo.App.isDefined("Echo.StreamServer.BundledApps.Stream.ClientWidget");
 		},
-		"url": "{config:cdnBaseURL.sdk}/streamserver.pack.js"
+		"url": "{config:cdnBaseURL.sdk}/streamserver.sdk.js"
 	}];
 
 ## Events
@@ -230,7 +230,7 @@ Note: in order to configure internal Echo Apps and Plugins used in the applicati
 		{"loaded": function() {
 			return Echo.App.isDefined("Echo.StreamServer.BundledApps.Submit.ClientWidget") &&
 				Echo.App.isDefined("Echo.StreamServer.BundledApps.Stream.ClientWidget");
-		}, "url": "{config:cdnBaseURL.sdk}/streamserver.pack.js"}
+		}, "url": "{config:cdnBaseURL.sdk}/streamserver.sdk.js"}
 	];
 
 	Comments.config = {

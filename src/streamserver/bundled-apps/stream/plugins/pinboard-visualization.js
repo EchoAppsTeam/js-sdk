@@ -24,7 +24,7 @@ Echo.define([
  * 	});
  *
  * __Note__: the "PinboardVisualization" plugin is not included into the
- * StreamServer JS package (streamserver.pack.js). Please include the
+ * StreamServer JS package (streamserver.sdk.js). Please include the
  * scripts below (production and development versions respectively) to
  * load the "PinboardVisualization" plugin:
  *
