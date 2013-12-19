@@ -206,7 +206,7 @@ module.exports = function(grunt) {
 			"variables"
 		]
 	}, {
-		"name": "appserver.pack",
+		"name": "appserver.sdk",
 		"create": true,
 		"include": [
 			"appserver/canvases",

@@ -4,7 +4,7 @@ Echo.Tests.Units.push(function(callback) {
 
 Echo.require([
 	"jquery",
-	"loadFrom![echo/appserver.pack]echo/appserver/canvases"
+	"loadFrom![echo/appserver.sdk]echo/appserver/canvases"
 ], function($, Canvases) {
 
 var requireJSLoad;

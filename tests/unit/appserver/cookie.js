@@ -3,7 +3,7 @@ Echo.Tests.Units.push(function(callback) {
 
 	Echo.require([
 		"jquery",
-		"loadFrom![echo/appserver.pack]echo/appserver/cookie"
+		"loadFrom![echo/appserver.sdk]echo/appserver/cookie"
 	], function($, Cookie) {
 
 	Echo.Tests.module("Echo.AppServer.Cookie", {
