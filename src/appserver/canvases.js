@@ -1,4 +1,8 @@
-Echo.define(function() {
+Echo.define([
+	// FIXME: __DEPRECATED__
+	// remove this after full require js compatible implementation
+	"loadFrom![echo/apps.sdk]echo/utils"
+], function(Utils) {
 
 "use strict";
 
@@ -226,6 +230,10 @@ var Canvas = function(config) {
 	var self = this;
 	this.target = normalizeTarget(config.target);
 	this.data = config.data;
+	this.callbacks = {
+		"ready": config.ready,
+		"error": config.error
+	};
 	var id = this.attr("id") || config.id;
 
 	if (this.attr("initialized") === "true") {
@@ -247,10 +255,6 @@ var Canvas = function(config) {
 	this.attr("initialized", true);
 	this.cssPrefix = "echo-canvas-";
 	this.apps = [];
-	this.callbacks = {
-		"ready": config.ready,
-		"error": config.error
-	};
 	this.makeIdsAndClasses(id);
 	this.switchCSS("on");
 
@@ -289,8 +293,14 @@ Canvas.prototype.fetchConfig = function(callback) {
 			});
 			return;
 		}
-		self.data = config;
+		self.data = extend({}, config);
 		callback();
+	}, function() {
+		// won't work in IE 8- :( Let's ignore it
+		self.error({
+			"code": "no_config",
+			"extra": {"target": self.target}
+		});
 	});
 };
 
@@ -306,7 +316,7 @@ Canvas.prototype.prepareApp = function(app) {
 	app.config = app.config || {};
 	app.config.canvasId = this.ids.unique;
 	app.config.backplane = this.data.backplane;
-	app.script = getAppScriptURL(app);
+	app.url = getAppScriptURL(app);
 	delete app.scripts;
 
 	var container = addDivTo(this.target, this.cssPrefix + "appContainer");
@@ -363,13 +373,14 @@ Canvas.prototype.switchCSS = function(action) {
 };
 
 Canvas.prototype.destroy = function() {
+	this.attr("initialized", false);
 	var apps = this.apps;
+	if (!apps || !apps.length) return;
 	for (var i = 0; i < apps.length; i++) {
 		if (apps[i] && typeof apps[i].destroy === "function") {
 			apps[i].destroy();
 		}
 	}
-	this.attr("initialized", false);
 	this.switchCSS("off");
 	Echo.require.undef(this.url);
 };
@@ -405,19 +416,25 @@ function initApplication(params, callback) {
 		callback(app);
 	};
 
+	// Note that _every_ call of Echo.require takes "init" function as third
+	// parameter (so called errback). It's done to transform script loading
+	// errors into "incomplete_app_config" log messages.
 	if (!url && !component) {
 		init();
 	} else if (url && component) {
 		Echo.require([url], function() {
 			if (Echo.require.specified(component)) {
-				Echo.require([component], init);
+				Echo.require([component], init, init);
 				return;
 			}
 			init(getComponent(window, component.split(".")));
-		});
-		return;
+		}, init);
+	} else if (component && Echo.require.specified(component)) {
+		Echo.require([component], init, init);
+	} else if (url) {
+		Echo.require([url], init, init);
 	} else {
-		Echo.require([component || url], init);
+		init();
 	}
 }
 
@@ -564,6 +581,10 @@ function extend(target, options) {
 	// Return the modified object
 	return target;
 }
+
+// FIXME: __DEPRECATED__
+// remove this after full require js compatible implementation
+Utils.set(window, "Echo.AppServer.Canvases", Canvases);
 
 return Canvases;
 

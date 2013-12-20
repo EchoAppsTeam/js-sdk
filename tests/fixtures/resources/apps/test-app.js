@@ -1,7 +1,7 @@
 Echo.define("fixtures/resources/apps/test-app", [
 	"jquery",
 	"echo/app",
-	"echo/utils",
+	"echo/utils"
 ], function($, App, Utils) {
 
 "use strict";
@@ -17,8 +17,7 @@ testApp.config = {
 	"appkey": "",
 	"apiBaseURL": "{%=baseURLs.api.streamserver%}/v1/",
 	"query": "",
-	"data": undefined,
-
+	"data": undefined
 };
 
 testApp.templates.main = "<span>{data}</span>";
@@ -42,4 +41,5 @@ testApp.methods._error = function(data, options) {
 };
 
 return App.create(testApp);
+
 });
