@@ -30,11 +30,6 @@
 	</script>
 	<!-- Client initialization -->
 	<script type="text/javascript">
-		var identityManager = {
-			"width": 400,
-			"height": 240,
-			"url": "https://echo.rpxnow.com/openid/embed?flags=stay_in_window,no_immediate&token_url=http%3A%2F%2Fechoenabled.com%2Fapps%2Fjanrain%2Fwaiting.html&bp_channel="
-		};
 		Echo.require(["loadFrom![echo/streamserver.sdk]echo/streamserver/bundled-apps/stream/client-widget"], function(App) {
 			new App({
 				"backplane": {
@@ -57,12 +52,9 @@
 				}, {
 					"component": "echo/streamserver/bundled-apps/stream/item/plugins/reply",
 					"nestedPlugins": [{
-						"component": "echo/streamserver/bundled-apps/submit/plugins/form-auth",
-						"submitPermissions": "forceLogin",
-						"identityManager": {
-							"login": identityManager,
-							"signup": identityManager
-						}
+						"component": "echo/streamserver/bundled-apps/submit/plugins/janrain-auth",
+						"appId": "echo",
+						"submitPermissions": "forceLogin"
 					}]
 				}, {
 					"component": "echo/streamserver/bundled-apps/stream/item/plugins/edit"

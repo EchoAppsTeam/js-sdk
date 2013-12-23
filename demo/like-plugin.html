@@ -35,11 +35,6 @@
 	</script>
 	<!-- Client initialization -->
 	<script type="text/javascript">
-		var identityManager = {
-			"width": 400,
-			"height": 240,
-			"url": "https://echo.rpxnow.com/openid/embed?flags=stay_in_window,no_immediate&token_url=http%3A%2F%2Fechoenabled.com%2Fapps%2Fjanrain%2Fwaiting.html&bp_channel="
-		};
 		var backplane = {
 			"serverBaseURL": "https://api.echoenabled.com/v1",
 			"busName": "jskit"
@@ -49,10 +44,10 @@
 				"backplane": backplane,
 				"target": document.getElementById("auth"),
 				"appkey": "echo.jssdk.demo.aboutecho.com",
-				"identityManager": {
-					"login": identityManager,
-					"signup": identityManager
-				}
+				"plugins": [{
+					"component": "echo/streamserver/bundled-apps/auth/plugins/janrain-connector"
+					"appId": "echo"
+				}]
 			});
 		});
 		Echo.require(["loadFrom![echo/streamserver.sdk]echo/streamserver/bundled-apps/stream/client-widget"], function(App) {
