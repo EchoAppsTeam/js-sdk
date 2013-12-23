@@ -366,7 +366,7 @@ StreamServerAPI.Request.prototype._liveUpdatesWatcher = function(polling, ws) {
 	});
 	// TODO: remove it after more general approach will be implemented
 	ws.on("quotaExceeded", switchTo(polling));
-	var timeout = Echo.Utils.random.apply(null, config.waitingForConnection);
+	var timeout = Utils.random.apply(null, config.waitingForConnection);
 	waitingForConnectionTimeout = setTimeout(function() {
 		clearTimeout(fallbackTimeout);
 		switchTo(polling)();
@@ -775,7 +775,6 @@ StreamServerAPI.WebSockets.prototype.getRequestObject = function() {
 			});
 		}
 	});
-	_config.data.q = "aaaa";
 	return new API.Request(_config);
 };
 

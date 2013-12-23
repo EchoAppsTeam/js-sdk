@@ -200,7 +200,7 @@ Echo.Tests.Units.push(function(callback) {
 		// temporary override method which establishes WS connection
 		var prepare = API.Transports.WebSockets.prototype._prepareTransportObject;
 		API.Transports.WebSockets.prototype._prepareTransportObject = $.noop;
-		var req = Echo.StreamServer.API.request({
+		var req = StreamServerAPI.request({
 			"endpoint": "search",
 			"data": $.extend(true, {}, this.params),
 			"liveUpdates": {
