@@ -85,7 +85,7 @@ stream.init = function() {
 			}
 		},
 		"onError": function(data, options) {
-			if (typeof options.critical === "undefined" || options.critical || options.requestType === "initial") {
+			if (typeof options.critical === "undefined" || options.critical && options.requestType === "initial") {
 				data = data || {};
 				var labelName = "error_" + data.errorCode;
 				var label = self.labels.get(labelName);

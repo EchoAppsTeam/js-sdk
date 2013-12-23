@@ -775,6 +775,7 @@ StreamServerAPI.WebSockets.prototype.getRequestObject = function() {
 			});
 		}
 	});
+	_config.data.q = "aaaa";
 	return new API.Request(_config);
 };
 

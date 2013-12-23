@@ -57,6 +57,11 @@ Echo.Tests.Units.push(function(callback) {
 				"target" : this.config.target,
 				"appkey" : "echo.jssdk.tests.aboutecho.com",
 				"query"  : "childrenof:http://example.com/*",
+				"liveUpdates": {
+					"polling": {
+						"timeout": 3
+					}
+				},
 				"ready"  : function() {
 					suite.counter = this;
 					QUnit.ok(self.config.target.html().match(suite.counter.get("data.count")),
@@ -70,7 +75,7 @@ Echo.Tests.Units.push(function(callback) {
 						"method": "get",
 						"URL": "api.echoenabled.com"
 					})) {
-						sequentialTests = sequentialTests.concat(["onError_wrong_query", "onError_incorrect_appkey"]);
+						sequentialTests = sequentialTests.concat(["onError_wrong_query", "onError_incorrect_appkey", "liveUpdatesErrorCase"]);
 					}
 					self.sequentialAsyncTests(sequentialTests, "cases");
 				}
@@ -149,6 +154,17 @@ Echo.Tests.Units.push(function(callback) {
 			}
 		});
 		suite.counter.refresh();
+	};
+
+	suite.prototype.cases.liveUpdatesErrorCase = function(callback) {
+		var counter = suite.counter;
+		counter.config.set("liveUpdates.onClose", function() {
+			QUnit.ok(!/wrong_query/.test(counter.config.get("target").html()), "Check that live updates error handler doesn't execute \"showError\" message");
+			callback();
+		});
+		counter.config.set("query", "wrong_query");
+		counter.config.set("data", {"count": 10});
+		counter.refresh();
 	};
 
 	suite.prototype.cases.onError_wrong_query = function(callback) {
