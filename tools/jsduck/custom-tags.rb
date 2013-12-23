@@ -40,7 +40,7 @@ module Echo
 
 		def to_html(context)
 			config = JSON.parse(File.read(File.dirname(__FILE__) + "/../../package.json"))
-			base = "//cdn.echoenabled.com/sdk/#{config["version"]}/"
+			base = "//cdn.echoenabled.com/sdk/v#{config["version"]}/"
 			packages = context[@tagname].map {|package| "<a target=\"_blank\" href=\"#{base}#{package}\">#{package}</a>" }.join(", ")
 			<<-EOHTML
 				<p>
