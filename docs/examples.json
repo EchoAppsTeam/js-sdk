@@ -7,35 +7,35 @@
 				"title": "Auth",
 				"description": "Displays the user login status and allows them sign in using different social identities.",
 				"url": "auth.html",
-				"icon": "../docs/resources/images/default-guide.png"
+				"icon": "[EXAMPLES-URL]/resources/images/default-guide.png"
 			},
 			{
 				"name": "counter",
 				"text": "Counter",
 				"description": "Encapsulates interaction with the Echo Count API and provides a simple live updating number.",
 				"url": "counter.html",
-				"icon": "../docs/resources/images/default-guide.png"
+				"icon": "[EXAMPLES-URL]/resources/images/default-guide.png"
 			},
 			{
 				"name": "facepile",
 				"text": "FacePile",
 				"description": "Displays users (actors) returned in any activity stream and displays a live updating collection of avatars and names.",
 				"url": "facepile.html",
-				"icon": "../docs/resources/images/default-guide.png"
+				"icon": "[EXAMPLES-URL]/resources/images/default-guide.png"
 			},
 			{
 				"name": "stream",
 				"text": "Stream",
 				"description": "Encapsulates interaction with the Echo Search API and displays live updating search results in a standard 'news feed' style format.",
 				"url": "stream.html",
-				"icon": "../docs/resources/images/default-guide.png"
+				"icon": "[EXAMPLES-URL]/resources/images/default-guide.png"
 			},
 			{
 				"name": "submit",
 				"text": "Submit",
 				"description": "Encapsulates interaction with the Echo Submit API and provides a simple 'submit/comment form' style interaction.",
 				"url": "submit.html",
-				"icon": "../docs/resources/images/default-guide.png"
+				"icon": "[EXAMPLES-URL]/resources/images/default-guide.png"
 			}
 		]
 	},
@@ -47,56 +47,56 @@
 				"title": "Reply",
 				"description": "The plugin adds extra “Reply” button to each item in the Stream app. Integrates Submit app and provides the ability to reply to the posted items.",
 				"url": "reply-plugin.html",
-				"icon": "../docs/resources/images/default-guide.png"
+				"icon": "[EXAMPLES-URL]/resources/images/default-guide.png"
 			},
 			{
 				"name": "like-plugin",
 				"title": "Like",
 				"description": "The plugin adds extra Like/Unlike buttons to each item in the Stream app for authenticated users.",
 				"url": "like-plugin.html",
-				"icon": "../docs/resources/images/default-guide.png"
+				"icon": "[EXAMPLES-URL]/resources/images/default-guide.png"
 			},
 			{
 				"name": "community-flag-plugin",
 				"title": "CommunityFlag",
 				"description": "The plugin adds extra Flag/Unflag buttons to each item in the Echo Stream app for authenticated users.",
 				"url": "community-flag-plugin.html",
-				"icon": "../docs/resources/images/default-guide.png"
+				"icon": "[EXAMPLES-URL]/resources/images/default-guide.png"
 			},
 			{
 				"name": "text-counter-plugin",
 				"title": "TextCounter",
 				"description": "The plugin adds the character counter under the text field in the Submit app. Allows to set the maximum length of the text to enter.",
 				"url": "text-counter-plugin.html",
-				"icon": "../docs/resources/images/default-guide.png"
+				"icon": "[EXAMPLES-URL]/resources/images/default-guide.png"
 			},
 			{
 				"name": "pinboard-plugin",
 				"title": "PinboardVisualization",
 				"description": "",
 				"url": "pinboard.html",
-				"icon": "../docs/resources/images/default-guide.png"
+				"icon": "[EXAMPLES-URL]/resources/images/default-guide.png"
 			},
 			{
 				"name": "janrain-auth-plugin",
 				"title": "JanrainAuth",
-				"description": "Janrain Social Sign-in Widget integration with Echo Submit Control.",
+				"description": "Janrain Social Sign-in Widget integration with Echo Submit Application.",
 				"url": "janrain-auth-plugin.html",
-				"icon": "../docs/resources/images/default-guide.png"
+				"icon": "[EXAMPLES-URL]/resources/images/default-guide.png"
 			},
 			{
 				"name": "janrain-sharing-plugin-submit",
 				"title": "JanrainSharing for Submit",
-				"description": "Plugin provides the ability to load Janrain sharing dialog after the item has been posted using the Echo Submit control.",
+				"description": "Plugin provides the ability to load Janrain sharing dialog after the item has been posted using the Echo Submit application.",
 				"url": "janrain-sharing-plugin-submit.html",
-				"icon": "../docs/resources/images/default-guide.png"
+				"icon": "[EXAMPLES-URL]/resources/images/default-guide.png"
 			},
 			{
 				"name": "janrain-sharing-plugin-stream",
 				"title": "JanrainSharing for Stream",
 				"description": "Plugin provides the ability to load Janrain sharing dialog clicking the \"Share\" button in the item.",
 				"url": "janrain-sharing-plugin-stream.html",
-				"icon": "../docs/resources/images/default-guide.png"
+				"icon": "[EXAMPLES-URL]/resources/images/default-guide.png"
 			}
 		]
 	},
@@ -108,7 +108,7 @@
 				"title": "Comments (Reference)",
 				"description": "Example of a simple app built using the \"How to develop an app\" guide.",
 				"url": "apps/comments-sample/index.html",
-				"icon": "../docs/resources/images/default-guide.png"
+				"icon": "[EXAMPLES-URL]/resources/images/default-guide.png"
 			}
 		]
 	}

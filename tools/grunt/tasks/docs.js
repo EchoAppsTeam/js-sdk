@@ -31,7 +31,7 @@ module.exports = function(grunt) {
 								"<%= dirs.src %>/!(backplane).js",
 								"<%= dirs.src %>/!(tests|third-party)/**/*.js",
 								"<%= dirs.src %>/tests/!(qunit|sinon)/**/*.js",
-								"<%= dirs.src %>/third-party/bootstrap/plugins/echo-*.js"
+								"<%= dirs.src %>/gui/*.js"
 							],
 							"dest": "<%= dirs.build %>"
 						}],
@@ -40,6 +40,9 @@ module.exports = function(grunt) {
 							"processContent": shared.replacePlaceholdersOnCopy
 						}
 					});
+					var docsURL = "http:" + shared.replacePlaceholdersOnCopy(grunt.config("envConfig.baseURLs.docs"));
+					var examplesConfig = grunt.file.read("docs/examples.json").replace(/\[EXAMPLES-URL\]/g, docsURL);
+					grunt.file.write("build/examples.json", examplesConfig);
 					done();
 				});
 				break;
@@ -55,14 +58,15 @@ module.exports = function(grunt) {
 		var cmd = [
 			"git checkout gh-pages",
 			"git pull",
-			"cp -r " + grunt.config("dirs.dist") + "/docs/* docs",
-			"cp -r " + grunt.config("dirs.dist") + "/tests/* tests",
-			"cp -r " + grunt.config("dirs.dist") + "/demo/* demo",
+			"cp -r <%=dirs.dist%>/docs/v<%=pkg.mainVersion%> docs/",
+			"cp -r <%=dirs.dist%>/tests/v<%=pkg.mainVersion%> tests/",
+			"cp -r <%=dirs.dist%>/demo/v<%=pkg.mainVersion%> demo/",
 			"git add docs/ tests/ demo/",
-			"git commit -m \"up to v" + grunt.config("pkg.version") + "\"",
+			"git commit -m \"up to v<%=pkg.version%>\"",
 			"git push origin gh-pages",
 			"git checkout master"
 		].join(" && ");
+		cmd = grunt.template.process(cmd);
 		if (shared.config("debug") || shared.config("env") !== "production") {
 			console.log(cmd);
 			done();
@@ -91,14 +95,23 @@ module.exports = function(grunt) {
 		});
 	}
 
+	function prepareOptions() {
+		var outputFileName = "build/tmp_config.json";
+		var config = grunt.file.read("config/jsduck/config.json").replace(/\[VERSION\]/g, "v" + grunt.config("pkg.mainVersion"));
+		grunt.file.write(outputFileName, config);
+		return outputFileName;
+	}
+
 	function generate(done) {
-		var cmd = "jsduck --config=config/jsduck/config.json";
+		var configFile = prepareOptions();
+		var cmd = "jsduck --config=" + configFile;
 		if (shared.config("debug")) {
 			console.log(cmd);
 			done();
 			return;
 		}
-		var path = grunt.config("dirs.dist") + "/docs";
+		var versionDir = "v" + grunt.config("pkg.mainVersion");
+		var path = grunt.config("dirs.dist") + "/docs/" + versionDir;
 		shared.exec("rm -rf " + path + " && mkdir -p " + path, function() {
 			shared.exec(cmd, function() {
 				// copy Echo specific images and CSS to documentation directory

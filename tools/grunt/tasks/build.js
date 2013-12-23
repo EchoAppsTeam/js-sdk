@@ -130,7 +130,8 @@ module.exports = function(grunt) {
 						"expand": true,
 						"cwd": type,
 						"src": grunt.config("sources." + type),
-						"dest": "<%= dirs.dist %>/" + type
+						"dest": "<%= dirs.dist %>/" + type + "/v<%=pkg.mainVersion%>"
+
 					}],
 					"options": {
 						"processContent": shared.replacePlaceholdersOnCopy,
