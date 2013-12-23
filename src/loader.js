@@ -424,7 +424,7 @@ Echo.define = function(config) {
 Echo.Loader._storeCanvasConfig = function(id, config) {
 	var i = id.indexOf("/");
 	// backward compatibility
-	if (i >= 0) {
+	if (~i) {
 		id = id.substr(i + 1);
 	}
 	Echo.Loader._map(Echo.Loader.canvases, function(canvas) {
