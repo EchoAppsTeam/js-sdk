@@ -31,28 +31,23 @@
 	</script>
 	<!-- Client initialization -->
 	<script type="text/javascript">
-		var identityManager = {
-			"width": 400,
-			"height": 240,
-			"url": "https://echo.rpxnow.com/openid/embed?flags=stay_in_window,no_immediate&token_url=http%3A%2F%2Fechoenabled.com%2Fapps%2Fjanrain%2Fwaiting.html&bp_channel="
-		};
-        Echo.Loader.initApplication({ 
-            "script": "{%=baseURLs.sdk%}/identityserver.pack.js",
-            "component": "Echo.IdentityServer.Controls.Auth",
-            "backplane": { 
-                "serverBaseURL": "https:{%=baseURLs.api.backplane%}/v1",
-                "busName": "jskit"
-            },
-            "config": {
-                "target": document.getElementById("auth"),
-                "appkey": "echo.jssdk.demo.aboutecho.com",
-                "targetURL": "http://echosandbox.com/use-cases/commenting",
-				"identityManager": {
-					"login": identityManager,
-					"signup": identityManager
-				}
-            }
-        }); 
+		Echo.Loader.initApplication({
+			"script": "{%=baseURLs.sdk%}/identityserver.pack.js",
+			"component": "Echo.IdentityServer.Controls.Auth",
+			"backplane": {
+				"serverBaseURL": "https:{%=baseURLs.api.backplane%}/v1",
+				"busName": "jskit"
+			},
+			"config": {
+				"target": document.getElementById("auth"),
+				"appkey": "echo.jssdk.demo.aboutecho.com",
+				"targetURL": "http://echosandbox.com/use-cases/commenting",
+				"plugins": [{
+					"name": "JanrainConnector",
+					"appId": "echo"
+				}]
+			}
+		});
 	</script>
 </body>
 </html>
