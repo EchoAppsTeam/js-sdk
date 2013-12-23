@@ -113,6 +113,8 @@ StreamServerAPI.Request = Utils.inherit(API.Request, function(config) {
 					"timeout": 10,
 					"divergence": 5
 				},
+				/** @ignore */
+				"waitingForConnection": [2, 5],
 				"URL": "{%=baseURLs.api.ws%}/v1/"
 			}
 		},
@@ -267,7 +269,7 @@ StreamServerAPI.Request.prototype._prepareURL = function() {
 
 StreamServerAPI.Request.prototype._initLiveUpdates = function(data) {
 	var ws;
-	var polling = this.liveUpdates = StreamServerAPI.Polling.init(
+	var polling = StreamServerAPI.Polling.init(
 		$.extend(true, this._getLiveUpdatesConfig("polling"), {
 			"request": {
 				"data": {
@@ -277,7 +279,7 @@ StreamServerAPI.Request.prototype._initLiveUpdates = function(data) {
 		})
 	);
 	if (this.config.get("liveUpdates.transport") === "websockets" && API.Transports.WebSockets.available()) {
-		ws = StreamServerAPI.WebSockets.init(
+		ws = this.liveUpdates = StreamServerAPI.WebSockets.init(
 			$.extend(true, this._getLiveUpdatesConfig("websockets"), {
 				"request": {
 					"data": {
@@ -287,6 +289,8 @@ StreamServerAPI.Request.prototype._initLiveUpdates = function(data) {
 			})
 		);
 		this._liveUpdatesWatcher(polling, ws);
+	} else {
+		this.liveUpdates = polling;
 	}
 };
 
@@ -336,6 +340,7 @@ StreamServerAPI.Request.prototype._getLiveUpdatesConfig = function(name) {
 
 StreamServerAPI.Request.prototype._liveUpdatesWatcher = function(polling, ws) {
 	var self = this;
+	var config = this.config.get("liveUpdates.websockets");
 	var switchTo = function(inst) {
 		return function() {
 			if (self.liveUpdates.connected()) {
@@ -345,23 +350,34 @@ StreamServerAPI.Request.prototype._liveUpdatesWatcher = function(polling, ws) {
 			self.liveUpdates.start();
 		};
 	};
+	var fallbackTimeout, waitingForConnectionTimeout;
 	ws.on("close", function() {
-		var timeout, config = self.config.get("liveUpdates.websockets.fallback");
+		var timeout, fallback = config.fallback;
 		if (self.liveUpdates.closeReason !== "abort") {
 			timeout = Utils.random(
-				config.timeout - config.divergence,
-				config.timeout + config.divergence
+				fallback.timeout - fallback.divergence,
+				fallback.timeout + fallback.divergence
 			) * 1000;
-			setTimeout(switchTo(polling), timeout);
+			fallbackTimeout = setTimeout(function() {
+				clearTimeout(waitingForConnectionTimeout);
+				switchTo(polling)();
+			}, timeout);
 		}
 	});
 	// TODO: remove it after more general approach will be implemented
 	ws.on("quotaExceeded", switchTo(polling));
+	var timeout = Echo.Utils.random.apply(null, config.waitingForConnection);
+	waitingForConnectionTimeout = setTimeout(function() {
+		clearTimeout(fallbackTimeout);
+		switchTo(polling)();
+	}, timeout * 1000);
 	if (ws.connected()) {
-		switchTo(ws)();
+		clearTimeout(waitingForConnectionTimeout);
 		return;
 	}
-	ws.on("open", switchTo(ws));
+	ws.on("open", function() {
+		clearTimeout(waitingForConnectionTimeout);
+	});
 };
 
 StreamServerAPI.Request.prototype._isWaitingForData = function(data) {
@@ -697,7 +713,7 @@ StreamServerAPI.WebSockets = Utils.inherit(StreamServerAPI.Polling, function(con
 		"time": (new Date()).getTime()
 	};
 	this.requestObject = this.getRequestObject();
-	if (this.connected()) {
+	if (this.requestObject && this.connected()) {
 		this.requestObject.config.get("onOpen")();
 	}
 });
