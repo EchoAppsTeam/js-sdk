@@ -415,10 +415,21 @@ Echo.Loader._initCanvas = function(target, initMode, config) {
 	})();
 };
 
+// forward compatibility with requireJS (private)
+Echo.define = function(config) {
+	if (!config.id) return;
+	Echo.Loader._storeCanvasConfig(config.id, config);
+};
+
 Echo.Loader._storeCanvasConfig = function(id, config) {
+	var i = id.indexOf("/");
+	// backward compatibility
+	if (i >= 0) {
+		id = id.substr(i + 1);
+	}
 	Echo.Loader._map(Echo.Loader.canvases, function(canvas) {
 		var ids = canvas._getIds();
-		if (~ids.unique.indexOf(id)) {
+		if (~ids.unique.indexOf("/" + id)) {
 			Echo.Loader.canvasesConfigById[ids.unique] = config;
 		}
 	});
