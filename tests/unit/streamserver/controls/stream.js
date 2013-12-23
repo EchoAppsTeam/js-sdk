@@ -118,7 +118,8 @@ suite.prototype.tests.commonWorkflow = {
 					"addChildItem",
 					"moreButton",
 					"predefinedData",
-					"liveUpdateEmptyStream"
+					"liveUpdateEmptyStream",
+					"liveUpdatesErrorCase"
 				], "cases");
 			}
 		});
@@ -397,6 +398,35 @@ suite.prototype.cases.liveUpdateEmptyStream = function(callback) {
 		}
 	});
 
+	stream.refresh();
+};
+
+suite.prototype.cases.liveUpdatesErrorCase = function(callback) {
+	var stream = suite.stream;
+	stream.config.set("liveUpdates.onClose", function() {
+		QUnit.strictEqual(0, stream.config.get("target").contents().find(".echo-app-message-error").length, "Check that live updates error handler doesn't execute \"showError\" message");
+		callback();
+	});
+	stream.config.set("query", "wrong_query");
+	stream.config.set("data", {
+		"id": "http://api.echoenabled.com/v1/search?q=childrenof:http://example.com/js-sdk/%20itemsPerPage:1%20children:0",
+		"updated": "2013-04-18T17:32:18Z",
+		"hasMoreChildren": "true",
+		"sortOrder": "reverseChronological",
+		"showFlags": "on",
+		"safeHTML": "aggressive",
+		"itemsPerPage": "1",
+		"children": {
+			"maxDepth": "0",
+			"sortOrder": "reverseChronological",
+			"itemsPerPage": "2",
+			"filter": "()"
+		},
+		"nextPageAfter": "1366306330.049437",
+		"nextSince": "1366306549.849118",
+		"liveUpdatesTimeout": "0",
+		"entries": []
+	});
 	stream.refresh();
 };
 

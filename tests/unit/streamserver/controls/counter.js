@@ -51,11 +51,11 @@ suite.prototype.tests.dynamicWorkflow = {
 			"appkey" : "echo.jssdk.tests.aboutecho.com",
 			"query"  : "childrenof:http://example.com/*",
 			"liveUpdates": {
-				"timeout": 60
+				"timeout": 3
 			},
 			"ready"  : function() {
 				suite.counter = this;
-				QUnit.equal(suite.counter.config.get("liveUpdates.polling.timeout"), 60,
+				QUnit.equal(suite.counter.config.get("liveUpdates.polling.timeout"), 3,
 					"Check that \"liveUpdates.timeout\" mapped to the \"liveUpdates.polling.timeout\"");
 				QUnit.ok(self.config.target.html().match(suite.counter.get("data.count")),
 				'Checking the dynamic usecase rendering');
@@ -68,7 +68,7 @@ suite.prototype.tests.dynamicWorkflow = {
 					"method": "get",
 					"URL": "api.echoenabled.com"
 				})) {
-					sequentialTests = sequentialTests.concat(["onError_wrong_query", "onError_incorrect_appkey"]);
+					sequentialTests = sequentialTests.concat(["onError_wrong_query", "onError_incorrect_appkey", "liveUpdatesErrorCase"]);
 				}
 				self.sequentialAsyncTests(sequentialTests, "cases");
 			}
@@ -212,6 +212,17 @@ suite.prototype.cases.onError_incorrect_appkey = function(callback) {
 		}
 	});
 	suite.counter.refresh();
+};
+
+suite.prototype.cases.liveUpdatesErrorCase = function(callback) {
+	var counter = suite.counter;
+	counter.config.set("liveUpdates.onClose", function() {
+			QUnit.ok(!/wrong_query/.test(counter.config.get("target").html()), "Check that live updates error handler doesn't execute \"showError\" message");
+			callback();
+	});
+	counter.config.set("query", "wrong_query");
+	counter.config.set("data", {"count": 10});
+	counter.refresh();
 };
 
 suite.prototype.cases.onUpdate = function(callback) {
