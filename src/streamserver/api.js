@@ -12,7 +12,7 @@ Echo.StreamServer.API = {};
 /**
  * @class Echo.StreamServer.API.Request
  * Class implements the interaction with the
- * <a href="http://wiki.aboutecho.com/w/page/35105642/API-section-items" target="_blank">Echo StreamServer API</a>
+ * <a href="http://echoplatform.com/streamserver/docs/rest-api/items-api/" target="_blank">Echo StreamServer API</a>
  *
  *     var request = Echo.StreamServer.API.request({
  *         "endpoint": "search",
@@ -96,7 +96,8 @@ Echo.StreamServer.API.Request = Echo.Utils.inherit(Echo.API.Request, function(co
 		 *
 		 * __Note__: The API endpoint "mux" allows to "multiplex" requests,
 		 * i.e. use a single API call to "wrap" several requests. More information
-		 * about "mux" can be found [here](http://wiki.aboutecho.com/w/page/32433803/API-method-mux).
+		 * about "mux" can be found
+		 * <a href="http://echoplatform.com/streamserver/docs/rest-api/other-api/mux/" target="_blank">here</a>.
 		 */
 		"liveUpdates": {
 			"transport": "polling", // or "websockets"

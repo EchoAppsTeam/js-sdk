@@ -11,7 +11,7 @@ Echo.IdentityServer.API = {};
 
 /**
  * @class Echo.IdentityServer.API.Request
- * Class implements the interaction with the <a href="http://wiki.aboutecho.com/w/page/35104702/API-section-users" target="_blank">Echo Users API</a> 
+ * Class implements the interaction with the <a href="http://echoplatform.com/streamserver/docs/rest-api/users-api/" target="_blank">Echo Users API</a> 
  *
  *     var request = Echo.IdentityServer.API.request({
  *         "endpoint": "whoami",

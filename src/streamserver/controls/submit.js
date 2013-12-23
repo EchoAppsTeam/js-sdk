@@ -6,7 +6,7 @@ var $ = jQuery;
 /**
  * @class Echo.StreamServer.Controls.Submit
  * Echo Submit control which encapsulates interaction with the
- * <a href="http://wiki.aboutecho.com/w/page/35059196/API-method-submit" target="_blank">Echo Submit API</a>
+ * <a href="http://echoplatform.com/streamserver/docs/rest-api/items-api/submit/" target="_blank">Echo Submit API</a>
  * and provides a simple ‘submit/comment form’ style interaction.
  *
  * 	new Echo.StreamServer.Controls.Submit({
@@ -527,8 +527,8 @@ submit.renderers._metaFields = function(element, extra) {
 
 /**
  * Method used for posting user provided content to the
- * <a href="http://wiki.aboutecho.com/w/page/35059196/API-method-submit" target="_blank"> Echo Submit</a>
- * endpoint through <a href="http://wiki.aboutecho.com/w/page/53021402/Echo%20Submission%20Proxy" target="_blank"> Echo Submission Proxy</a>.
+ * <a href="http://echoplatform.com/streamserver/docs/rest-api/items-api/submit/" target="_blank"> Echo Submit</a>
+ * endpoint through <a href="http://echoplatform.com/streamserver/docs/features/submission-proxy/" target="_blank">Echo Submission Proxy</a>.
  */
 submit.methods.post = function() {
 	var self = this;

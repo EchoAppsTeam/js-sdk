@@ -6,7 +6,7 @@ var $ = jQuery;
 /**
  * @class Echo.StreamServer.Controls.Counter
  * Echo Counter class which encapsulates interaction with the
- * <a href="http://wiki.aboutecho.com/w/page/27888212/API-method-count" target="_blank">Echo Count API</a>
+ * <a href="http://echoplatform.com/streamserver/docs/rest-api/other-api/count/" target="_blank">Echo Count API</a>
  * and provides a simple live updating number.
  *
  * 	new Echo.StreamServer.Controls.Counter({
@@ -104,7 +104,7 @@ counter.config = {
 	 * @cfg {String} query
 	 * Specifies the search query to generate the necessary data set.
 	 * It must be constructed according to the
-	 * <a href="http://wiki.aboutecho.com/w/page/23491639/API-method-search" target="_blank">"search" API</a>
+	 * <a href="http://echoplatform.com/streamserver/docs/rest-api/items-api/search/" target="_blank">"search" API</a>
 	 * method specification.
 	 *
 	 * 	new Echo.StreamServer.Controls.Counter({
@@ -118,7 +118,7 @@ counter.config = {
 	 * Specifies predefined items count which should be displayed by the application.
 	 * Counter control works with the data format used by the "count" API endpoint.
 	 * More information about the data format can be found
-	 * <a href="http://wiki.aboutecho.com/w/page/27888212/API-method-count#ResponseFormat" target="_blank">here</a>.
+	 * <a href="http://echoplatform.com/streamserver/docs/rest-api/other-api/count/#sect7" target="_blank">here</a>.
 	 *
 	 * 	new Echo.Counter({
 	 * 		...
