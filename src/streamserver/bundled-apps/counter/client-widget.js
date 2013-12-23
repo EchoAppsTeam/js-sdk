@@ -10,7 +10,7 @@ Echo.define([
 /**
  * @class Echo.StreamServer.BundledApps.Counter.ClientWidget
  * Echo Counter class which encapsulates interaction with the
- * <a href="http://echoplatform.com/streamserver/docs/rest-api/other-api/count" target="_blank">Echo Count API</a>
+ * <a href="http://echoplatform.com/streamserver/docs/rest-api/other-api/count/" target="_blank">Echo Count API</a>
  * and provides a simple live updating number.
  *
  * 	new Echo.StreamServer.BundledApps.Counter.ClientWidget({
@@ -116,7 +116,7 @@ counter.config = {
 	 * @cfg {String} query
 	 * Specifies the search query to generate the necessary data set.
 	 * It must be constructed according to the
-	 * <a href="http://echoplatform.com/streamserver/docs/rest-api/items-api/search" target="_blank">"search" API</a>
+	 * <a href="http://echoplatform.com/streamserver/docs/rest-api/items-api/search/" target="_blank">"search" API</a>
 	 * method specification.
 	 *
 	 * 	new Echo.StreamServer.BundledApps.Counter.ClientWidget({
@@ -132,7 +132,7 @@ counter.config = {
 	 * Specifies predefined items count which should be displayed by the application.
 	 * Counter application works with the data format used by the "count" API endpoint.
 	 * More information about the data format can be found
-	 * <a href="http://echoplatform.com/streamserver/docs/rest-api/other-api/count#sect7" target="_blank">here</a>.
+	 * <a href="http://echoplatform.com/streamserver/docs/rest-api/other-api/count/#sect7" target="_blank">here</a>.
 	 *
 	 * 	new Echo.StreamServer.BundledApps.Counter.ClientWidget({
 	 * 		...

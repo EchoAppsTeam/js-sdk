@@ -125,7 +125,8 @@ module.exports = function(grunt) {
 
 	function checkDocs(done) {
 		grunt.log.subhead("Searching for dead wiki links");
-		shared.exec("grep -roZE 'https?://wiki.aboutecho.com[^\")]+' src/ docs/", function(stdout) {
+		// TODO: remove wiki.aboutecho.com domain in late Q1 2014 (for now it's backwards compatibility)
+		shared.exec("grep -roZE 'https?://(wiki.aboutecho.com|echoplatform.com)[^\")]+' src/ docs/", function(stdout) {
 			var lines = stdout.trim().split(/[\r\n]+/);
 			async.eachSeries(lines, function(line, next) {
 				var parts = line.split("\0");

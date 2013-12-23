@@ -11,7 +11,7 @@ Echo.define([
 /**
  * @class Echo.StreamServer.BundledApps.Stream.ClientWidget
  * Echo Stream application which encapsulates interaction with the
- * <a href="http://echoplatform.com/streamserver/docs/rest-api/items-api/search" target="_blank">Echo Search API</a>
+ * <a href="http://echoplatform.com/streamserver/docs/rest-api/items-api/search/" target="_blank">Echo Search API</a>
  * and displays live updating search results in a standard ‘news feed’ style format.
  *
  * 	var stream = new Echo.StreamServer.BundledApps.Stream.ClientWidget({
@@ -153,7 +153,7 @@ stream.config = {
 	 * @cfg {String} query
 	 * Specifies the search query to generate the necessary data set.
 	 * It must be constructed according to the
-	 * <a href="http://echoplatform.com/streamserver/docs/rest-api/items-api/search" target="_blank">"search" API</a>
+	 * <a href="http://echoplatform.com/streamserver/docs/rest-api/items-api/search/" target="_blank">"search" API</a>
 	 * method specification.
 	 *
 	 * 	new Echo.StreamServer.BundledApps.Stream.ClientWidget({
@@ -404,7 +404,7 @@ stream.config = {
 	 * Specifies predefined items data which should be rendered by the application.
 	 * Stream application works with the data format used by the "search" API endpoint.
 	 * More information about the data format can be found
-	 * <a href="http://echoplatform.com/streamserver/docs/rest-api/items-api/search" target="_blank">here</a>.
+	 * <a href="http://echoplatform.com/streamserver/docs/rest-api/items-api/search/#sect3" target="_blank">here</a>.
 	 */
 
 	/**

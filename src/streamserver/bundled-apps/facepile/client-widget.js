@@ -103,7 +103,7 @@ pile.config = {
 	/**
 	 * @cfg {Object} data
 	 * Specifies static data for the face pile. It has the same format as returned
-	 * by the <a href="http://echoplatform.com/streamserver/docs/rest-api/items-api/search" target="_blank">
+	 * by the <a href="http://echoplatform.com/streamserver/docs/rest-api/items-api/search/" target="_blank">
 	 * "search" API endpoint</a>. If the "data" parameter is provided then the
 	 * "query" parameter should be omitted. If "data" and "query" parameters are both
 	 * provided "query" takes precedence over "data".
@@ -142,7 +142,7 @@ pile.config = {
 	 * @cfg {String} query
 	 * Specifies the search query to generate the necessary data set.
 	 * It must be constructed according to the
-	 * <a href="http://echoplatform.com/streamserver/docs/rest-api/items-api/search" target="_blank">"search" API</a>
+	 * <a href="http://echoplatform.com/streamserver/docs/rest-api/items-api/search/" target="_blank">"search" API</a>
 	 * method specification.
 	 *
 	 * 	new Echo.StreamServer.BundledApps.FacePile.ClientWidget({
