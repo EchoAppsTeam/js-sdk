@@ -19,7 +19,7 @@
 				$("#container").addClass("embedded");
 			});
 		}
-		Echo.require(["{%=baseURLs.cdn%}/apps/echo/comments-sample/comments-sample.js"], function(App) {
+		Echo.require(["{%=baseURLs.cdn%}/apps/v3.1/echo/comments-sample/comments-sample.js"], function(App) {
 			new App({
 				"backplane": {
 					"serverBaseURL": "https:{%=baseURLs.api.backplane%}/v1",
@@ -41,7 +41,7 @@
 						}, {
 							"component": "echo/streamserver/bundled-apps/stream/item/plugins/moderation"
 						}, {
-							"url": "{%=baseURLs.cdn%}/apps/echo/comments-sample/plugins/stream-sorting-selector.js"
+							"url": "{%=baseURLs.cdn%}/apps/v3.1/echo/comments-sample/plugins/stream-sorting-selector.js"
 						}]
 					},
 					"Submit": {

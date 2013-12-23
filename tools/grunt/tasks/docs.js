@@ -40,6 +40,9 @@ module.exports = function(grunt) {
 							"processContent": shared.replacePlaceholdersOnCopy
 						}
 					});
+					var docsURL = "http:" + shared.replacePlaceholdersOnCopy(grunt.config("envConfig.baseURLs.docs"));
+					var examplesConfig = grunt.file.read("docs/examples.json").replace(/\[EXAMPLES-URL\]/g, docsURL);
+					grunt.file.write("build/examples.json", examplesConfig, {"flag": "w+"});
 					done();
 				});
 				break;
@@ -95,8 +98,7 @@ module.exports = function(grunt) {
 	function prepareOptions() {
 		var outputFileName = "build/tmp_config.json";
 		var config = grunt.file.read("config/jsduck/config.json")
-			.replace(/\[VERSION\]/g,
-				shared.config("env") === "development" ? "" : "v" + grunt.config("pkg.majorVersion") + "." + grunt.config("pkg.minorVersion")
+			.replace(/\[VERSION\]/g, "v" + grunt.config("pkg.majorVersion") + "." + grunt.config("pkg.minorVersion")
 			);
 		grunt.file.write(outputFileName, config, {"flag": "w+"});
 		return outputFileName;
@@ -110,15 +112,16 @@ module.exports = function(grunt) {
 			done();
 			return;
 		}
-		var versionDir = shared.config("env") === "development"
-			? ""
-			: "v" + grunt.config("pkg.majorVersion") + "." + grunt.config("pkg.minorVersion") + "";
+		var versionDir = "v" + grunt.config("pkg.majorVersion") + "." + grunt.config("pkg.minorVersion");
 
 		var path = grunt.config("dirs.dist") + "/docs/" + versionDir;
 		shared.exec("rm -rf " + path + " && mkdir -p " + path, function() {
 			shared.exec(cmd, function() {
 				// copy Echo specific images and CSS to documentation directory
 				shared.exec("cp -r docs/patch/* " + path, done);
+				shared.exec("cp docs/index.html " + grunt.config("dirs.dist") + "/docs/ && less docs/index.html | tee "
+					+ grunt.config("dirs.dist") + "/demo/index.html "
+					+ grunt.config("dirs.dist") + "/tests/index.html");
 			});
 		});
 	}

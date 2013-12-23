@@ -128,8 +128,7 @@ module.exports = function(grunt) {
 						"expand": true,
 						"cwd": type,
 						"src": grunt.config("sources." + type),
-						"dest": "<%= dirs.dist %>/" + type
-							+ (shared.config("env") === "development" ? "" : "/v<%=pkg.majorVersion%>.<%=pkg.minorVersion%>")
+						"dest": "<%= dirs.dist %>/" + type + "/v<%=pkg.majorVersion%>.<%=pkg.minorVersion%>"
 					}],
 					"options": {
 						"processContent": shared.replacePlaceholdersOnCopy,
@@ -225,7 +224,7 @@ module.exports = function(grunt) {
 		};
 		var chooseForTestUnits = function(name) {
 			return "<%= dirs.dist %>/tests"
-				+ (shared.config("env") === "development" ? "/" : "/v<%=pkg.majorVersion%>.<%=pkg.minorVersion%>/")
+				+ "/v<%=pkg.majorVersion%>.<%=pkg.minorVersion%>/"
 				+ chooseFile(name, target, stage);
 		};
 		_.each(grunt.config("packs"), function(pack, key) {
