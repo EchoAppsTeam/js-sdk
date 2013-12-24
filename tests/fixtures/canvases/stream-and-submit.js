@@ -29,7 +29,7 @@ Echo.define({
 			"appkey": "echo.jssdk.tests.aboutecho.com",
 			"query": "childrenof:http://example.com/sdk/loader/canvases/search/1",
 			"plugins": [{
-				"component": "echo/streamserver/plugins/infinite-scroll"
+				"component": "echo/streamserver/bundled-apps/stream/plugins/infinite-scroll"
 			}]
 		}
 	}]
