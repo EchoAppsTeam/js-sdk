@@ -294,6 +294,16 @@ Plugin.prototype.disable = function(global) {
  * actions except "remove".
  */
 Plugin.prototype.extendTemplate = function(action, anchor, html) {
+	if (!html && action !== "remove") {
+		this.log({
+			"message": "Template can't be extended due to absence of HTML string",
+			"args": {
+				"action": action,
+				"anchor": anchor
+			}
+		});
+		return;
+	}
 	if (html) {
 		html = this.substitute({"template": this.invoke(html)});
 	}

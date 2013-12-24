@@ -360,6 +360,16 @@ App.prototype.parentRenderer = function(name, args) {
  * This param is required for all actions except "remove".
  */
 App.prototype.extendTemplate = function(action, anchor, html) {
+	if (!html && action !== "remove") {
+		this.log({
+			"message": "Template can't be extended due to absence of HTML string",
+			"args": {
+				"action": action,
+				"anchor": anchor
+			}
+		});
+		return;
+	}
 	this.extension.template.push({"action": action, "anchor": anchor, "html": html});
 };
 
