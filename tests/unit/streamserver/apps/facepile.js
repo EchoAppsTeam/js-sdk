@@ -50,7 +50,7 @@ Echo.Tests.Units.push(function(callback) {
 				data.entries.push({
 					"actor" : {
 						"id"     : i,
-						"avatar" : "{%=baseURLs.cdn%}/images/avatar-default.png",
+						"avatar" : Echo.require.toUrl("echo-assets/images/avatar-default.png"),
 						"title"  : "TestActor" + i
 					}
 				});
