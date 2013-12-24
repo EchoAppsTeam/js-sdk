@@ -42,7 +42,7 @@ module.exports = function(grunt) {
 					});
 					var docsURL = "http:" + shared.replacePlaceholdersOnCopy(grunt.config("envConfig.baseURLs.docs"));
 					var examplesConfig = grunt.file.read("docs/examples.json").replace(/\[EXAMPLES-URL\]/g, docsURL);
-					grunt.file.write("build/examples.json", examplesConfig, {"flag": "w+"});
+					grunt.file.write("build/examples.json", examplesConfig);
 					done();
 				});
 				break;
@@ -58,9 +58,9 @@ module.exports = function(grunt) {
 		var cmd = [
 			"git checkout gh-pages",
 			"git pull",
-			"cp -r " + grunt.config("dirs.dist") + "/docs/v<%=pkg.majorVersion%>.<%=pkg.minorVersion%> docs/",
-			"cp -r " + grunt.config("dirs.dist") + "/tests/v<%=pkg.majorVersion%>.<%=pkg.minorVersion%> tests/",
-			"cp -r " + grunt.config("dirs.dist") + "/demo/v<%=pkg.majorVersion%>.<%=pkg.minorVersion%> demo/",
+			"cp -r " + grunt.config("dirs.dist") + "/docs/v<%=pkg.mainVersion%> docs/",
+			"cp -r " + grunt.config("dirs.dist") + "/tests/v<%=pkg.mainVersion%> tests/",
+			"cp -r " + grunt.config("dirs.dist") + "/demo/v<%=pkg.mainVersion%> demo/",
 			"git add docs/ tests/ demo/",
 			"git commit -m \"up to v" + grunt.config("pkg.version") + "\"",
 			"git push origin gh-pages",
@@ -97,10 +97,8 @@ module.exports = function(grunt) {
 
 	function prepareOptions() {
 		var outputFileName = "build/tmp_config.json";
-		var config = grunt.file.read("config/jsduck/config.json")
-			.replace(/\[VERSION\]/g, "v" + grunt.config("pkg.majorVersion") + "." + grunt.config("pkg.minorVersion")
-			);
-		grunt.file.write(outputFileName, config, {"flag": "w+"});
+		var config = grunt.file.read("config/jsduck/config.json").replace(/\[VERSION\]/g, "v" + grunt.config("pkg.mainVersion"));
+		grunt.file.write(outputFileName, config);
 		return outputFileName;
 	}
 
@@ -112,16 +110,16 @@ module.exports = function(grunt) {
 			done();
 			return;
 		}
-		var versionDir = "v" + grunt.config("pkg.majorVersion") + "." + grunt.config("pkg.minorVersion");
+		var versionDir = "v" + grunt.config("pkg.mainVersion");
 
 		var path = grunt.config("dirs.dist") + "/docs/" + versionDir;
 		shared.exec("rm -rf " + path + " && mkdir -p " + path, function() {
 			shared.exec(cmd, function() {
 				// copy Echo specific images and CSS to documentation directory
 				shared.exec("cp -r docs/patch/* " + path, done);
-				shared.exec("cp docs/index.html " + grunt.config("dirs.dist") + "/docs/ && less docs/index.html | tee "
-					+ grunt.config("dirs.dist") + "/demo/index.html "
-					+ grunt.config("dirs.dist") + "/tests/index.html");
+				shared.exec("cp docs/index.html " + grunt.config("dirs.dist") + "/docs/"
+					+ " && cp docs/index.html " + grunt.config("dirs.dist") + "/demo/"
+					+ " && cp docs/index.html " + grunt.config("dirs.dist") + "/tests/");
 			});
 		});
 	}
