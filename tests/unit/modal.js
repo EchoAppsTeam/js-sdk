@@ -1,11 +1,11 @@
 Echo.Tests.Units.push(function(callback) {
+	"use strict";
+
 	Echo.require([
 		"jquery",
 		"loadFrom![echo/gui.pack]echo/gui/modal",
 		"loadFrom![echo/apps.sdk]echo/utils"
 	], function($, GUIModal, Utils) {
-
-	"use strict";
 
 	Echo.Tests.module("Echo.GUI.Modal", {
 		"meta": {
@@ -15,6 +15,7 @@ Echo.Tests.Units.push(function(callback) {
 	});
 
 	Echo.Tests.asyncTest("common workflow", function() {
+		var modal, modalElement, modalBackdrop;
 		var modalParams = {
 			"show": true,
 			"backdrop": true,
@@ -45,12 +46,12 @@ Echo.Tests.Units.push(function(callback) {
 
 		QUnit.expect(24);
 		Utils.addCSS(".echo-hide { display: none; }", "echo-hide");
-		var modal = new GUIModal(modalParams);
+		modal = new GUIModal(modalParams);
 
 		QUnit.ok($(".echo-sdk-ui .modal").length, "Check that modal is available");
 
-		var modalElement = modal.element;
-		var modalBackdrop = $(".echo-sdk-ui .modal-backdrop")[0];
+		modalElement = modal.element;
+		modalBackdrop = $(".echo-sdk-ui .modal-backdrop")[0];
 
 		QUnit.ok(modalBackdrop, "Check that backdrop is displayed");
 
@@ -87,7 +88,7 @@ Echo.Tests.Units.push(function(callback) {
 		modal.config.set("width", 500);
 		modal.refresh();
 
-		var modalElement = modal.element;
+		modalElement = modal.element;
 		QUnit.ok(modalElement.hasClass("upd-echo-hide"), "Check set() method (CSS class)");
 		QUnit.equal($(".modal-header h3", modalElement).html(), "upd-title", "Check set() method (title HTML)");
 		QUnit.equal($(".modal-body", modalElement).html(), "upd_body", "Check set() method (body HTML)");
@@ -110,6 +111,8 @@ Echo.Tests.Units.push(function(callback) {
 		});
 		modal.hide();
 	});
+
 	callback();
+
 	});
 });

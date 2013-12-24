@@ -1,39 +1,40 @@
 Echo.Tests.Units.push(function(callback) {
+	"use strict";
+
 	Echo.require([
 		"jquery",
 		"loadFrom![echo/streamserver.sdk]echo/streamserver/bundled-apps/counter/client-widget",
 		"loadFrom![echo/apps.sdk]echo/api"
 	], function($, Counter, API) {
 
-	"use strict";
-
 	var suite = Echo.Tests.Unit.Counter = function() {};
 
 	suite.prototype.info = {
-		"className" : "Echo.StreamServer.BundledApps.Counter.ClientWidget",
+		"className": "Echo.StreamServer.BundledApps.Counter.ClientWidget",
 		"functions": []
 	};
 
 	suite.prototype.tests = {};
 
 	suite.prototype.tests.staticWorkflow = {
-		"config" : {
-			"async" : true,
-			"testTimeout" : 20000, // 20 secs
-			"description" : "data defined explicitly"
+		"config": {
+			"async": true,
+			"testTimeout": 20000, // 20 secs
+			"description": "data defined explicitly"
 		},
-		"check" : function() {
+		"check": function() {
 			var self = this;
 			var target = this.config.target;
 			var count = 99;
+			/* jshint nonew:false */
 			new Counter({
-				"target" : target,
-				"appkey" : "echo.jssdk.tests.aboutecho.com",
-				"data"   : {"count": count},
-				"ready"  : function() {
+				"target": target,
+				"appkey": "echo.jssdk.tests.aboutecho.com",
+				"data": {"count": count},
+				"ready": function() {
 					suite.counter = this;
 					QUnit.ok(target.html().match(count),
-						'Checking the static usecase rendering');
+						"Checking the static usecase rendering");
 					QUnit.ok(this.request instanceof API.Request, "Check that counter initializing with the pre-defined data inits a request object as well");
 					QUnit.strictEqual(this.request.config.get("liveUpdates.enabled"), this.config.get("liveUpdates.enabled"), "Check that counter initializing with the pre-defined data inits a request object with the proper options");
 					self.sequentialAsyncTests([
@@ -42,30 +43,32 @@ Echo.Tests.Units.push(function(callback) {
 					], "cases");
 				}
 			});
+			/* jshint nonew:true */
 		}
 	};
 
 	suite.prototype.tests.dynamicWorkflow = {
-		"config" : {
-			"async" : true,
-			"testTimeout" : 20000, // 20 secs
-			"description" : "data taken from API endpoint"
+		"config": {
+			"async": true,
+			"testTimeout": 20000, // 20 secs
+			"description": "data taken from API endpoint"
 		},
-		"check" : function() {
+		"check": function() {
 			var self = this;
+			/* jshint nonew:false */
 			new Counter({
-				"target" : this.config.target,
-				"appkey" : "echo.jssdk.tests.aboutecho.com",
-				"query"  : "childrenof:http://example.com/*",
+				"target": this.config.target,
+				"appkey": "echo.jssdk.tests.aboutecho.com",
+				"query": "childrenof:http://example.com/*",
 				"liveUpdates": {
 					"polling": {
 						"timeout": 3
 					}
 				},
-				"ready"  : function() {
+				"ready": function() {
 					suite.counter = this;
 					QUnit.ok(self.config.target.html().match(suite.counter.get("data.count")),
-					'Checking the dynamic usecase rendering');
+						"Checking the dynamic usecase rendering");
 					var sequentialTests = [
 						"onError_more_than",
 						"onUpdate"
@@ -80,6 +83,7 @@ Echo.Tests.Units.push(function(callback) {
 					self.sequentialAsyncTests(sequentialTests, "cases");
 				}
 			});
+			/* jshint nonew:true */
 		}
 	};
 
@@ -88,11 +92,11 @@ Echo.Tests.Units.push(function(callback) {
 	suite.prototype.cases.staticInit = function(callback) {
 		var self = this;
 		suite.counter.events.subscribe({
-			"topic"   : "Echo.StreamServer.BundledApps.Counter.ClientWidget.onRefresh",
-			"once"    : true,
-			"handler" : function(topic, params) {
+			"topic": "Echo.StreamServer.BundledApps.Counter.ClientWidget.onRefresh",
+			"once": true,
+			"handler": function(topic, params) {
 				QUnit.ok(self.config.target.html().match(suite.counter.get("data.count")),
-					'Checking the static usecase rendering and refresh() idempotence');
+					"Checking the static usecase rendering and refresh() idempotence");
 				callback();
 			}
 		});
@@ -104,11 +108,11 @@ Echo.Tests.Units.push(function(callback) {
 		var count = 101;
 		suite.counter.set("data", {"count": count});
 		suite.counter.events.subscribe({
-			"topic"   : "Echo.StreamServer.BundledApps.Counter.ClientWidget.onRefresh",
-			"once"    : true,
-			"handler" : function(topic, params) {
+			"topic": "Echo.StreamServer.BundledApps.Counter.ClientWidget.onRefresh",
+			"once": true,
+			"handler": function(topic, params) {
 				QUnit.ok(self.config.target.html().match(suite.counter.get("data.count")),
-					'Checking the static usecase rerendering');
+					"Checking the static usecase rerendering");
 				callback();
 			}
 		});
@@ -118,8 +122,8 @@ Echo.Tests.Units.push(function(callback) {
 	suite.prototype.cases.onError_more_than = function(callback) {
 		var self = this;
 		suite.counter.events.subscribe({
-			"topic"   : "Echo.StreamServer.BundledApps.Counter.ClientWidget.onError",
-			"handler" : function(topic, params) {
+			"topic": "Echo.StreamServer.BundledApps.Counter.ClientWidget.onError",
+			"handler": function(topic, params) {
 				params = params || {};
 				if (params.data && params.data.errorCode === "waiting") {
 					var data = {
@@ -138,18 +142,18 @@ Echo.Tests.Units.push(function(callback) {
 						"errorCode" : "more_than",
 						"errorMessage" : 5000
 					},
-					'Checking the restrictions of the count API. Error: "more_than"');
+					"Checking the restrictions of the count API. Error: \"more_than\"");
 				this.events.unsubscribe({
 					"topic": "Echo.StreamServer.BundledApps.Counter.ClientWidget.onError"
 				});
 			}
 		});
 		suite.counter.events.subscribe({
-			"topic"   : "Echo.StreamServer.BundledApps.Counter.ClientWidget.onRefresh",
-			"once"    : true,
-			"handler" : function(topic, params) {
+			"topic": "Echo.StreamServer.BundledApps.Counter.ClientWidget.onRefresh",
+			"once": true,
+			"handler": function(topic, params) {
 				self.jqueryObjectsEqual($(self.config.target.html()), $("<span>5000+</span>"),
-					'Checking the Error: "more_than" usecase rendering');
+					"Checking the Error: \"more_than\" usecase rendering");
 				callback();
 			}
 		});
@@ -171,9 +175,9 @@ Echo.Tests.Units.push(function(callback) {
 		var self = this;
 		suite.counter.config.set("query", "children1of:http://example.com/*");
 		suite.counter.events.subscribe({
-			"topic"   : "Echo.StreamServer.BundledApps.Counter.ClientWidget.onError",
-			"once"    : true,
-			"handler" : function(topic, params) {
+			"topic": "Echo.StreamServer.BundledApps.Counter.ClientWidget.onError",
+			"once": true,
+			"handler": function(topic, params) {
 				QUnit.deepEqual(
 					params.data,
 					{
@@ -181,15 +185,15 @@ Echo.Tests.Units.push(function(callback) {
 						"errorCode" : "wrong_query",
 						"errorMessage" : "Unrecognized query"
 					},
-					'Checking the restrictions of the count API. Error: "wrong_query"');
+					"Checking the restrictions of the count API. Error: \"wrong_query\"");
 			}
 		});
 		suite.counter.events.subscribe({
-			"topic"   : "Echo.StreamServer.BundledApps.Counter.ClientWidget.onRefresh",
-			"once"    : true,
-			"handler" : function(topic, params) {
+			"topic": "Echo.StreamServer.BundledApps.Counter.ClientWidget.onRefresh",
+			"once": true,
+			"handler": function(topic, params) {
 				QUnit.ok(self.config.target.html().match(/wrong_query/),
-					'Checking the Error: "wrong_query" usecase rendering');
+					"Checking the Error: \"wrong_query\" usecase rendering");
 				callback();
 			}
 		});
@@ -201,9 +205,9 @@ Echo.Tests.Units.push(function(callback) {
 		suite.counter.config.set("query", "childrenof:http://example.com/test/*");
 		suite.counter.config.set("appkey", "faketest.aboutecho.com");
 		suite.counter.events.subscribe({
-			"topic"   : "Echo.StreamServer.BundledApps.Counter.ClientWidget.onError",
-			"once"    : true,
-			"handler" : function(topic, params) {
+			"topic": "Echo.StreamServer.BundledApps.Counter.ClientWidget.onError",
+			"once": true,
+			"handler": function(topic, params) {
 				//TODO fix test when the API is fixed
 				// it should return incorrect_appkey instead of wrong_query 
 				QUnit.deepEqual(
@@ -213,19 +217,19 @@ Echo.Tests.Units.push(function(callback) {
 						"errorCode" : "wrong_query",
 						"errorMessage" : "Unrecognized query"
 					},
-					'Checking the restrictions of the count API. Error: "incorrect_appkey"');
+					"Checking the restrictions of the count API. Error: \"incorrect_appkey\"");
 			}
 		});
 		suite.counter.events.subscribe({
-			"topic"   : "Echo.StreamServer.BundledApps.Counter.ClientWidget.onRefresh",
-			"once"    : true,
-			"handler" : function(topic, params) {
+			"topic": "Echo.StreamServer.BundledApps.Counter.ClientWidget.onRefresh",
+			"once": true,
+			"handler": function(topic, params) {
 				//TODO fix test when the API is fixed
 				// it should return incorrect_appkey instead of wrong_query 
 				QUnit.ok(self.config.target.html().match(/wrong_query/),
-					'Checking the Error: "incorrect_appkey" usecase rendering');
+					"Checking the Error: \"incorrect_appkey\" usecase rendering");
 				//QUnit.ok($(params.target).html().match(/Incorrect application key was specified in the query/),
-				//	'Checking the Error: "incorrect_appkey" usecase rendering');
+				//	"Checking the Error: \"incorrect_appkey\" usecase rendering");
 				callback();
 			}
 		});
@@ -236,19 +240,19 @@ Echo.Tests.Units.push(function(callback) {
 		var self = this;
 		suite.counter.config.set("appkey", "echo.jssdk.tests.aboutecho.com");
 		suite.counter.events.subscribe({
-			"topic" : "Echo.StreamServer.BundledApps.Counter.ClientWidget.onUpdate",
-			"once"  : true,
-			"handler" : function(topic, params) {
+			"topic": "Echo.StreamServer.BundledApps.Counter.ClientWidget.onUpdate",
+			"once": true,
+			"handler": function(topic, params) {
 				QUnit.ok(typeof(params.data.count) === "number",
-					'Checking if data.count contains valid value');
+					"Checking if data.count contains valid value");
 			}
 		});
 		suite.counter.events.subscribe({
-			"topic" : "Echo.StreamServer.BundledApps.Counter.ClientWidget.onRefresh",
-			"once"  : true,
-			"handler" : function(topic, params) {
+			"topic": "Echo.StreamServer.BundledApps.Counter.ClientWidget.onRefresh",
+			"once": true,
+			"handler": function(topic, params) {
 				QUnit.ok(self.config.target.html().match(suite.counter.get("data.count")),
-					'Checking the common usecase rendering');
+					"Checking the common usecase rendering");
 				callback();
 			}
 		});
@@ -259,6 +263,8 @@ Echo.Tests.Units.push(function(callback) {
 		suite.counter.destroy();
 		callback();
 	};
+
 	callback();
+
 	});
 });

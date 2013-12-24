@@ -1,11 +1,10 @@
 Echo.Tests.Units.push(function(callback) {
+	"use strict";
+
 	Echo.require([
 		"jquery",
-		"loadFrom![echo/streamserver.sdk]echo/streamserver/bundled-apps/stream/client-widget",
-		"loadFrom![echo/streamserver.sdk]echo/streamserver/bundled-apps/stream/plugins/infinite-scroll"
+		"loadFrom![echo/streamserver.sdk]echo/streamserver/bundled-apps/stream/client-widget"
 	], function($, Stream) {
-
-	"use strict";
 
 	var plugin = "Echo.StreamServer.BundledApps.Stream.ClientWidget.Plugins.InfiniteScroll";
 
@@ -20,6 +19,7 @@ Echo.Tests.Units.push(function(callback) {
 
 	Echo.Tests.asyncTest("common workflow", function() {
 		var target = $("#qunit-fixture");
+		/* jshint nonew:false */
 		new Stream({
 			"target": target,
 			"appkey": "echo.jssdk.tests.aboutecho.com",
@@ -28,7 +28,7 @@ Echo.Tests.Units.push(function(callback) {
 				"enabled": false
 			},
 			"plugins": [{
-				"name": "InfiniteScroll"
+				"component": "loadFrom![echo/streamserver.sdk]echo/streamserver/bundled-apps/stream/plugins/infinite-scroll"
 			}],
 			"ready": function() {
 				var element = this.view.get("more");
@@ -40,7 +40,6 @@ Echo.Tests.Units.push(function(callback) {
 					"top": $(window).scrollTop() + 100,
 					"visibility": "hidden"
 				});
-				var plugin = this.getPlugin("InfiniteScroll");
 				var spy = sinon.spy(element, "click");
 				this.events.subscribe({
 					"topic": "Echo.StreamServer.BundledApps.Stream.ClientWidget.onDataReceive",
@@ -49,7 +48,7 @@ Echo.Tests.Units.push(function(callback) {
 						this.destroy();
 						$(window).trigger("scroll");
 						QUnit.equal(spy.callCount, 1, "Plugin reaction on window scroll event is NOT registered after app destroy");
-						spy.reset();
+						spy.restore();
 						// restore styles stream target had before the test
 						target.css(styles);
 						QUnit.start();
@@ -59,7 +58,10 @@ Echo.Tests.Units.push(function(callback) {
 				QUnit.ok(spy.called, "Plugin reaction on window scroll event is registered");
 			}
 		});
+		/* jshint nonew:true */
 	});
+
 	callback();
+
 	});
 });

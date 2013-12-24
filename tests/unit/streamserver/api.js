@@ -1,4 +1,6 @@
 Echo.Tests.Units.push(function(callback) {
+	"use strict";
+
 	Echo.require([
 		"jquery",
 		"loadFrom![echo/apps.sdk]echo/api",
@@ -7,8 +9,6 @@ Echo.Tests.Units.push(function(callback) {
 		"loadFrom![echo/streamserver.sdk]echo/streamserver/api",
 		"loadFrom![echo/streamserver.sdk]echo/streamserver/user"
 	], function($, API, Utils, Events, StreamServerAPI, User) {
-
-	"use strict";
 
 	var suite = Echo.Tests.Unit.StreamServerAPI = function() {};
 
@@ -296,7 +296,7 @@ Echo.Tests.Units.push(function(callback) {
 	suite.prototype.cases.websockets = function(callback) {
 		var item = $.extend(true, {}, this.items.post);
 		var params = $.extend({}, this.params);
-		var q = params.q.replace(/\s+children:\d+$/, "") + "/11111"
+		var q = params.q.replace(/\s+children:\d+$/, "") + "/11111";
 		var target = q.replace(/^childrenof:(http:\/\/\S+).*$/, "$1");
 		item.targets[0].id = target;
 		item.targets[0].conversationID = target;
@@ -350,7 +350,7 @@ Echo.Tests.Units.push(function(callback) {
 	suite.prototype.cases.webSocketSinceCase = function(callback) {
 		var item = $.extend(true, {}, this.items.post);
 		var params = $.extend({}, this.params);
-		var q = params.q.replace(/\s+children:\d+$/, "") + "/11111"
+		var q = params.q.replace(/\s+children:\d+$/, "") + "/11111";
 		var target = q.replace(/^childrenof:(http:\/\/\S+).*$/, "$1");
 		item.targets[0].id = target;
 		item.targets[0].conversationID = target;
@@ -392,7 +392,7 @@ Echo.Tests.Units.push(function(callback) {
 	suite.prototype.cases.multipleWebsocketRequests = function(callback) {
 		var item = $.extend(true, {}, this.items.post);
 		var params = $.extend({}, this.params);
-		var q = params.q.replace(/\s+children:\d+$/, "") + "/222"
+		var q = params.q.replace(/\s+children:\d+$/, "") + "/222";
 		var target = q.replace(/^childrenof:(http:\/\/\S+).*$/, "$1");
 		item.targets[0].id = target;
 		item.targets[0].conversationID = target;
@@ -424,21 +424,17 @@ Echo.Tests.Units.push(function(callback) {
 		// 21 is a euristic non documented number
 		// The server allows to subscribe to no more than 20 subscriptions per connect.
 		for (var i = 0; i < 21; i++) {
-			(function(i) {
-				def.push($.Deferred());
-				requests.push(
-					getRequest(i)
-				);
-			})(i);
+			def.push($.Deferred());
+			requests.push(getRequest(i));
 		}
-		var chained = function chain(i, r) {
+		var chained = (function chain(i, r) {
 			if (requests[i + 1]) {
 				return chain(i + 1, r.pipe(function() {
 					return requests[i + 1].send();
 				}));
 			}
 			return r;
-		}(0, requests[0].send());
+		})(0, requests[0].send());
 		Events.subscribe({
 			"topic": "Echo.API.Transports.WebSockets.onOpen",
 			"context": "live.echoenabled.com-v1-ws",
@@ -646,6 +642,8 @@ Echo.Tests.Units.push(function(callback) {
 			}]
 		}
 	];
+
 	callback();
+
 	});
 });

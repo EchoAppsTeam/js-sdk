@@ -1,11 +1,11 @@
 Echo.Tests.Units.push(function(callback) {
+	"use strict";
+
 	Echo.require([
 		"jquery",
 		"loadFrom![echo/streamserver.sdk]echo/streamserver/bundled-apps/stream/item/client-widget",
 		"loadFrom![echo/streamserver/bundled-apps/stream/plugins/pinboard-visualization]echo/streamserver/bundled-apps/stream/item/media-gallery/client-widget"
 	], function($, Item, MediaGallery) {
-
-	"use strict";
 
 	var data = {
 		"instance": {
@@ -56,6 +56,7 @@ Echo.Tests.Units.push(function(callback) {
 				});
 				return isActive;
 			};
+			/* jshint nonew:false */
 			new MediaGallery({
 				"target": this.config.target,
 				"appkey": this.config.appkey,
@@ -69,6 +70,7 @@ Echo.Tests.Units.push(function(callback) {
 					], "cases");
 				}
 			});
+			/* jshint nonew:true */
 		}
 	};
 
@@ -122,6 +124,8 @@ Echo.Tests.Units.push(function(callback) {
 		if (suite.mediaGallery) suite.mediaGallery.destroy();
 		callback && callback();
 	};
+
 	callback();
+
 	});
 });

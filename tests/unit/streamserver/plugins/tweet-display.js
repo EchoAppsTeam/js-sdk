@@ -1,12 +1,12 @@
 Echo.Tests.Units.push(function(callback) {
+	"use strict";
+
 	Echo.require([
 		"jquery",
 		"loadFrom![echo/apps.sdk]echo/utils",
 		"loadFrom![echo/streamserver.sdk]echo/streamserver/bundled-apps/stream/client-widget",
 		"loadFrom![echo/streamserver.sdk]echo/streamserver/bundled-apps/stream/item/plugins/tweet-display"
 	], function($, Utils, Stream) {
-
-	"use strict";
 
 	var plugin = "Echo.StreamServer.BundledApps.Stream.Item.ClientWidget.Plugins.TweetDisplay";
 
@@ -116,6 +116,7 @@ Echo.Tests.Units.push(function(callback) {
 	});
 
 	Echo.Tests.asyncTest("disabled Like and Reply plugins", function() {
+		/* jshint nonew:false */
 		new Stream({
 			"target": $("<div>"),
 			"appkey": "test.js-kit.com",
@@ -144,7 +145,10 @@ Echo.Tests.Units.push(function(callback) {
 				QUnit.start();
 			}
 		});
+		/* jshint nonew:true */
 	});
+
 	callback();
+
 	});
 });

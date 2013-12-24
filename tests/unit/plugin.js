@@ -1,13 +1,13 @@
 Echo.Tests.Units.push(function(callback) {
+	"use strict";
+
 	Echo.require([
 		"jquery",
 		"loadFrom![echo/apps.sdk]echo/plugin",
 		"loadFrom![echo/apps.sdk]echo/utils",
 		"loadFrom![echo/apps.sdk]echo/events",
 		"loadFrom![echo/apps.sdk]echo/labels"
-	], function($, Plugin, Utils, Events, Labels) { 
-
-	"use strict";
+	], function($, Plugin, Utils, Events, Labels) {
 
 	var suite = Echo.Tests.Unit.Plugin = function() {};
 
@@ -58,7 +58,6 @@ Echo.Tests.Units.push(function(callback) {
 			"testTimeout": 20000 // 20 secs
 		},
 		"check": function() {
-			var self = this;
 			var definition = {
 				"name": "MyTestPlugin",
 				"component": {
@@ -136,7 +135,6 @@ Echo.Tests.Units.push(function(callback) {
 	suite.prototype.cases = {};
 
 	suite.prototype.cases.basicOperations = function(callback) {
-		var test = this;
 		var check = function() {
 			var app = this;
 			var plugin = app.getPlugin(suite.getTestPluginName());
@@ -160,7 +158,6 @@ Echo.Tests.Units.push(function(callback) {
 				"Checking if private methods are available and executable");
 
 			// checking "get" operation
-			var data = suite.data.config.data;
 			QUnit.equal(plugin.get("non-existing-key"), undefined,
 				"Trying to fetch the value using non-existing key via \"get\" function");
 			QUnit.equal(plugin.get("non-existing-key", "default"), "default",
@@ -216,7 +213,7 @@ Echo.Tests.Units.push(function(callback) {
 				QUnit.ok(true, "Checking if no exceptions were thrown while executing the \"log\" function with valid and invalid params");
 			} catch(e) {
 				QUnit.ok(e, "Execution of the \"log\" function caused exception.");
-			};
+			}
 
 			// checking "invoke" method
 			var cases = [
@@ -224,8 +221,8 @@ Echo.Tests.Units.push(function(callback) {
 				[function() { return this.cssClass; },
 					"echo-streamserver-apps-mytestapp-plugin-MyTestPlugin"],
 				[function() { return this.fakeKey; }, undefined],
-				[function() { return this.get("data.key1")}, "key1 value"],
-				[function() { return this.get("name")}, "MyTestPlugin"]
+				[function() { return this.get("data.key1"); }, "key1 value"],
+				[function() { return this.get("name"); }, "MyTestPlugin"]
 			];
 			$.each(cases, function(id, _case) {
 				QUnit.strictEqual(
@@ -299,7 +296,7 @@ Echo.Tests.Units.push(function(callback) {
 		};
 		var checker = function(label, active, cb) {
 			return function(_callback) {
-				QUnit.ok(!!this.getPlugin("MyTestPlugin") == active, label);
+				QUnit.strictEqual(!!this.getPlugin("MyTestPlugin"), active, label);
 				this.destroy();
 				cb();
 			};
@@ -368,7 +365,7 @@ Echo.Tests.Units.push(function(callback) {
 					"Checking if the value was wiped out of config");
 
 				var nested = this.config.assemble();
-				QUnit.ok(nested.plugins[0].name == "MyNestedPlugin",
+				QUnit.equal(nested.plugins[0].name, "MyNestedPlugin",
 					"Checking if the \"nestedPlugins\" were copied over to \"plugins\" section in the \"assemble\" function call result");
 				QUnit.ok(!!nested.parent,
 					"Checking if we have parent config in the \"assemble\" function call result");
@@ -402,7 +399,7 @@ Echo.Tests.Units.push(function(callback) {
 		var check = function() {
 			var self = this;
 			var plugin = this.getPlugin("MyTestPlugin");
-			QUnit.ok(this.config.get("target") instanceof $, 
+			QUnit.ok(this.config.get("target") instanceof $,
 				"Checking if the target if a jQuery element");
 			QUnit.ok(!!this.config.get("target").children().length,
 				"Checking if target is not empty after rendering");
@@ -431,14 +428,14 @@ Echo.Tests.Units.push(function(callback) {
 				"Checking if initially empty element became non-empty after applying renderer");
 
 			// checking extendRenderer & parentRenderer functions
-			QUnit.ok(this.view.get("testComponentRenderer").children().length == 2,
+			QUnit.equal(this.view.get("testComponentRenderer").children().length, 2,
 				"Checking multiple extension of the same renderer, checking if \"parentRenderer\" function is called");
 
 			// checking extendTemplate function
 			var actions = ["insertAsLastChild", "insertBefore", "insertAfter", "insertAsFirstChild", "replace"];
 			$.map(actions, function(action) {
 				var element = self.view.get("ext_" + action);
-				QUnit.ok(element.html() == action,
+				QUnit.equal(element.html(), action,
 					"Checking \"" + action + "\" extendTemplate method");
 			});
 			QUnit.ok(!self.view.get("plugin_templateRemoveCheck"),
@@ -527,7 +524,7 @@ Echo.Tests.Units.push(function(callback) {
 			// we expect that the "internal.Echo.App.onDataInvalidate" is fired
 			plugin.requestDataRefresh();
 
-			QUnit.ok(count == 9,
+			QUnit.equal(count, 9,
 				"Checking if expected amount of events were executed and handled");
 
 			var e = plugin.events;
@@ -810,6 +807,8 @@ Echo.Tests.Units.push(function(callback) {
 
 		return definition;
 	};
+
 	callback();
+
 	});
 });

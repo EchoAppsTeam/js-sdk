@@ -1,11 +1,11 @@
 Echo.Tests.Units.push(function(callback) {
+	"use strict";
+
 	Echo.require([
 		"jquery",
 		"loadFrom![echo/streamserver.sdk]echo/streamserver/bundled-apps/auth/client-widget",
 		"loadFrom![echo/apps.sdk]echo/events"
 	], function($, Auth, Events) {
-
-	"use strict";
 
 	Echo.Tests.module("Echo.StreamServer.BundledApps.Auth.ClientWidget", {
 		"meta": {
@@ -46,6 +46,7 @@ Echo.Tests.Units.push(function(callback) {
 			QUnit.equal(avatar, getRenderedAvatar(), "Checking if custom default avatar is rendered when user avatar is not available");
 			QUnit.start();
 		};
+		/* jshint nonew:false */
 		new Auth({
 			"target": target,
 			"appkey": "echo.jssdk.tests.aboutecho.com",
@@ -55,6 +56,7 @@ Echo.Tests.Units.push(function(callback) {
 			},
 			"ready": checkAvatar
 		});
+		/* jshint nonew:true */
 	}, {
 		"user": {"status": "logged"}
 	});
@@ -75,6 +77,7 @@ Echo.Tests.Units.push(function(callback) {
 				QUnit.start();
 			}
 		});
+		/* jshint nonew:false */
 		new Auth({
 			"target": target,
 			"appkey": "echo.jssdk.tests.aboutecho.com",
@@ -83,7 +86,10 @@ Echo.Tests.Units.push(function(callback) {
 				"signup": identityManager
 			}
 		});
+		/* jshint nonew:true */
 	});
+
 	callback();
+
 	});
 });

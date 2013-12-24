@@ -1,10 +1,10 @@
 Echo.Tests.Units.push(function(callback) {
+	"use strict";
+
 	Echo.require([
 		"jquery",
 		"loadFrom![echo/gui.pack]echo/gui/button"
 	], function($, GUIButton) {
-
-	"use strict";
 
 	Echo.Tests.module("Echo.GUI.Button", {
 		"meta": {
@@ -79,12 +79,16 @@ Echo.Tests.Units.push(function(callback) {
 	Echo.Tests.test("taking data from HTML", function() {
 		var target = $("#qunit-fixture");
 		var element = $('<button disabled="disabled">ClickMe</button>').appendTo(target);
-		var button = new GUIButton({"target": element});
+		/* jshint nonew:false */
+		new GUIButton({"target": element});
+		/* jshint nonew:true */
 		QUnit.ok(target.html().match(/>ClickMe</),
 			"Checking that label value is taken from the element");
 		QUnit.ok(element.is(":disabled"),
 			"Checking that disabled value is taken from the element");
 	});
+
 	callback();
+
 	});
 });

@@ -242,6 +242,8 @@ Echo.Tests.Units.push(function(callback) {
 		publish({"topic": "A.test", "context": "a1/b3", "bubble": false});
 		QUnit.deepEqual(published, [], "Publish: handlers order (topic \"A\", nonexistent deep context without bubble)");
 	});
+
 	callback();
+
 	});
 });

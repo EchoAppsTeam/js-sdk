@@ -1,11 +1,11 @@
 Echo.Tests.Units.push(function(callback) {
+	"use strict";
+
 	Echo.require([
 		"jquery",
 		"loadFrom![echo/apps.sdk]echo/api",
 		"loadFrom![echo/apps.sdk]echo/utils"
 	], function($, API, Utils) {
-
-	"use strict";
 
 	Echo.Tests.module("Echo.API", {
 		"meta": {
@@ -67,31 +67,30 @@ Echo.Tests.Units.push(function(callback) {
 			var requests = [];
 			var deferred = [];
 			var closeDef = [];
+			var getRequest = function(i) {
+				return new API.Request({
+					"endpoint": "ws",
+					"apiBaseURL": "live.echoenabled.com/v1/",
+					"transport": "websockets",
+					"onClose": function() {
+						closed++;
+						closeDef[i].resolve();
+					},
+					"onOpen": function() {
+						if (i === 0) {
+							QUnit.ok(requests[0].transport.connected(), "Check if WS was initialized and \"onOpen\" event fired");
+						}
+						deferred[i].resolve();
+					}
+				});
+			};
 			for (var i = 0; i < 4; i++) {
 				deferred.push($.Deferred());
 				closeDef.push($.Deferred());
-				(function(i) {
-					requests.push(
-						new API.Request({
-							"endpoint": "ws",
-							"apiBaseURL": "live.echoenabled.com/v1/",
-							"transport": "websockets",
-							"onClose": function() {
-								closed++;
-								closeDef[i].resolve();
-							},
-							"onOpen": function() {
-								if (i === 0) {
-									QUnit.ok(requests[0].transport.connected(), "Check if WS was initialized and \"onOpen\" event fired");
-								}
-								deferred[i].resolve();
-							}
-						})
-					);
-					if (i === 0) {
-						QUnit.ok(requests[0].transport.connecting(), "Check that WS status is \"connecting\"");
-					}
-				})(i);
+				requests.push(getRequest(i));
+				if (i === 0) {
+					QUnit.ok(requests[0].transport.connecting(), "Check that WS status is \"connecting\"");
+				}
 			}
 			var req = requests[0];
 			$.when.apply($, deferred).done(function() {
@@ -197,6 +196,8 @@ Echo.Tests.Units.push(function(callback) {
 			QUnit.equal(request.config.get("transport"), item.inspection, "Check transport if specified transport is " + item.transport);
 		});
 	});
+
 	callback();
+
 	});
 });

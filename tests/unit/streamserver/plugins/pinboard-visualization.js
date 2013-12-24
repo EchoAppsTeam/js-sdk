@@ -1,10 +1,10 @@
 Echo.Tests.Units.push(function(callback) {
+	"use strict";
+
 	Echo.require([
 		"jquery",
 		"loadFrom![echo/streamserver/bundled-apps/stream/plugins/pinboard-visualization]echo/streamserver/bundled-apps/stream/item/plugins/pinboard-visualization"
 	], function($) {
-
-	"use strict";
 
 	var plugin = "Echo.StreamServer.BundledApps.Stream.Item.ClientWidget.Plugins.PinboardVisualization";
 

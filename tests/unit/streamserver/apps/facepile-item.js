@@ -1,9 +1,9 @@
 Echo.Tests.Units.push(function(callback) {
+	"use strict";
+
 	Echo.require([
 		"jquery"
 	], function($) {
-
-	"use strict";
 
 	var data = {
 		"instance": {
@@ -29,6 +29,8 @@ Echo.Tests.Units.push(function(callback) {
 		"className" : data.instance.name,
 		"functions": ["isYou"]
 	};
+
 	callback();
+
 	});
 });

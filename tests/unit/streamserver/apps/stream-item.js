@@ -1,11 +1,11 @@
 Echo.Tests.Units.push(function(callback) {
+	"use strict";
+
 	Echo.require([
 		"jquery",
 		"loadFrom![echo/streamserver.sdk]echo/streamserver/bundled-apps/stream/item/client-widget",
 		"loadFrom![echo/apps.sdk]echo/events"
 	], function($, Item, Events) {
-
-	"use strict";
 
 	var suite = Echo.Tests.Unit.Item = function() {
 		this.constructRenderersTest({
@@ -127,6 +127,7 @@ Echo.Tests.Units.push(function(callback) {
 				item.set("children", children);
 			};
 
+			/* jshint nonew:false */
 			new Item({
 				"target": this.config.target,
 				"appkey": this.config.appkey,
@@ -149,6 +150,7 @@ Echo.Tests.Units.push(function(callback) {
 					item.render();
 				}
 			});
+			/* jshint nonew:true */
 		}
 	};
 
@@ -207,6 +209,7 @@ Echo.Tests.Units.push(function(callback) {
 		},
 		"check": function() {
 			var self = this;
+			/* jshint nonew:false */
 			new Item({
 				"target": this.config.target,
 				"appkey": this.config.appkey,
@@ -228,6 +231,7 @@ Echo.Tests.Units.push(function(callback) {
 					item.render();
 				}
 			});
+			/* jshint nonew:true */
 		}
 	};
 
@@ -305,7 +309,7 @@ Echo.Tests.Units.push(function(callback) {
 							return false;
 						}
 					});
-					isOrderCorrect = isOrderCorrect && $(element.children().get(index)).html().match(label); 
+					isOrderCorrect = isOrderCorrect && $(element.children().get(index)).html().match(label);
 					return isOrderCorrect;
 				});
 				QUnit.ok(isOrderCorrect, "Checking correct buttons order");
@@ -339,7 +343,7 @@ Echo.Tests.Units.push(function(callback) {
 			"handler": function(topic, args) {
 				QUnit.equal(item.get("key"), "value",
 					"Checking callback function after button click");
-				QUnit.equal(args.plugin, button.plugin, 
+				QUnit.equal(args.plugin, button.plugin,
 					"Checking plugin name after button click");
 				callback();
 			}
@@ -664,9 +668,12 @@ Echo.Tests.Units.push(function(callback) {
 	};
 
 	function getGenerateItemFunction(checker) {
+		/* jshint validthis:true */
 		var self = this;
+		/* jshint validthis:false */
 		return function(params) {
 			return function(callback) {
+				/* jshint nonew:false */
 				new Item($.extend({
 					"target": self.config.target,
 					"appkey": self.config.appkey,
@@ -685,9 +692,10 @@ Echo.Tests.Units.push(function(callback) {
 					},
 					"data": _normalizeEntry($.extend(true, {}, suite._itemData, params.data))
 				}, params.config));
+				/* jshint nonew:true */
 			};
 		};
-	};
+	}
 
 	// almost copy of Echo.StreamServer.BundledApps.Stream.ClientWidget.prototype._normalizeEntry()
 	var _normalizeEntry = function(entry) {
@@ -702,7 +710,7 @@ Echo.Tests.Units.push(function(callback) {
 		entry.object.content_type = entry.object.content_type || "text";
 		entry.object.accumulators = entry.object.accumulators || {};
 		$.each(["repliesCount", "flagsCount", "likesCount"], function(i, name) {
-			entry.object.accumulators[name] = parseInt(entry.object.accumulators[name] || "0");
+			entry.object.accumulators[name] = parseInt(entry.object.accumulators[name] || "0", 10);
 		});
 		entry.object.context = entry.object.context || [];
 		entry.object.flags = entry.object.flags || [];
@@ -824,6 +832,8 @@ Echo.Tests.Units.push(function(callback) {
 		}}, config));
 		return stream;
 	});
+
 	callback();
+
 	});
 });

@@ -1,10 +1,10 @@
 Echo.Tests.Units.push(function(callback) {
+	"use strict";
+
 	Echo.require([
 		"jquery",
 		"loadFrom![echo/gui.pack]echo/gui/dropdown"
 	], function($, GUIDropdown) {
-
-	"use strict";
 
 	Echo.Tests.module("Echo.GUI.Dropdown", {
 		"meta": {
@@ -117,6 +117,8 @@ Echo.Tests.Units.push(function(callback) {
 		dropdown.destroy();
 		QUnit.ok(element.is(":empty"), "Check destroy() method");
 	});
+
 	callback();
+
 	});
 });

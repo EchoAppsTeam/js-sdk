@@ -1,10 +1,10 @@
 Echo.Tests.Units.push(function(callback) {
+	"use strict";
+
 	Echo.require([
 		"jquery",
 		"loadFrom![echo/gui.pack]echo/gui/tabs"
 	], function($, GUITabs) {
-
-	"use strict";
 
 	Echo.Tests.module("Echo.GUI.Tabs", {
 		"meta": {
@@ -133,6 +133,8 @@ Echo.Tests.Units.push(function(callback) {
 		tabs.destroy();
 		QUnit.ok(element.is(":empty"), "Check destroy() method");
 	});
+
 	callback();
+
 	});
 });

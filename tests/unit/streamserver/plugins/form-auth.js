@@ -1,10 +1,10 @@
 Echo.Tests.Units.push(function(callback) {
+	"use strict";
+
 	Echo.require([
 		"jquery",
 		"loadFrom![echo/streamserver.sdk]echo/streamserver/bundled-apps/submit/plugins/form-auth"
 	], function($) {
-
-	"use strict";
 
 	var plugin = "Echo.StreamServer.BundledApps.Submit.ClientWidget.Plugins.FormAuth";
 
@@ -29,6 +29,8 @@ Echo.Tests.Units.push(function(callback) {
 			}
 		}
 	});
+
 	callback();
+
 	});
 });

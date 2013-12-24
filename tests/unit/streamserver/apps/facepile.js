@@ -1,15 +1,15 @@
 Echo.Tests.Units.push(function(callback) {
+	"use strict";
+
 	Echo.require([
 		"jquery",
 		"loadFrom![echo/streamserver.sdk]echo/streamserver/bundled-apps/facepile/client-widget",
 		"loadFrom![echo/streamserver.sdk]echo/streamserver/api"
 	], function($, FacePile, API) {
 
-	"use strict";
-
 	var data = {
-		"instance" : {
-			"name" : "Echo.StreamServer.BundledApps.FacePile.ClientWidget",
+		"instance": {
+			"name": "Echo.StreamServer.BundledApps.FacePile.ClientWidget",
 			"config": {
 				"data": {"entries": []},
 				"liveUpdates": {
@@ -18,8 +18,8 @@ Echo.Tests.Units.push(function(callback) {
 			}
 		},
 		"config": {
-			"async"       : true,
-			"testTimeout" : 10000
+			"async": true,
+			"testTimeout": 10000
 		}
 	};
 
@@ -28,8 +28,8 @@ Echo.Tests.Units.push(function(callback) {
 	};
 
 	suite.prototype.info = {
-		"className" : data.instance.name,
-		"functions" : [
+		"className": data.instance.name,
+		"functions": [
 			"getVisibleUsersCount"
 		]
 	};
@@ -37,31 +37,32 @@ Echo.Tests.Units.push(function(callback) {
 	suite.prototype.tests = {};
 
 	suite.prototype.tests.staticWorkflow = {
-		"config" : {
-			"async"       : true,
-			"testTimeout" : 20000, // 20 secs
-			"description" : "data defined explicitly"
+		"config": {
+			"async": true,
+			"testTimeout": 20000, // 20 secs
+			"description": "data defined explicitly"
 		},
-		"check" : function() {
+		"check": function() {
 			var self = this;
 			var data = { "entries": [] };
 			var i = 0;
 			while (i++ < 50) {
 				data.entries.push({
-					"actor" : {
-						"id"     : i,
-						"avatar" : Echo.require.toUrl("echo-assets/images/avatar-default.png"),
-						"title"  : "TestActor" + i
+					"actor": {
+						"id": i,
+						"avatar": Echo.require.toUrl("echo-assets/images/avatar-default.png"),
+						"title": "TestActor" + i
 					}
 				});
 			}
+			/* jshint nonew:false */
 			new FacePile({
-				"initialUsersCount" : 5,
-				"suffixText" : " commented on aboutecho.com",
-				"target" : this.config.target,
-				"appkey" : this.config.appkey,
-				"data"   : data,
-				"ready"  : function() {
+				"initialUsersCount": 5,
+				"suffixText": " commented on aboutecho.com",
+				"target": this.config.target,
+				"appkey": this.config.appkey,
+				"data": data,
+				"ready": function() {
 					suite.pile = this;
 					self.sequentialAsyncTests([
 						"staticCommon",
@@ -69,6 +70,7 @@ Echo.Tests.Units.push(function(callback) {
 					], "cases");
 				}
 			});
+			/* jshint nonew:true */
 		}
 	};
 
@@ -82,9 +84,9 @@ Echo.Tests.Units.push(function(callback) {
 	suite.prototype.cases.staticCommon = function(callback) {
 		var self = this, pile = suite.pile;
 		pile.events.subscribe({
-			"topic"   : "Echo.StreamServer.BundledApps.FacePile.ClientWidget.onRefresh",
-			"once"    : true,
-			"handler" : function(topic, params) {
+			"topic": "Echo.StreamServer.BundledApps.FacePile.ClientWidget.onRefresh",
+			"once": true,
+			"handler": function(topic, params) {
 				var html = self.config.target.html();
 				QUnit.ok(html.match(/echo-streamserver-bundledapps-facepile-clientwidget-container/),
 					"Checking the common container rendering");
@@ -104,8 +106,8 @@ Echo.Tests.Units.push(function(callback) {
 	suite.prototype.cases.staticMore = function(callback) {
 		var self = this, pile = suite.pile;
 		pile.events.subscribe({
-			"topic"  : "Echo.StreamServer.BundledApps.FacePile.ClientWidget.onRerender",
-			"once"   : true,
+			"topic": "Echo.StreamServer.BundledApps.FacePile.ClientWidget.onRerender",
+			"once": true,
 			"handler": function(topic, params) {
 				QUnit.equal(self.config.target.html().match(/echo-streamserver-bundledapps-facepile-item-clientwidget-container/g).length, 7,
 					"Checking users count after more button click");
@@ -117,24 +119,25 @@ Echo.Tests.Units.push(function(callback) {
 
 	suite.prototype.tests.dynamicWorkflow = {
 		"config" : {
-			"async"       : true,
-			"testTimeout" : 20000, // 20 secs
-			"description" : "data taken from API endpoint",
-			"user"        : {"status": "logged"}
+			"async": true,
+			"testTimeout": 20000, // 20 secs
+			"description": "data taken from API endpoint",
+			"user": {"status": "logged"}
 		},
-		"check" : function() {
+		"check": function() {
 			var self = this;
+			/* jshint nonew:false */
 			new FacePile({
-				"suffixText" : " commented on facepile test page",
-				"target" : this.config.target,
-				"appkey" : this.config.appkey,
-				"query"  : "scope:" + this.config.dataBaseLocation + "tests/facepile sortOrder:chronological " +
+				"suffixText": " commented on facepile test page",
+				"target": this.config.target,
+				"appkey": this.config.appkey,
+				"query": "scope:" + this.config.dataBaseLocation + "tests/facepile sortOrder:chronological " +
 					 "itemsPerPage: 1 -user.id:http://js-kit.com/ECHO/user/fake_user",
-				"item"   : {"avatar": true, "text": true},
+				"item": {"avatar": true, "text": true},
 				"liveUpdates": {
 					"enabled": false
 				},
-				"ready"  : function() {
+				"ready": function() {
 					suite.pile = this;
 					var html = self.config.target.html();
 					QUnit.ok(html.match(/echo-streamserver-bundledapps-facepile-clientwidget-container/),
@@ -150,15 +153,16 @@ Echo.Tests.Units.push(function(callback) {
 					], "cases");
 				}
 			});
+			/* jshint nonew:true */
 		}
 	};
 
 	suite.prototype.cases.dynamicMore = function(callback) {
 		var self = this, pile = suite.pile;
 		pile.events.subscribe({
-			"topic"   : "Echo.StreamServer.BundledApps.FacePile.ClientWidget.onRerender",
-			"once"    : true,
-			"handler" : function(topic, params) {
+			"topic": "Echo.StreamServer.BundledApps.FacePile.ClientWidget.onRerender",
+			"once": true,
+			"handler": function(topic, params) {
 				QUnit.equal(self.config.target.html().match(/echo-streamserver-bundledapps-facepile-item-clientwidget-container/g).length, 3,
 					"Checking users count after more button click");
 				QUnit.strictEqual(pile.getVisibleUsersCount(), 3, "Checking users count after more button click (by \"getVisibleUsersCount()\")");
@@ -190,9 +194,9 @@ Echo.Tests.Units.push(function(callback) {
 			}]
 		};
 		pile.events.subscribe({
-			"topic"   : "Echo.StreamServer.BundledApps.FacePile.ClientWidget.onRefresh",
-			"once"    : true,
-			"handler" : function(topic, params) {
+			"topic": "Echo.StreamServer.BundledApps.FacePile.ClientWidget.onRefresh",
+			"once": true,
+			"handler": function(topic, params) {
 				QUnit.ok(self.config.target.html().match(/You/), "Checking that 'You' item is displayed after posting");
 				callback();
 			}
@@ -208,11 +212,11 @@ Echo.Tests.Units.push(function(callback) {
 	};
 
 	suite.prototype.tests.actorsView = {
-		"config" : {
-			"async" : true,
-			"testTimeout" : 20000 // 20 secs
+		"config": {
+			"async": true,
+			"testTimeout": 20000 // 20 secs
 		},
-		"check" : function() {
+		"check": function() {
 			this.sequentialAsyncTests([
 				"onlyAvatars",
 				"onlyNames"
@@ -230,14 +234,15 @@ Echo.Tests.Units.push(function(callback) {
 
 	suite.prototype._checkActorsView = function(item, callback) {
 		var cfg = this.config;
+		/* jshint nonew:false */
 		new FacePile({
-			"target" : cfg.target,
-			"appkey" : cfg.appkey,
-			"query"  : "scope:" + cfg.dataBaseLocation + "tests/facepile",
+			"target": cfg.target,
+			"appkey": cfg.appkey,
+			"query": "scope:" + cfg.dataBaseLocation + "tests/facepile",
 			"initialUsersCount": 5,
-			"suffixText" : " commented on aboutecho.com",
-			"item"  : item,
-			"ready" : function() {
+			"suffixText": " commented on aboutecho.com",
+			"item": item,
+			"ready": function() {
 				suite.pile = this;
 				$.each(item, function(key, value) {
 					var postfix = (key === "text") ? "title" : key;
@@ -249,7 +254,10 @@ Echo.Tests.Units.push(function(callback) {
 				callback();
 			}
 		});
+		/* jshint nonew:true */
 	};
+
 	callback();
+
 	});
 });

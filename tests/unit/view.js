@@ -1,10 +1,10 @@
 Echo.Tests.Units.push(function(callback) {
+	"use strict";
+
 	Echo.require([
 		"jquery",
 		"loadFrom![echo/apps.sdk]echo/view"
 	], function($, View) {
-
-	"use strict";
 
 	Echo.Tests.module("Echo.View", {
 		"meta": {
@@ -68,20 +68,21 @@ Echo.Tests.Units.push(function(callback) {
 	});
 
 	Echo.Tests.test("rendering with partial or incorrect config", function() {
-		var view = new View();
+		var view, result, dom;
+		view = new View();
 		QUnit.ok(!!view, "Checking if the Echo.View class can be instantiated with no config");
-		var result = view.render();
+		result = view.render();
 		QUnit.ok(!result, "Checking if the \"render\" call with no arguments doesn't throw an exception and returns 'false'");
 
-		var result = view.render({"template": ""});
+		result = view.render({"template": ""});
 		QUnit.ok(!result, "Checking if the \"render\" call with no the template defined as an empty string returns 'false'");
 
-		var dom = view.render({"template": "  "});
+		dom = view.render({"template": "  "});
 		QUnit.strictEqual(dom.html(), undefined,
 			"Checking if the \"render\" call returns \"undefined\" of whitespaces only");
 
 		// simple template rendering with no cssPrefix defined
-		var view = new View();
+		view = new View();
 		view.render({
 			"template": templates.simple
 		});
@@ -94,8 +95,8 @@ Echo.Tests.Units.push(function(callback) {
 			"[no cssPrefix] Checking if the {data:KEY} pattern is replaced with the empty string in case no data is available");
 
 		// rendering of the template with incorrect placeholders
-		var view = new View({"cssPrefix": "echo-"});
-		var dom = view.render({
+		view = new View({"cssPrefix": "echo-"});
+		dom = view.render({
 			"template": templates.incorrect
 		});
 
@@ -132,7 +133,7 @@ Echo.Tests.Units.push(function(callback) {
 		});
 		checks("[via object in config]");
 
-		var view = new View({"cssPrefix": "echo-"});
+		view = new View({"cssPrefix": "echo-"});
 		view.render({
 			"template": templates.simple,
 			"renderers": renderers
@@ -140,7 +141,7 @@ Echo.Tests.Units.push(function(callback) {
 		checks("[in 'render' call]");
 
 		// same set of renderers applied via "renderer" function in config
-		var view = new View({
+		view = new View({
 			"cssPrefix": "echo-",
 			"renderer": function(args) {
 				if (renderers[args.name]) {
@@ -190,8 +191,7 @@ Echo.Tests.Units.push(function(callback) {
 			"template": templates.simple
 		});
 		// forking another view
-		var _view = view.fork();
-		_view.render({"template": templates.simple});
+		view.fork().render({"template": templates.simple});
 		QUnit.equal(view.get("header").html(), "Header Renderer applied!",
 			"[fork with renderers] Checking if the header renderer was applied");
 		QUnit.equal(view.get("body").html(), "Body Renderer applied!",
@@ -269,6 +269,8 @@ Echo.Tests.Units.push(function(callback) {
 			return element.empty().append("Footer Renderer applied!");
 		}
 	};
+
 	callback();
+
 	});
 });

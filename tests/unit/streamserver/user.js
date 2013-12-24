@@ -278,6 +278,8 @@ Echo.Tests.Units.push(function(callback) {
 		QUnit.equal(user.has("identity", identity), user._hasIdentity(identity),
 			"Checking delegation using user.has(\"identity\", \"...\") function");
 	}
+
 	callback();
+
 	});
 });

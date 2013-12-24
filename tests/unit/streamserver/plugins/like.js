@@ -3,10 +3,10 @@ Echo.Tests.Units.push(function(callback) {
 
 	Echo.require([
 		"jquery",
-		"loadFrom![echo/streamserver.sdk]echo/streamserver/bundled-apps/stream/item/plugins/item-accumulator-display"
+		"loadFrom![echo/streamserver.sdk]echo/streamserver/bundled-apps/stream/item/plugins/like"
 	], function($) {
 
-	var plugin = "Echo.StreamServer.BundledApps.Stream.Item.ClientWidget.Plugins.ItemAccumulatorDisplay";
+	var plugin = "Echo.StreamServer.BundledApps.Stream.Item.ClientWidget.Plugins.Like";
 
 	Echo.Tests.module(plugin, {
 		"meta": {

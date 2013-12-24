@@ -1,4 +1,6 @@
 Echo.Tests.Units.push(function(callback) {
+	"use strict";
+
 	Echo.require([
 		"jquery",
 		"loadFrom![echo/streamserver.sdk]echo/streamserver/bundled-apps/stream/client-widget",
@@ -6,8 +8,6 @@ Echo.Tests.Units.push(function(callback) {
 		"loadFrom![echo/streamserver.sdk]echo/streamserver/api",
 		"loadFrom![echo/apps.sdk]echo/api"
 	], function($, Stream, Utils, StreamServerAPI, API) {
-
-	"use strict";
 
 	Echo.Tests.module("Echo.StreamServer.BundledApps.Stream.ClientWidget", {
 		"meta": {
@@ -53,6 +53,7 @@ Echo.Tests.Units.push(function(callback) {
 
 		Utils.sequentialCall($.map(cases, function(test) {
 			return function(callback) {
+				/* jshint nonew:false */
 				new Stream({
 					"target": $("#qunit-fixture"),
 					"appkey": "echo.jssdk.tests.aboutecho.com",
@@ -63,6 +64,7 @@ Echo.Tests.Units.push(function(callback) {
 						callback();
 					}
 				});
+				/* jshint nonew:true */
 			};
 		}), function() {
 			QUnit.start();
@@ -105,6 +107,7 @@ Echo.Tests.Units.push(function(callback) {
 		},
 		"check": function() {
 			var self = this;
+			/* jshint nonew:false */
 			new Stream({
 				"target": this.config.target,
 				"appkey": this.config.appkey,
@@ -132,6 +135,7 @@ Echo.Tests.Units.push(function(callback) {
 					], "cases");
 				}
 			});
+			/* jshint nonew:true */
 		}
 	};
 
@@ -142,6 +146,7 @@ Echo.Tests.Units.push(function(callback) {
 		},
 		"check": function() {
 			var self = this;
+			/* jshint nonew:false */
 			new Stream({
 				"target": this.config.target,
 				"appkey": this.config.appkey,
@@ -152,7 +157,6 @@ Echo.Tests.Units.push(function(callback) {
 				},
 				"query": "childrenof: " + this.config.dataBaseLocation + " -state:ModeratorDeleted itemsPerPage:10",
 				"ready": function() {
-					var target = this.config.get("target");
 					suite.stream = this;
 					self.sequentialAsyncTests([
 						"asyncItemsRendering",
@@ -160,6 +164,7 @@ Echo.Tests.Units.push(function(callback) {
 					], "cases");
 				}
 			});
+			/* jshint nonew:true */
 		}
 	};
 	suite.prototype.cases = {};
@@ -204,9 +209,7 @@ Echo.Tests.Units.push(function(callback) {
 	};
 
 	suite.prototype.cases.queueActivityTesting = function(callback) {
-		var self = this;
 		var stream = suite.stream;
-		var target = this.config.target;
 		stream.events.subscribe({
 			"topic": "Echo.StreamServer.BundledApps.Stream.Item.ClientWidget.onRender",
 			"once": true,
@@ -282,7 +285,6 @@ Echo.Tests.Units.push(function(callback) {
 
 	suite.prototype.cases.addChildItem = function(callback) {
 		var stream = suite.stream;
-		var target = this.config.target;
 		var parentItem;
 		$.each(stream.items, function(key, item) {
 			if (item.isRoot()) {
@@ -314,7 +316,6 @@ Echo.Tests.Units.push(function(callback) {
 
 	suite.prototype.cases.asyncItemsRendering = function(callback) {
 		var stream = suite.stream;
-		var self = this;
 		var oldElement = stream.view.get("body").clone(true, true);
 		stream.config.set("asyncItemsRendering", true);
 		stream.events.subscribe({
@@ -402,7 +403,7 @@ Echo.Tests.Units.push(function(callback) {
 			"topic": "Echo.StreamServer.BundledApps.Stream.Item.ClientWidget.onRender",
 			"once": true,
 			"handler": function(topic, args) {
-				QUnit.ok(ok, "Check if item was rendered for empty Stream");
+				QUnit.ok(true, "Check if item was rendered for empty Stream");
 				callback();
 			}
 		});
@@ -448,10 +449,10 @@ Echo.Tests.Units.push(function(callback) {
 			"handler": function(topic, args) {
 				var count = 0;
 				$.each(args.entries, function(key, entry) {
-					if (entry.object.id == entry.targets[0].conversationID) {
+					if (entry.object.id === entry.targets[0].conversationID) {
 						count++;
 					}
-				}); 
+				});
 				QUnit.equal(count, 1,
 					"Checking that new item was received after more button click(onDataReceive event)");
 				callback();
@@ -461,6 +462,7 @@ Echo.Tests.Units.push(function(callback) {
 	};
 
 	suite.prototype.cases.predefinedData = function(callback) {
+		/* jshint nonew:false */
 		new Stream({
 			"target": $(document.getElementById("qunit-fixture")).empty(),
 			"appkey": "echo.jssdk.tests.aboutecho.com",
@@ -547,12 +549,12 @@ Echo.Tests.Units.push(function(callback) {
 				]
 				},
 			"ready": function() {
-				var self = this;
 				QUnit.ok(this.request instanceof API.Request, "Check that stream initializing with the pre-defined data inits a request object as well");
 				QUnit.strictEqual(this.request.config.get("liveUpdates.enabled"), this.config.get("liveUpdates.enabled"), "Check that stream initializing with the pre-defined data inits a request object with the proper options");
 				callback();
 			}
 		});
+		/* jshint nonew:true */
 	};
 
 	suite.prototype.cases.destroy = function(callback) {
@@ -592,6 +594,8 @@ Echo.Tests.Units.push(function(callback) {
 			"query": "childrenof:" + config.dataBaseLocation + " sortOrder:repliesDescending"
 		}, config));
 	});
+
 	callback();
+
 	});
 });

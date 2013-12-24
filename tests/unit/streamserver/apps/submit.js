@@ -1,10 +1,10 @@
 Echo.Tests.Units.push(function(callback) {
+	"use strict";
+
 	Echo.require([
 		"jquery",
 		"loadFrom![echo/streamserver.sdk]echo/streamserver/bundled-apps/submit/client-widget"
 	], function($, Submit) {
-
-	"use strict";
 
 	var data = {
 		"instance": {
@@ -40,6 +40,7 @@ Echo.Tests.Units.push(function(callback) {
 		},
 		"check": function() {
 			var self = this;
+			/* jshint nonew:false */
 			new Submit({
 				"target": this.config.target,
 				"appkey": "echo.jssdk.tests.aboutecho.com",
@@ -53,6 +54,7 @@ Echo.Tests.Units.push(function(callback) {
 					], "cases");
 				}
 			});
+			/* jshint nonew:true */
 		}
 	};
 
@@ -64,6 +66,7 @@ Echo.Tests.Units.push(function(callback) {
 		},
 		"check": function() {
 			var self = this;
+			/* jshint nonew:false */
 			new Submit({
 				"target": this.config.target,
 				"appkey": "echo.jssdk.tests.aboutecho.com",
@@ -78,6 +81,7 @@ Echo.Tests.Units.push(function(callback) {
 					], "cases");
 				}
 			});
+			/* jshint nonew:true */
 		}
 	};
 
@@ -89,6 +93,7 @@ Echo.Tests.Units.push(function(callback) {
 		},
 		"check": function() {
 			var self = this;
+			/* jshint nonew:false */
 			new Submit({
 				"target": this.config.target,
 				"appkey": "echo.jssdk.tests.aboutecho.com",
@@ -104,6 +109,7 @@ Echo.Tests.Units.push(function(callback) {
 					], "cases");
 				}
 			});
+			/* jshint nonew:true */
 		}
 	};
 
@@ -112,6 +118,7 @@ Echo.Tests.Units.push(function(callback) {
 			"async": true
 		},
 		"check": function() {
+			/* jshint nonew:false */
 			new Submit({
 				"target": this.config.target,
 				"appkey": "echo.jssdk.tests.aboutecho.com",
@@ -142,6 +149,7 @@ Echo.Tests.Units.push(function(callback) {
 					this.refresh();
 				}
 			});
+			/* jshint nonew:true */
 		}
 	};
 
@@ -174,6 +182,7 @@ Echo.Tests.Units.push(function(callback) {
 	};
 
 	suite.prototype.cases.markersAndTags = function(callback) {
+		/* jshint nonew:false */
 		new Submit({
 			"target": this.config.target,
 			"appkey": "echo.jssdk.tests.aboutecho.com",
@@ -195,6 +204,7 @@ Echo.Tests.Units.push(function(callback) {
 				callback();
 			}
 		});
+		/* jshint nonew:true */
 	};
 
 	suite.prototype.cases.validator = function(callback) {
@@ -209,15 +219,14 @@ Echo.Tests.Units.push(function(callback) {
 		};
 		submit.addPostValidator(validator);
 		var button = submit.view.get("postButton");
-		button.off('click', suite.postHandler);
+		button.off("click", suite.postHandler);
 		var content = submit.view.get("content");
-		var text = submit.view.get("text").val("Content");
 		suite.postHandler = function() {
 			QUnit.ok(content.hasClass('echo-streamserver-bundledapps-submit-clientwidget-mandatory'),
 				"Checking custom validator");
 			callback();
 		};
-		button.on('click', suite.postHandler).click();
+		button.on("click", suite.postHandler).click();
 	};
 
 	suite.prototype.cases.post = function(callback) {
@@ -247,7 +256,7 @@ Echo.Tests.Units.push(function(callback) {
 				callback();
 			}
 		});
-		button.off('click', suite.postHandler).click();
+		button.off("click", suite.postHandler).click();
 	};
 
 	suite.prototype.cases.user = function(callback) {
@@ -262,8 +271,7 @@ Echo.Tests.Units.push(function(callback) {
 
 	suite.prototype.cases.onInit = function(callback) {
 		var submit = suite.submit;
-		var button = submit.view.get("postButton");
-		var text = submit.view.get("text").val("UserContent");
+		submit.view.get("text").val("UserContent");
 		submit.events.subscribe({
 			"topic": "Echo.StreamServer.BundledApps.Submit.ClientWidget.onPostInit",
 			"once": true,
@@ -298,8 +306,7 @@ Echo.Tests.Units.push(function(callback) {
 
 	suite.prototype.cases.onComplete = function(callback) {
 		var submit = suite.submit;
-		var button = submit.view.get("postButton");
-		var text = submit.view.get("text").val("UserContent");
+		submit.view.get("text").val("UserContent");
 		submit.events.subscribe({
 			"topic": "Echo.StreamServer.BundledApps.Submit.ClientWidget.onPostInit",
 			"once": true,
@@ -325,7 +332,7 @@ Echo.Tests.Units.push(function(callback) {
 
 	suite.prototype.cases.onError = function(callback) {
 		var submit = suite.submit;
-		var text = submit.view.get("text").val("UserContent");
+		submit.view.get("text").val("UserContent");
 		submit.events.subscribe({
 			"topic": "Echo.StreamServer.BundledApps.Submit.ClientWidget.onPostInit",
 			"once": true,
@@ -370,10 +377,12 @@ Echo.Tests.Units.push(function(callback) {
 		}, config));
 	});
 
-	//TODO: added admin specific test cases when admin role will be supported in testlib.js
+	//TODO: add admin specific test cases when admin role will be supported in testlib.js
 	//suite.prototype.tests.adminWorkflow = {
 	//
 	//};
+
 	callback();
+
 	});
 });

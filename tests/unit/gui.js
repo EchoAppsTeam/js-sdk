@@ -1,10 +1,10 @@
 Echo.Tests.Units.push(function(callback) {
+	"use strict";
+
 	Echo.require([
 		"jquery",
 		"loadFrom![echo/gui.pack]echo/gui"
 	], function($, GUI) {
-
-	"use strict";
 
 	Echo.Tests.module("Echo.GUI", {
 		"meta": {
@@ -44,6 +44,8 @@ Echo.Tests.Units.push(function(callback) {
 			"Checking destroy() method"
 		);
 	});
+
 	callback();
+
 	});
 });

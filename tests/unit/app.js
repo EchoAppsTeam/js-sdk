@@ -1,4 +1,6 @@
 Echo.Tests.Units.push(function(callback) {
+	"use strict";
+
 	Echo.require([
 		"jquery",
 		"loadFrom![echo/apps.sdk]echo/app",
@@ -7,8 +9,6 @@ Echo.Tests.Units.push(function(callback) {
 		"loadFrom![echo/apps.sdk]echo/labels"
 		
 	], function($, App, Utils, Events, Labels) {
-
-	"use strict";
 
 	var suite = Echo.Tests.Unit.App = function() {};
 
@@ -54,7 +54,6 @@ Echo.Tests.Units.push(function(callback) {
 			"testTimeout": 20000 // 20 secs
 		},
 		"check": function() {
-			var self = this;
 			var definition = {
 				"name": suite.getTestAppClassName(),
 				"vars": {},
@@ -117,7 +116,7 @@ Echo.Tests.Units.push(function(callback) {
 		var self = this;
 		var check = function() {
 			QUnit.ok(true,
-	 			"Checking that app.onReady() handler was called after initApp()");
+				"Checking that app.onReady() handler was called after initApp()");
 			QUnit.equal(this.config.get("key1"), "value1",
 				"Checking that parent section of component config is the config of appropriate application");
 			this.initApp({
@@ -138,9 +137,9 @@ Echo.Tests.Units.push(function(callback) {
 					}
 				}
 			});
-			QUnit.ok(this.getApp("TestApp") && this.getApp("TestApp") instanceof App, 
+			QUnit.ok(this.getApp("TestApp") && this.getApp("TestApp") instanceof App,
 				"Check getApp() returns a ref to the initialized component");
-			QUnit.strictEqual(undefined, this.getApp("TestComponent1000"), 
+			QUnit.strictEqual(undefined, this.getApp("TestComponent1000"),
 				"Check getApp() returns \"undefined\" value for the uninitialized component");
 			this.destroy();
 		};
@@ -222,7 +221,6 @@ Echo.Tests.Units.push(function(callback) {
 	};
 
 	suite.prototype.cases.basicOperations = function(callback) {
-		var test = this;
 		var check = function() {
 			var self = this;
 
@@ -329,8 +327,8 @@ Echo.Tests.Units.push(function(callback) {
 				[function() { return this.cssClass; },
 					"echo-streamserver-apps-mytestapp"],
 				[function() { return this.fakeKey; }, undefined],
-				[function() { return this.get("data.key1")}, "key1 value"],
-				[function() { return this.get("name")},
+				[function() { return this.get("data.key1"); }, "key1 value"],
+				[function() { return this.get("name"); },
 					"Echo.StreamServer.Apps.MyTestApp"]
 			];
 			$.each(cases, function(id, _case) {
@@ -422,6 +420,7 @@ Echo.Tests.Units.push(function(callback) {
 		var _suite = this;
 		var check = function(_callback) {
 			var self = this;
+			var target, params, template;
 			QUnit.ok(this.config.get("target") instanceof $, //$ is a jQuery, for sure
 				"Checking if the target if a jQuery element");
 			QUnit.ok(!!this.config.get("target").children().length,
@@ -454,7 +453,7 @@ Echo.Tests.Units.push(function(callback) {
 
 			// template rendering
 			var cssClass = "." + this.get("cssPrefix") + "testRenderer";
-			var template =
+			template =
 				'<div class="{class:container}">' +
 					'<div class="k1">{data:k1}</div>' +
 					'<div class="k2">{data:k2}</div>' +
@@ -476,7 +475,7 @@ Echo.Tests.Units.push(function(callback) {
 				"Checking config values substitution into template");
 
 			// element rendering, specific renderer application
-			var target = this.view.get("testRenderer");
+			target = this.view.get("testRenderer");
 			this.view.render({
 				"target": target,
 				"name": "testRendererWithExtra",
@@ -517,8 +516,8 @@ Echo.Tests.Units.push(function(callback) {
 				"Checking if component was re-rendered and appended elements were wiped out");
 
 			// checking "showMessage" method
-			var target = $('<div></div>');
-			var params = {
+			target = $('<div></div>');
+			params = {
 				"data": {
 					"type": "error",
 					"message": "An error occured during the request..."
@@ -542,7 +541,6 @@ Echo.Tests.Units.push(function(callback) {
 				"Checking \"showMessage\" in full mode");
 
 			// checking "showError" method
-			var errorCount = 0;
 			var errorTarget = $("<div></div>");
 			var def = $.Deferred();
 			var errorOptions = {
@@ -584,7 +582,7 @@ Echo.Tests.Units.push(function(callback) {
 				QUnit.start();
 			}, 500);
 
-			var template = '<div class="echo-utils-tests-footer">footer content</div>';
+			template = '<div class="echo-utils-tests-footer">footer content</div>';
 			this.render();
 			_suite.jqueryObjectsEqual($(this.view.get("testRenderer").html()), $("<div>Some value</div>"),
 				"Checking app.view.get() function");
@@ -660,7 +658,7 @@ Echo.Tests.Units.push(function(callback) {
 			publish("incoming.event.global.test");
 			publish("incoming.event.local.test");
 
-			QUnit.ok(count == 9,
+			QUnit.equal(count, 9,
 				"Checking if expected amount of events were executed and handled");
 
 			var e = this.events;
@@ -766,7 +764,7 @@ Echo.Tests.Units.push(function(callback) {
 			publish("incoming.event.global.test", this);
 			publish("incoming.event.local.test", this);
 
-			QUnit.ok(count == 2,
+			QUnit.equal(count, 2,
 				"Checking if expected amount of events were executed and handled (checking \"destroy\" function call)");
 
 			this.destroy();
@@ -833,6 +831,7 @@ Echo.Tests.Units.push(function(callback) {
 			QUnit.ok(!byOuterApp, "Check if the callback is called due to the inner application initialization");
 		};
 		var createInstance = function(parent) {
+			/* jshint nonew:false */
 			new Echo.Tests.TestApp({
 				"target": $("<div>"),
 				"appkey": "echo.jssdk.tests.aboutecho.com",
@@ -840,6 +839,7 @@ Echo.Tests.Units.push(function(callback) {
 				"context": parent && parent.config.get("context") || undefined,
 				"ready": parent ? innerReady : outerReady
 			});
+			/* jshint nonew:true */
 		};
 		var definition = App.definition("Echo.Tests.TestApp");
 		definition.init = function() {
@@ -855,7 +855,7 @@ Echo.Tests.Units.push(function(callback) {
 	};
 
 	suite.prototype.cases.inheritedEvent = function(callback) {
-		var self = this, s = "";
+		var s = "";
 		var handler = function(topic) { s += this.name; };
 		var initApp = function(definition, ctx, ready) {
 			var d = $.Deferred();
@@ -996,7 +996,7 @@ Echo.Tests.Units.push(function(callback) {
 			},
 			"css": ".{class:container} { width: 50px; }.{class:someRenderer} { width: 10px; }"
 		};
-		var app = App.create(parentDefinition);
+		App.create(parentDefinition);
 		var child1Definition = {
 			"name": "Echo.TestApp1_Child1",
 			"inherits": Echo.TestApp1,
@@ -1018,10 +1018,10 @@ Echo.Tests.Units.push(function(callback) {
 			},
 			"methods": {
 				"method1": function() {
-					return this.parent() + " method1_child_1"
+					return this.parent() + " method1_child_1";
 				},
 				"child1Method": function() {
-					return "child1 method"
+					return "child1 method";
 				}
 			},
 			"classMethods": {
@@ -1029,7 +1029,7 @@ Echo.Tests.Units.push(function(callback) {
 					var o = this.parent();
 					o.b = 2;
 					return o;
-				},
+				}
 			},
 			"templates": {
 				"main": '<div class="{inherited.class:container} {class:container}"><div class="{class:someRenderer}"></div></div>'
@@ -1044,12 +1044,12 @@ Echo.Tests.Units.push(function(callback) {
 			},
 			"css": ".{class:someRenderer} { width: 5px; }"
 		};
-		var child = App.create(child1Definition);
-		var child2 = App.create({
+		App.create(child1Definition);
+		App.create({
 			"name": "Echo.TestApp1_Child2",
 			"inherits": Utils.getComponent("Echo.TestApp1")
 		});
-		var child2_child3 = App.create({
+		App.create({
 			"name": "Echo.TestApp1_Child2_Child3",
 			"inherits": Utils.getComponent("Echo.TestApp1_Child2"),
 			"init": function() {
@@ -1062,7 +1062,7 @@ Echo.Tests.Units.push(function(callback) {
 			}
 		});
 		var newEventCounter = function() { eventsChecker.newEvent++; };
-		var child1_child2 = App.create({
+		App.create({
 			"name": "Echo.TestApp1_Child1_Child2",
 			"methods": {
 				"method2": function() {
@@ -1077,7 +1077,7 @@ Echo.Tests.Units.push(function(callback) {
 			"inherits": Utils.getComponent("Echo.TestApp1_Child1")
 		});
 		var anotherEventCounter = function() { eventsChecker.anotherNewEvent++; };
-		var app2 = App.create($.extend(true, {}, parentDefinition, {
+		App.create($.extend(true, {}, parentDefinition, {
 			"name": "Echo.TestApp2",
 			"templates": {
 				"main": '<div class="{inherited.class:container} {class:container}"></div>'
@@ -1347,11 +1347,13 @@ Echo.Tests.Units.push(function(callback) {
 	};
 
 	suite.initTestApp = function(config, name) {
-		var definition = suite.getTestAppClass(name);
-		new definition($.extend({
+		var Definition = suite.getTestAppClass(name);
+		/* jshint nonew:false */
+		new Definition($.extend({
 			"target": $("<div></div>"),
 			"appkey": "echo.jssdk.tests.aboutecho.com"
 		}, config));
+		/* jshint nonew:true */
 	};
 
 	suite.createComponents = function(names) {
@@ -1467,6 +1469,8 @@ Echo.Tests.Units.push(function(callback) {
 		return definition;
 
 	};
+
 	callback();
+
 	});
 });

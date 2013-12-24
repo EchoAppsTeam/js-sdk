@@ -1007,6 +1007,8 @@ Echo.Tests.Units.push(function(callback) {
 			QUnit.start();
 		});
 	});
+
 	callback();
+
 	});
 });

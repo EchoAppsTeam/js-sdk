@@ -1,9 +1,9 @@
 Echo.Tests.Units.push(function(callback) {
+	"use strict";
+
 	Echo.require([
 		"jquery"
 	], function($) {
-
-	"use strict";
 
 	Echo.Tests.module("Compatibility tests");
 
@@ -54,7 +54,6 @@ Echo.Tests.Units.push(function(callback) {
 		QUnit.ok(!!Echo.require, "Echo require is loaded");
 
 		Echo.require(["https://cdnjs.cloudflare.com/ajax/libs/require.js/2.1.9/require.js"], function () {
-			var externalRequire = window.require;
 			QUnit.ok(!!window.require, "External require is loaded");
 			QUnit.notDeepEqual(window.require, Echo.require,
 				"External require end Echo require are different objects");
@@ -64,6 +63,8 @@ Echo.Tests.Units.push(function(callback) {
 	}, {
 		"timeout": 6000
 	});
+
 	callback();
+
 	});
 });
