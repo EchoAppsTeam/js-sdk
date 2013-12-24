@@ -1,5 +1,5 @@
 {
-	"--title": "Echo JS SDK Documentation Center",
+	"--title": "Echo JS SDK [VERSION] Documentation Center",
 	"--footer": "<a class=\"policy\" target=\"_blank\" href=\"http://aboutecho.com/Privacy\">Privacy Policy</a> | © 2013 Echo. All rights reserved.",
 	"--": ["./"],
 	"--output": "../web/docs/[VERSION]/",
@@ -17,8 +17,8 @@
 		"<script type=\"text/javascript\" src=\"resources/echo.js\"></script>",
 		"<script type=\"text/javascript\">",
 		"Docs.otherProducts = [",
-		"{\"text\": \"Echo JS SDK 3.0\", \"href\": \"../../docs/v3.0/\"},",
-		"{\"text\": \"Echo JS SDK 3.1\", \"href\": \"../../docs/[VERSION]\"}",
+		"{\"text\": \"Echo JS SDK 3.0\", \"href\": \"../../docs/v3.0/\", \"width\": \"150px\"},",
+		"{\"text\": \"Echo JS SDK 3.1\", \"href\": \"../../docs/[VERSION]\", \"width\": \"150px\"}",
 		"];",
 		"</script>"
 	]

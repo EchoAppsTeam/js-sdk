@@ -58,11 +58,11 @@ module.exports = function(grunt) {
 		var cmd = [
 			"git checkout gh-pages",
 			"git pull",
-			"cp -r " + grunt.config("dirs.dist") + "/docs/v<%=pkg.mainVersion%> docs/",
-			"cp -r " + grunt.config("dirs.dist") + "/tests/v<%=pkg.mainVersion%> tests/",
-			"cp -r " + grunt.config("dirs.dist") + "/demo/v<%=pkg.mainVersion%> demo/",
+			"cp -r <%=dirs.dist%>/docs/v<%=pkg.mainVersion%> docs/",
+			"cp -r <%=dirs.dist%>/tests/v<%=pkg.mainVersion%> tests/",
+			"cp -r <%=dirs.dist%>/demo/v<%=pkg.mainVersion%> demo/",
 			"git add docs/ tests/ demo/",
-			"git commit -m \"up to v" + grunt.config("pkg.version") + "\"",
+			"git commit -m \"up to v<%=pkg.version%>\"",
 			"git push origin gh-pages",
 			"git checkout master"
 		].join(" && ");
@@ -111,15 +111,14 @@ module.exports = function(grunt) {
 			return;
 		}
 		var versionDir = "v" + grunt.config("pkg.mainVersion");
-
 		var path = grunt.config("dirs.dist") + "/docs/" + versionDir;
 		shared.exec("rm -rf " + path + " && mkdir -p " + path, function() {
 			shared.exec(cmd, function() {
-				// copy Echo specific images and CSS to documentation directory
-				shared.exec("cp -r docs/patch/* " + path, done);
+				// copy Echo specific things (scripts, redirect page, images, css) to documentation, demo and test directories
 				shared.exec("cp docs/index.html " + grunt.config("dirs.dist") + "/docs/"
 					+ " && cp docs/index.html " + grunt.config("dirs.dist") + "/demo/"
-					+ " && cp docs/index.html " + grunt.config("dirs.dist") + "/tests/");
+					+ " && cp docs/index.html " + grunt.config("dirs.dist") + "/tests/"
+					+ " && cp -r docs/patch/* " + path, done);
 			});
 		});
 	}

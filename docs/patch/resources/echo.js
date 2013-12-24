@@ -4,7 +4,7 @@ Docs.initEventTracking = function() {
 	Ext.each(cmps, function(cmp) {
 		if (cmp.menu) {
 			cmp.el.removeAllListeners().addListener("click", function() {
-				cmp.menu.showBy(cmp.el, "bl", [270, 0]);
+				cmp.menu.showBy(cmp.el, "tr-br?");
 			});
 			return false;
 		}
