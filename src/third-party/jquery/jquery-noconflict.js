@@ -1,3 +1,3 @@
-Echo.define("jquery-noconflict", ["jquery"], function ($) {
+Echo.define(["jquery"], function ($) {
     return $.noConflict(true);
 });

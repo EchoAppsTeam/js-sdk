@@ -1,4 +1,4 @@
-Echo.define("echo/view", [
+Echo.define([
 	"jquery",
 	"echo/utils"
 ], function($, Utils) {

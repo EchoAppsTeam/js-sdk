@@ -1,4 +1,4 @@
-Echo.define("echo/streamserver/user", [
+Echo.define([
 	"jquery",
 	"loadFrom![echo/apps.sdk]echo/utils",
 	"echo/backplane",

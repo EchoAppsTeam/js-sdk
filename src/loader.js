@@ -79,7 +79,7 @@ var paths = [{
 	"modules": ["echo/backplane"]
 }, {
 	"path": getURL("/third-party/jquery.pack"),
-	"modules": ["jquery-noconflict"]
+	"modules": ["echo/third-party/jquery/jquery-noconflict"]
 }, {
 	"path": getURL("/third-party/jquery/jquery.isotope.min"),
 	"modules": ["isotope"]
@@ -96,10 +96,10 @@ require.config({
 			// It can be used this way: loadFrom![url/to/pack]single/module/name
 			"loadFrom": "echo/third-party/requirejs/loadFrom",
 			// for * modules we use jquery-noconflict instead of jquery
-			"jquery": "jquery-noconflict"
+			"jquery": "echo/third-party/jquery/jquery-noconflict"
 		},
 		// for jquery-noconflict module we use real jquery
-		"jquery-noconflict": {"jquery": "jquery"}
+		"echo/third-party/jquery/jquery-noconflict": {"jquery": "jquery"}
 	},
 	"shim": {
 		"echo/backplane": {
