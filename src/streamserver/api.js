@@ -120,7 +120,7 @@ Echo.StreamServer.API.Request = Echo.Utils.inherit(Echo.API.Request, function(co
 					"divergence": 5
 				},
 				/** @ignore */
-				"waitingForConnection": [2, 5],
+				"waitingForConnection": 5,
 				"URL": "{%=baseURLs.api.ws%}/v1/"
 			}
 		},
@@ -365,16 +365,18 @@ Echo.StreamServer.API.Request.prototype._liveUpdatesWatcher = function(polling, 
 	});
 	// TODO: remove it after more general approach will be implemented
 	ws.on("quotaExceeded", switchTo(polling));
-	var timeout = Echo.Utils.random.apply(null, config.waitingForConnection);
 	waitingForConnectionTimeout = setTimeout(function() {
 		clearTimeout(fallbackTimeout);
 		switchTo(polling)();
-	}, timeout * 1000);
+	}, config.waitingForConnection * 1000);
 	if (ws.connected()) {
 		clearTimeout(waitingForConnectionTimeout)
 		return;
 	}
 	ws.on("open", function() {
+		if (!(self.liveUpdates instanceof Echo.StreamServer.API.WebSockets)) {
+			switchTo(ws)();
+		}
 		clearTimeout(waitingForConnectionTimeout);
 	});
 };
