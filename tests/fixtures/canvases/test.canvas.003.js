@@ -1,5 +1,5 @@
-window.Echo && Echo.Loader && Echo.Loader._storeCanvasConfig && Echo.Loader._storeCanvasConfig("js-sdk-tests/test-canvas-003", {
-    "id": "test.canvas.003",
+Echo.define({
+    "id": "test-canvas-003",
     "title": "Test canvas with multiple Counter controls",
     "backplane": {
         "serverBaseURL": "https://api.echoenabled.com/v1",
