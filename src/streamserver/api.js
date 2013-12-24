@@ -114,7 +114,7 @@ StreamServerAPI.Request = Utils.inherit(API.Request, function(config) {
 					"divergence": 5
 				},
 				/** @ignore */
-				"waitingForConnection": [2, 5],
+				"waitingForConnection": 5,
 				"URL": "{%=baseURLs.api.ws%}/v1/"
 			}
 		},
@@ -366,16 +366,18 @@ StreamServerAPI.Request.prototype._liveUpdatesWatcher = function(polling, ws) {
 	});
 	// TODO: remove it after more general approach will be implemented
 	ws.on("quotaExceeded", switchTo(polling));
-	var timeout = Utils.random.apply(null, config.waitingForConnection);
 	waitingForConnectionTimeout = setTimeout(function() {
 		clearTimeout(fallbackTimeout);
 		switchTo(polling)();
-	}, timeout * 1000);
+	}, config.waitingForConnection * 1000);
 	if (ws.connected()) {
 		clearTimeout(waitingForConnectionTimeout);
 		return;
 	}
 	ws.on("open", function() {
+		if (!(self.liveUpdates instanceof StreamServerAPI.WebSockets)) {
+			switchTo(ws)();
+		}
 		clearTimeout(waitingForConnectionTimeout);
 	});
 };

@@ -198,8 +198,7 @@ Echo.Tests.Units.push(function(callback) {
 
 	suite.prototype.cases.websocketFallback = function(callback) {
 		// temporary override method which establishes WS connection
-		var prepare = API.Transports.WebSockets.prototype._prepareTransportObject;
-		API.Transports.WebSockets.prototype._prepareTransportObject = $.noop;
+		var stub = sinon.stub(API.Transports.WebSockets.prototype,  "_prepareTransportObject", $.noop);
 		var req = StreamServerAPI.request({
 			"endpoint": "search",
 			"data": $.extend(true, {}, this.params),
@@ -214,7 +213,7 @@ Echo.Tests.Units.push(function(callback) {
 				},
 				"onOpen": function(data) {
 					QUnit.ok(req.liveUpdates instanceof StreamServerAPI.Polling && !(req.liveUpdates instanceof StreamServerAPI.WebSockets), "Checking WS connection fallback");
-					API.Transports.WebSockets.prototype._prepareTransportObject = prepare;
+					stub.restore();
 					req.abort();
 					callback();
 				}
