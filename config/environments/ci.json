@@ -2,9 +2,9 @@
 	"version": 3,
 	"baseURLs": {
 		"cdn": "//cdn.echoenabled.com",
-		"sdk": "//cdn.echoenabled.com/sdk/v{%=packageVersion%}",
-		"docs": "//echoappsteam.github.io/js-sdk/docs",
-		"tests": "//echoappsteam.github.io/js-sdk/tests",
+		"sdk": "//cdn.echoenabled.com/sdk/v{%=packageVersions.major%}",
+		"docs": "//echoappsteam.github.io/js-sdk/docs/v{%=packageVersions.main%}",
+		"tests": "//echoappsteam.github.io/js-sdk/tests/v{%=packageVersions.main%}",
 		"canvases": {
 			"prod": "//dqspik3j3bxvu.cloudfront.net",
 			"dev": "//s3.amazonaws.com/echo-canvases"
