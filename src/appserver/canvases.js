@@ -1,8 +1,4 @@
-Echo.define([
-	// FIXME: __DEPRECATED__
-	// remove this after full require js compatible implementation
-	"loadFrom![echo/apps.sdk]echo/utils"
-], function(Utils) {
+Echo.define(function(Utils) {
 
 "use strict";
 
@@ -584,7 +580,8 @@ function extend(target, options) {
 
 // FIXME: __DEPRECATED__
 // remove this after full require js compatible implementation
-Utils.set(window, "Echo.AppServer.Canvases", Canvases);
+if (!Echo.AppServer) Echo.AppServer = {};
+Echo.AppServer.Canvases = Canvases;
 
 return Canvases;
 
