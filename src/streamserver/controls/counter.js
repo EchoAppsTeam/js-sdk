@@ -219,7 +219,7 @@ counter.methods._error = function(data, options) {
 		this.set("data.count", data.errorMessage + "+");
 		this.render();
 	} else {
-		if (typeof options.critical === "undefined" || options.critical || options.requestType === "initial") {
+		if (typeof options.critical === "undefined" || options.critical && options.requestType === "initial") {
 			this.showMessage({"type": "error", "data": data, "message": data.errorMessage});
 		}
 	}

@@ -369,7 +369,7 @@ pile.methods._request = function() {
 			"secure": this.config.get("useSecureAPI"),
 			"apiBaseURL": this.config.get("apiBaseURL"),
 			"onError": function(data, extra) {
-				var needShowError = typeof extra.critical === "undefined" || extra.critical || extra.requestType === "initial";
+				var needShowError = typeof extra.critical === "undefined" || extra.critical && extra.requestType === "initial";
 				if (needShowError) {
 					self.showError(data, {"critical": extra.critical});
 				}
