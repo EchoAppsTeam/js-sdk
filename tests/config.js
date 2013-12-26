@@ -6,7 +6,6 @@ Echo.Tests.Stats.root = {
 	"namespace": "Echo."
 };
 
-// browser-specific ignore
 var ignoreList = [
 	"Echo.Tests",
 	"Echo.Variables",
@@ -15,6 +14,9 @@ var ignoreList = [
 	"Echo.requirejs",
 	"Echo.define"
 ];
+// let's ignore some functions for now as we hardly can write test to check them
+ignoreList.push("Echo.StreamServer.API.Polling.on", "Echo.StreamServer.API.Polling.connected");
+// browser-specific ignore
 var isNotLteIE7 = !(Echo.Tests.browser && Echo.Tests.browser.version <= 7);
 $.map(["AJAX", "XDomainRequest", "JSONP"], function(transport) {
 	if (!Echo.API.Transports[transport].available() || isNotLteIE7 && transport === "JSONP") {
@@ -31,7 +33,9 @@ Echo.Tests.Stats.isValidForTesting = function(parentObject, prefix, name, value)
 		name !== "cache" &&
 		name !== "definition" &&
 		name !== "constructor" &&
-		name !== "parent";
+		name !== "parent" &&
+		// hide inherited properties
+		!/(?:ClientWidget|Base)\.(?:isDefined|create)/.test(prefix + name);
 };
 
 QUnit.done(function() {
