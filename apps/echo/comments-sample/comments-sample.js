@@ -26,6 +26,15 @@ Comments.templates.bottomSubmitFormPosition =
 		'<div class="{class:submit}"></div>' +
 	'</div>';
 
+Comments.events = {
+	"Echo.StreamServer.User.onInvalidate": {
+		"context": "global",
+		"handler": function() {
+			this.refresh();
+		}
+	}
+};
+
 Comments.methods.template = function() {
 	return this.templates[
 		this.config.get("submitFormPosition") + "SubmitFormPosition"
