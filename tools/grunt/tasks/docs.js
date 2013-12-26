@@ -58,11 +58,11 @@ module.exports = function(grunt) {
 		var cmd = [
 			"git checkout gh-pages",
 			"git pull",
-			"cp -r <%=dirs.dist%>/docs/v<%=pkg.mainVersion%> docs/",
-			"cp -r <%=dirs.dist%>/tests/v<%=pkg.mainVersion%> tests/",
-			"cp -r <%=dirs.dist%>/demo/v<%=pkg.mainVersion%> demo/",
+			"cp -r <%=dirs.dist%>/docs/v<%=pkg.versions.main%> docs/",
+			"cp -r <%=dirs.dist%>/tests/v<%=pkg.versions.main%> tests/",
+			"cp -r <%=dirs.dist%>/demo/v<%=pkg.versions.main%> demo/",
 			"git add docs/ tests/ demo/",
-			"git commit -m \"up to v<%=pkg.version%>\"",
+			"git commit -m \"up to v<%=pkg.versions.full%>\"",
 			"git push origin gh-pages",
 			"git checkout master"
 		].join(" && ");
@@ -95,30 +95,25 @@ module.exports = function(grunt) {
 		});
 	}
 
-	function prepareOptions() {
-		var outputFileName = "build/tmp_config.json";
-		var config = grunt.file.read("config/jsduck/config.json").replace(/\[VERSION\]/g, "v" + grunt.config("pkg.mainVersion"));
-		grunt.file.write(outputFileName, config);
-		return outputFileName;
-	}
-
 	function generate(done) {
-		var configFile = prepareOptions();
+		var configFile = "build/jsduck_config.json";
 		var cmd = "jsduck --config=" + configFile;
 		if (shared.config("debug")) {
 			console.log(cmd);
 			done();
 			return;
 		}
-		var versionDir = "v" + grunt.config("pkg.mainVersion");
-		var path = grunt.config("dirs.dist") + "/docs/" + versionDir;
+		var config = grunt.file.read("config/jsduck/config.json")
+			.replace(/\[VERSION\]/g, "v" + grunt.config("pkg.versions.main"));
+		grunt.file.write(configFile, config);
+		var path = grunt.template.process("<%= dirs.dist %>/docs/v<%= pkg.versions.main %>");
 		shared.exec("rm -rf " + path + " && mkdir -p " + path, function() {
 			shared.exec(cmd, function() {
-				// copy Echo specific things (scripts, redirect page, images, css) to documentation, demo and test directories
-				shared.exec("cp docs/index.html " + grunt.config("dirs.dist") + "/docs/"
-					+ " && cp docs/index.html " + grunt.config("dirs.dist") + "/demo/"
-					+ " && cp docs/index.html " + grunt.config("dirs.dist") + "/tests/"
-					+ " && cp -r docs/patch/* " + path, done);
+				var cmd2 = "cp <%= dirs.src %>/version-redirect.html <%= dirs.dist %>/docs/index.html";
+				shared.exec(grunt.template.process(cmd2), function() {
+					// copy Echo specific images and CSS to documentation directory
+					shared.exec("cp -r docs/patch/* " + path, done);
+				});
 			});
 		});
 	}
