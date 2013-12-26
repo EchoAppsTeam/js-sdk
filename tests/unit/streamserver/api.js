@@ -152,8 +152,10 @@ Echo.Tests.Units.push(function(callback) {
 			"onData": function(data, options) {
 				skipped = false;
 			},
-			"liveUpdatesTimeout": 2,
 			"liveUpdates": {
+				"polling": {
+					"timeout": 2
+				},
 				"enabled": true,
 				"onData": function() {
 					QUnit.ok(skipped, "Check if the \"onData\" handler wasn't executed in the \"skipInitialRequest\" case");
@@ -206,7 +208,7 @@ Echo.Tests.Units.push(function(callback) {
 				"enabled": true,
 				"transport": "websockets",
 				"polling": {
-					"timeout": 3
+					"timeout": 2
 				},
 				"websockets": {
 					"waitingForConnection": [1, 2]
@@ -214,6 +216,7 @@ Echo.Tests.Units.push(function(callback) {
 				"onOpen": function(data) {
 					QUnit.ok(req.liveUpdates instanceof StreamServerAPI.Polling && !(req.liveUpdates instanceof StreamServerAPI.WebSockets), "Checking WS connection fallback");
 					stub.restore();
+					API.Transports.WebSockets.socketByURI = {};
 					req.abort();
 					callback();
 				}
@@ -253,8 +256,10 @@ Echo.Tests.Units.push(function(callback) {
 			"onData": function(response) {
 				submitReq.send();
 			},
-			"liveUpdatesTimeout": 2,
 			"liveUpdates": {
+				"polling": {
+					"timeout": 2
+				},
 				"enabled": true,
 				"onData": function(response) {
 					if (response && response.entries && response.entries.length) {
@@ -372,7 +377,12 @@ Echo.Tests.Units.push(function(callback) {
 					QUnit.ok(data, "Check that we recieve data through the WS protocol in case of since");
 					QUnit.strictEqual(data.entries.length, 1, "Check that we recieve exactly one item through the WS protocol in case of since");
 					StreamServerAPI.WebSockets.prototype.subscribe = subscribe;
-					callback();
+					Events.subscribe({
+						"topic": "Echo.API.Transports.WebSockets.onClose",
+						"once": true,
+						"context": "live.echoenabled.com-v1-ws",
+						"handler": function() {callback();}
+					});
 					request.abort();
 				}
 			}
@@ -469,7 +479,7 @@ Echo.Tests.Units.push(function(callback) {
 	suite.prototype.tests.PublicInterfaceTests = {
 		 "config": {
 			 "async": true,
-			 "testTimeout": 80000 // 80 secs
+			 "testTimeout": 5000 // 5 secs
 		},
 		"check": function() {
 			var sequentialTests = [
@@ -478,10 +488,7 @@ Echo.Tests.Units.push(function(callback) {
 				"simpleWhoamiRequest",
 				// FIXME: test fails with fake data
 				//"simpleUserUpdateRequest"
-				"skipInitialRequest",
-				"requestWithAbort",
-				"checkLiveUpdate",
-				"simpleLiveUpdatesRequest"
+				"requestWithAbort"
 			];
 			// FIXME: when server will support XDomainRequest handling
 			if (!API.Transports.XDomainRequest.available({
@@ -491,13 +498,48 @@ Echo.Tests.Units.push(function(callback) {
 			) {
 				sequentialTests.push("searchRequestWithError");
 			}
-			// WebSocket specific tests
-			if (API.Transports.WebSockets.available()) {
-				sequentialTests = sequentialTests.concat(["websockets", "multipleWebsocketRequests", "websocketFallback", "webSocketSinceCase"]);
-			}
 			this.sequentialAsyncTests(sequentialTests, "cases");
 		}
 	};
+
+	suite.prototype.tests["public interface tests (live updates)"] = {
+		"config": {
+			"async": true,
+			"testTimeout": 15000 // 15 secs
+		},
+		"check": function() {
+			this.sequentialAsyncTests([
+				"skipInitialRequest",
+				"checkLiveUpdate",
+				"simpleLiveUpdatesRequest"
+			], "cases");
+		}
+	};
+
+	if (API.Transports.WebSockets.available()) {
+		suite.prototype.tests["public interface tests (websocket cases)"] = {
+			"config": {
+				"async": true,
+				"testTimeout": 15000 // 15 secs
+			},
+			"check": function() {
+				this.sequentialAsyncTests([
+					"websockets",
+					"webSocketSinceCase",
+					"websocketFallback"
+				], "cases");
+			}
+		};
+		suite.prototype.tests["public interface tests (multiple websocket requests)"] = {
+			"config": {
+				"async": true,
+				"testTimeout": 20000 // 20 secs
+			},
+			"check": function() {
+				this.sequentialAsyncTests(["multipleWebsocketRequests"], "cases");
+			}
+		};
+	}
 
 	suite.prototype.tests.PrivateFunctionsTests = {
 		"check": function() {
