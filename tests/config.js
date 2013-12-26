@@ -15,7 +15,7 @@ var ignoreList = [
 	"Echo.define"
 ];
 // let's ignore some functions for now as we hardly can write test to check them
-ignoreList.push("Echo.StreamServer.API.Polling.on", "Echo.StreamServer.API.Polling.connected");
+ignoreList.push("Echo.StreamServer.API.Polling.on", "Echo.StreamServer.API.Polling.connected", "Echo.isDebug");
 // browser-specific ignore
 var isNotLteIE7 = !(Echo.Tests.browser && Echo.Tests.browser.version <= 7);
 $.map(["AJAX", "XDomainRequest", "JSONP"], function(transport) {
