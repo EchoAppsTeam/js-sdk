@@ -92,7 +92,7 @@ Echo.Utils.addCSS = function(cssCode, id) {
 		oldStyle = null;
 		currentCssCode = "";
 	}
-	var newStyle = $('<style id="echo-css-rules-' + cssStyles.index + '" type="text/css">' + currentCssCode + cssCode + '</style>');
+	var newStyle = $('<style id="echo-css-rules-' + cssStyles.index + '" type="text/css">' + currentCssCode + "\n" + cssCode + '</style>');
 	if (oldStyle && oldStyle.length) {
 		// use replacing instead of adding css to existing element
 		// because IE doesn't allow it
