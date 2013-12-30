@@ -31,7 +31,7 @@ module.exports = function(grunt) {
 								"<%= dirs.src %>/!(backplane).js",
 								"<%= dirs.src %>/!(tests|third-party)/**/*.js",
 								"<%= dirs.src %>/tests/!(qunit|sinon)/**/*.js",
-								"<%= dirs.src %>/gui/*.js"
+								"<%= dirs.src %>/third-party/bootstrap/plugins/echo-*.js"
 							],
 							"dest": "<%= dirs.build %>"
 						}],
