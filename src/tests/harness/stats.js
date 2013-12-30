@@ -309,7 +309,7 @@ function showCoverageList(type, prefix) {
 	var html = "", data = [];
 	var el = $(".echo-tests-stats-info");
 	var list = _coverage[prefix].processed[type];
-	list.sort();
+	list && list.sort();
 	_isListVisible = !(_isListVisible && _lastListType === prefix + "-" + type);
 	if (_isListVisible) {
 		if (prefix === "functions") {
