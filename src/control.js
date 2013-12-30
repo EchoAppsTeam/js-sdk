@@ -719,8 +719,9 @@ Echo.Control.prototype._initializers.subscriptions = function() {
 	var control = this;
 	$.each(control._manifest("events"), function subscribe(topic, data) {
 		if ($.isArray(data) && data.length) {
-			subscribe(topic, data.shift());
-			data.length && subscribe(topic, data);
+			for (var i = 0; i < data.length; i++) {
+				subscribe(topic, data[i]);
+			}
 		} else {
 			data = $.isFunction(data) ? {"handler": data} : data;
 			control.events.subscribe($.extend({"topic": topic}, data));
