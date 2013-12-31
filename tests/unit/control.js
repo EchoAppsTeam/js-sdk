@@ -1109,15 +1109,11 @@ suite.prototype.cases.manifestBaseInheritance = function(callback) {
 										"target": $("<div>"),
 										"ready": function() {
 											QUnit.strictEqual(this._manifest("events").parentTestEvent.length, 2, "Check if parent event handlers and own are not mutated");
-											try {
-												Echo.Events.publish({
-													"topic": "parentTestEvent",
-													"context": this.config.get("context")
-												});
-												QUnit.ok(true, "Check parent event subscription after re-initializing");
-											} catch(e) {
-												QUnit.ok(false, "Check parent event subscription after re-initializing");
-											}
+											Echo.Events.publish({
+												"topic": "parentTestEvent",
+												"context": this.config.get("context")
+											});
+											QUnit.ok(true, "Check parent event subscription after re-initializing");
 											callback && callback();
 										}
 									}, "Echo.TestControl1_Child1");
