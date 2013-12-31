@@ -1113,7 +1113,6 @@ suite.prototype.cases.manifestBaseInheritance = function(callback) {
 												"topic": "parentTestEvent",
 												"context": this.config.get("context")
 											});
-											QUnit.ok(true, "Check parent event subscription after re-initializing");
 											callback && callback();
 										}
 									}, "Echo.TestControl1_Child1");
