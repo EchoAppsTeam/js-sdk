@@ -718,7 +718,7 @@ Echo.Control.prototype._initializers.events = function() {
 Echo.Control.prototype._initializers.subscriptions = function() {
 	var control = this;
 	$.each(control._manifest("events"), function subscribe(topic, data) {
-		if ($.isArray(data) && data.length) {
+		if ($.isArray(data)) {
 			for (var i = 0; i < data.length; i++) {
 				subscribe(topic, data[i]);
 			}
