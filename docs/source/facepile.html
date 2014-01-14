@@ -116,7 +116,7 @@ pile.config = {
 <span id='Echo-StreamServer-Controls-FacePile-cfg-data'>	/**
 </span>	 * @cfg {Object} data
 	 * Specifies static data for the face pile. It has the same format as returned
-	 * by the &lt;a href=&quot;http://wiki.aboutecho.com/w/page/23491639/API-method-search#ResponseFormat&quot; target=&quot;_blank&quot;&gt;
+	 * by the &lt;a href=&quot;http://echoplatform.com/streamserver/docs/rest-api/items-api/search/#sect3&quot; target=&quot;_blank&quot;&gt;
 	 * &quot;search&quot; API endpoint&lt;/a&gt;. If the &quot;data&quot; parameter is provided then the
 	 * &quot;query&quot; parameter should be omitted. If &quot;data&quot; and &quot;query&quot; parameters are both
 	 * provided &quot;query&quot; takes precedence over &quot;data&quot;.
@@ -144,7 +144,7 @@ pile.config = {
 </span>	 * @cfg {String} query
 	 * Specifies the search query to generate the necessary data set.
 	 * It must be constructed according to the
-	 * &lt;a href=&quot;http://wiki.aboutecho.com/w/page/23491639/API-method-search&quot; target=&quot;_blank&quot;&gt;&quot;search&quot; API&lt;/a&gt;
+	 * &lt;a href=&quot;http://echoplatform.com/streamserver/docs/rest-api/items-api/search/&quot; target=&quot;_blank&quot;&gt;&quot;search&quot; API&lt;/a&gt;
 	 * method specification.
 	 *
 	 * 	new Echo.StreamServer.Controls.FacePile({
@@ -386,7 +386,7 @@ pile.methods._request = function() {
 			&quot;secure&quot;: this.config.get(&quot;useSecureAPI&quot;),
 			&quot;apiBaseURL&quot;: this.config.get(&quot;apiBaseURL&quot;),
 			&quot;onError&quot;: function(data, extra) {
-				var needShowError = typeof extra.critical === &quot;undefined&quot; || extra.critical || extra.requestType === &quot;initial&quot;;
+				var needShowError = typeof extra.critical === &quot;undefined&quot; || extra.critical &amp;&amp; extra.requestType === &quot;initial&quot;;
 				if (needShowError) {
 					self.showError(data, {&quot;critical&quot;: extra.critical});
 				}

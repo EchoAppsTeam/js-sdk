@@ -450,8 +450,8 @@ Echo.Control.prototype.extendTemplate = function(action, anchor, html) {
 	this.extension.template.push({&quot;action&quot;: action, &quot;anchor&quot;: anchor, &quot;html&quot;: html});
 };
 
-/*
- * Method extending the paticular renderer with defined function.
+<span id='Echo-Control-method-extendRenderer'>/**
+</span> * Method extending the paticular renderer with defined function.
  *
  * @param {String} name
  * Renderer name to be extended.
@@ -735,9 +735,10 @@ Echo.Control.prototype._initializers.events = function() {
 Echo.Control.prototype._initializers.subscriptions = function() {
 	var control = this;
 	$.each(control._manifest(&quot;events&quot;), function subscribe(topic, data) {
-		if ($.isArray(data) &amp;&amp; data.length) {
-			subscribe(topic, data.shift());
-			data.length &amp;&amp; subscribe(topic, data);
+		if ($.isArray(data)) {
+			for (var i = 0; i &lt; data.length; i++) {
+				subscribe(topic, data[i]);
+			}
 		} else {
 			data = $.isFunction(data) ? {&quot;handler&quot;: data} : data;
 			control.events.subscribe($.extend({&quot;topic&quot;: topic}, data));

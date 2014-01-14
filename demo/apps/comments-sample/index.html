@@ -5,8 +5,8 @@
 	<link rel="stylesheet" type="text/css" href="../../demo.css" />
 
 	<!-- Default scripts inclusion -->
-	<script type="text/javascript" src="//cdn.echoenabled.com/sdk/v3/loader.js"></script>
-	<script type="text/javascript" src="//cdn.echoenabled.com/sdk/v3/third-party/jquery.pack.js"></script>
+	<script type="text/javascript" src="//cdn.echoenabled.com/sdk/v/loader.js"></script>
+	<script type="text/javascript" src="//cdn.echoenabled.com/sdk/v/third-party/jquery.pack.js"></script>
 </head>
 <body>
 <div id="container">
@@ -47,7 +47,11 @@
 						}]
 					},
 					"Submit": {
-						"targetURL": "http://echosandbox.com/test/comments-sampler-test"
+						"targetURL": "http://echosandbox.com/test/comments-sampler-test",
+						"plugins": [{
+							"name": "JanrainAuth",
+							"appId": "echo"
+						}]
 					}
 				},
 				"identityManager": {
@@ -64,7 +68,7 @@
 				}
 			}
 		});
-        </script>
+	</script>
 </div>
 </body>
 </html>

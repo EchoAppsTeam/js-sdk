@@ -23,7 +23,7 @@ var $ = jQuery;
 <span id='Echo-StreamServer-Controls-Counter-method-constructor'><span id='Echo-StreamServer-Controls-Counter'>/**
 </span></span> * @class Echo.StreamServer.Controls.Counter
  * Echo Counter class which encapsulates interaction with the
- * &lt;a href=&quot;http://wiki.aboutecho.com/w/page/27888212/API-method-count&quot; target=&quot;_blank&quot;&gt;Echo Count API&lt;/a&gt;
+ * &lt;a href=&quot;http://echoplatform.com/streamserver/docs/rest-api/other-api/count/&quot; target=&quot;_blank&quot;&gt;Echo Count API&lt;/a&gt;
  * and provides a simple live updating number.
  *
  * 	new Echo.StreamServer.Controls.Counter({
@@ -121,7 +121,7 @@ counter.config = {
 </span>	 * @cfg {String} query
 	 * Specifies the search query to generate the necessary data set.
 	 * It must be constructed according to the
-	 * &lt;a href=&quot;http://wiki.aboutecho.com/w/page/23491639/API-method-search&quot; target=&quot;_blank&quot;&gt;&quot;search&quot; API&lt;/a&gt;
+	 * &lt;a href=&quot;http://echoplatform.com/streamserver/docs/rest-api/items-api/search/&quot; target=&quot;_blank&quot;&gt;&quot;search&quot; API&lt;/a&gt;
 	 * method specification.
 	 *
 	 * 	new Echo.StreamServer.Controls.Counter({
@@ -135,7 +135,7 @@ counter.config = {
 	 * Specifies predefined items count which should be displayed by the application.
 	 * Counter control works with the data format used by the &quot;count&quot; API endpoint.
 	 * More information about the data format can be found
-	 * &lt;a href=&quot;http://wiki.aboutecho.com/w/page/27888212/API-method-count#ResponseFormat&quot; target=&quot;_blank&quot;&gt;here&lt;/a&gt;.
+	 * &lt;a href=&quot;http://echoplatform.com/streamserver/docs/rest-api/other-api/count/#sect7&quot; target=&quot;_blank&quot;&gt;here&lt;/a&gt;.
 	 *
 	 * 	new Echo.Counter({
 	 * 		...
@@ -236,7 +236,7 @@ counter.methods._error = function(data, options) {
 		this.set(&quot;data.count&quot;, data.errorMessage + &quot;+&quot;);
 		this.render();
 	} else {
-		if (typeof options.critical === &quot;undefined&quot; || options.critical || options.requestType === &quot;initial&quot;) {
+		if (typeof options.critical === &quot;undefined&quot; || options.critical &amp;&amp; options.requestType === &quot;initial&quot;) {
 			this.showMessage({&quot;type&quot;: &quot;error&quot;, &quot;data&quot;: data, &quot;message&quot;: data.errorMessage});
 		}
 	}

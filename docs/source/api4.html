@@ -349,7 +349,10 @@ Echo.API.Transports.AJAX.prototype._getTransportObject = function() {
 		},
 		&quot;success&quot;: this.config.get(&quot;onData&quot;),
 		&quot;complete&quot;: this.config.get(&quot;onClose&quot;),
-		&quot;beforeSend&quot;: this.config.get(&quot;onOpen&quot;)
+		&quot;beforeSend&quot;: function(jqXHR) {
+			self.transportObject = jqXHR;
+			self.config.get(&quot;onOpen&quot;).apply(null, arguments);
+		}
 	}, this.config.get(&quot;settings&quot;));
 };
 
@@ -745,7 +748,6 @@ Echo.API.Request.prototype.request = function(params) {
 				this._getTransportConfig()
 			)
 		);
-		this.transport.send(params);
 		if (timeout &amp;&amp; this.config.get(&quot;onError&quot;)) {
 			this._timeoutId = setTimeout(function() {
 				self.config.get(&quot;onError&quot;)({
@@ -757,14 +759,16 @@ Echo.API.Request.prototype.request = function(params) {
 				self.transport.abort();
 			}, timeout * 1000);
 		}
+		this.transport.send(params);
 	}
 	return this.deferred.transport.promise();
 };
 
 Echo.API.Request.prototype.abort = function() {
 	this.transport &amp;&amp; this.transport.abort();
-	if (this.deferred.transport &amp;&amp; this.deferred.transport.state() === &quot;pending&quot;) {
-		this.deferred.transport.resolve();
+	clearTimeout(this._timeoutId);
+	if (this.deferred.transport) {
+		this.deferred.transport.reject();
 	}
 };
 

@@ -3,8 +3,8 @@
 <head>
 	<title>"Like" Plugin Demo</title>
 	<link rel="stylesheet" type="text/css" href="demo.css" />
-	<script type="text/javascript" src="//cdn.echoenabled.com/sdk/v3/loader.js"></script>
-	<script type="text/javascript" src="//cdn.echoenabled.com/sdk/v3/third-party/jquery.pack.js"></script>
+	<script type="text/javascript" src="//cdn.echoenabled.com/sdk/v/loader.js"></script>
+	<script type="text/javascript" src="//cdn.echoenabled.com/sdk/v/third-party/jquery.pack.js"></script>
 </head>
 <body>
 	<style>
@@ -38,26 +38,24 @@
 			"serverBaseURL": "https://api.echoenabled.com/v1",
 			"busName": "jskit"
 		};
-		var identityManager = {"width": 400, "height": 240, "url": "https://echo.rpxnow.com/openid/embed?flags=stay_in_window,no_immediate&token_url=http%3A%2F%2Fechoenabled.com%2Fapps%2Fjanrain%2Fwaiting.html&bp_channel="};
-
 		// init Auth app
 		Echo.Loader.initApplication({
-			"script": "//cdn.echoenabled.com/sdk/v3/identityserver.pack.js",
+			"script": "//cdn.echoenabled.com/sdk/v/identityserver.pack.js",
 			"component": "Echo.IdentityServer.Controls.Auth",
 			"backplane": backplane,
 			"config": {
 				"target": document.getElementById("auth"),
 				"appkey": "echo.jssdk.demo.aboutecho.com",
-				"identityManager": {
-					"login": identityManager,
-					"signup": identityManager
-				}
+				"plugins": [{
+					"name": "JanrainConnector",
+					"appId": "echo"
+				}]
 			}
 		});
 
 		// init Stream app
 		Echo.Loader.initApplication({
-			"script": "//cdn.echoenabled.com/sdk/v3/streamserver.pack.js",
+			"script": "//cdn.echoenabled.com/sdk/v/streamserver.pack.js",
 			"component": "Echo.StreamServer.Controls.Stream",
 			"backplane": backplane,
 			"config": {
@@ -66,7 +64,9 @@
 				"appkey": "echo.jssdk.demo.aboutecho.com",
 				"liveUpdates": {"transport": "websockets"},
 				"item": {"reTag": false},
-				"plugins": [{"name": "Like"}]
+				"plugins": [{
+					"name": "Like"
+				}]
 			}
 		});
 	</script>
