@@ -8,7 +8,7 @@ Echo.Tests.Stats.root = {
 	"namespace": "Echo."
 };
 
-var ignoreList = ["Echo.Tests", "Echo.Variables", "Echo.jQuery", "Echo.yepnope", "Echo.define"];
+var ignoreList = ["Echo.Tests", "Echo.Variables", "Echo.jQuery", "Echo.yepnope"];
 // let's ignore some functions for now as we hardly can write test to check them
 ignoreList.push("Echo.StreamServer.API.Polling.on", "Echo.StreamServer.API.Polling.connected");
 // browser-specific ignore
