@@ -1,5 +1,13 @@
 # Echo JS SDK CHANGELOG:
 
+##v3.0.16 - January 14, 2014
+
+* **StreamServer live updates connection logic was updated** and now if WebSockets are enabled, we try to establish a connection using WS first and fall back to Polling if our attempt failed or timed out (within 5 seconds). Previously both Polling and WebSockets were initialized in parallel and Polling got disabled when WS connection is established. This new connection logic is more efficient from both server-side and client-side standpoints.
+
+* StreamServer live update **errors received via WebSockets connection were displayed within a Stream UI** (instead of the Stream items). The logic was updated to avoid live update errors rendering in the main UI.
+
+** While making **"POST" requests via Echo.API machinery in IE**, a timeout handler was initialized in an incorrect place. As a result, an error callback was still fired even though a request was completed successfully. This problem was resolved to avoid error callbacks from being executed after successful operation completion. The most visible manifestation of this issue was an error popup displayed after successful item submission via a Submit form. 
+
 ##v3.0.15 - November 18, 2013
 
 * After switching the Canvas data extraction from CORS-based to JSONP-like method via YepNope library (which we use to load dependencies) in v3.0.14 release, we faced the problem that in some cases the Canvas data cached in the browser (along with the JSONP-wrapper code) became unavailable due to the specific way the YepNope handles it. So we decided to **utilize $.ajax jQuery function with the "script" transport behavior to retrieve the data from the Canvas config storage** to make sure that the cached resources are still available in JS code. This is an internal machinery update, so there are **no** performance or any other implications for the publishers and end users. We will switch back to the CORS approach as soon as it's fully supported by the Canvas config storage.
