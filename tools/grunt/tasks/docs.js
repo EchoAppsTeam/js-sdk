@@ -1,10 +1,11 @@
 module.exports = function(grunt) {
+	"use strict";
 
 	var shared = require("../lib.js").init(grunt);
-	var _ = grunt.utils._;
+	var trim = require("underscore.string").trim;
 	var desiredJSDuckVersion = "5.0.0";
 
-	grunt.registerInitTask("docs", "Generate and push docs to Github Pages", function(target) {
+	grunt.registerInitTask("docs", "Generate docs", function(target) {
 		if (!target) {
 			var tasks = [
 				"docs:prepare",
@@ -12,9 +13,6 @@ module.exports = function(grunt) {
 				"docs:generate",
 				"clean:build"
 			];
-			if (shared.config("release")) {
-				tasks.push("docs:release");
-			}
 			grunt.task.run(tasks);
 			return;
 		}
@@ -27,16 +25,18 @@ module.exports = function(grunt) {
 						return;
 					}
 					grunt.config("copy.docs", {
-						"files": {
-							"<%= dirs.build %>": [
+						"files": [{
+							"expand": true,
+							"src": [
 								"<%= dirs.src %>/!(backplane).js",
 								"<%= dirs.src %>/!(tests|third-party)/**/*.js",
 								"<%= dirs.src %>/tests/!(qunit|sinon)/**/*.js",
 								"<%= dirs.src %>/third-party/bootstrap/plugins/echo-*.js"
-							]
-						},
+							],
+							"dest": "<%= dirs.build %>"
+						}],
 						"options": {
-							"basePath": "<config:dirs.src>",
+							"basePath": "<%= dirs.src %>",
 							"processContent": shared.replacePlaceholdersOnCopy
 						}
 					});
@@ -46,16 +46,38 @@ module.exports = function(grunt) {
 			case "generate":
 				generate(this.async());
 				break;
-			case "release":
-				release(this.async());
-				break;
 		}
+	});
+
+	grunt.registerInitTask("docs-release", "Push docs to Github Pages", function() {
+		this.requires("docs");
+		var done = this.async();
+		var cmd = [
+			"git checkout gh-pages",
+			"git pull",
+			"cp -r " + grunt.config("dirs.dist") + "/docs/* docs",
+			"cp -r " + grunt.config("dirs.dist") + "/tests/* tests",
+			"cp -r " + grunt.config("dirs.dist") + "/demo/* demo",
+			"git add docs/ tests/ demo/",
+			"git commit -m \"up to v" + grunt.config("pkg.version") + "\"",
+			"git push origin gh-pages",
+			"git checkout master"
+		].join(" && ");
+		if (shared.config("debug") || shared.config("env") !== "production") {
+			console.log(cmd);
+			done();
+			return;
+		}
+		shared.exec(cmd, function() {
+			grunt.log.ok();
+			done();
+		});
 	});
 
 	function checkJSDuckVersion(done) {
 		shared.exec("jsduck --version | awk '{ print $2; }'", function(version) {
 			var failed = false;
-			version = _.trim(version);
+			version = trim(version);
 			if (!version) {
 				failed = true;
 				grunt.log.writeln("jsduck is not installed. Install it by running command `" + ("gem install jsduck -v " + desiredJSDuckVersion).yellow + "`.").cyan;
@@ -82,29 +104,6 @@ module.exports = function(grunt) {
 				// copy Echo specific images and CSS to documentation directory
 				shared.exec("cp -r docs/patch/* " + path, done);
 			});
-		});
-	}
-
-	function release(done) {
-		var cmd = [
-			"git checkout gh-pages",
-			"git pull",
-			"cp -r " + grunt.config("dirs.dist") + "/docs/* docs",
-			"cp -r " + grunt.config("dirs.dist") + "/tests/* tests",
-			"cp -r " + grunt.config("dirs.dist") + "/demo/* demo",
-			"git add docs/ tests/ demo/",
-			"git commit -m \"up to v" + grunt.config("pkg.version") + "\"",
-			"git push origin gh-pages",
-			"git checkout master"
-		].join(" && ");
-		if (shared.config("debug") || shared.config("env") !== "production") {
-			console.log(cmd);
-			done();
-			return;
-		}
-		shared.exec(cmd, function() {
-			grunt.log.ok();
-			done();
 		});
 	}
 };

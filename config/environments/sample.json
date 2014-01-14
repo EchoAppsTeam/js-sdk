@@ -1,5 +1,5 @@
 {
-	"version": 2,
+	"version": 3,
 	"baseURLs": {
 		"cdn": "",
 		"sdk": "",
@@ -19,48 +19,5 @@
 	"saucelabs": {
 		"name": "",
 		"key": ""
-	},
-	"release": {
-		"purger": "",
-		"auth": {
-			"cdn": {
-				"user": "",
-				"password": "",
-				"host": ""
-			},
-			"sandbox": {
-				"user": "",
-				"password": "",
-				"host": ""
-			}
-		},
-		"targets": {
-			"sdk": {
-				"latest": [{
-					"location": "",
-					"src": "**/*",
-					"dest": "",
-					"baseSrcPath": ""
-				}],
-				"stable": [{
-					"location": "",
-					"src": "**/*",
-					"dest": "",
-					"baseSrcPath": ""
-				}],
-				"beta": [{
-					"location": "",
-					"src": "**/*",
-					"dest": "",
-					"baseSrcPath": ""
-				}]
-			},
-			"apps": [{
-				"location": "",
-				"src": "**",
-				"dest": "/apps/",
-				"baseSrcPath": "apps/"
-			}]
-		}
 	}
 }

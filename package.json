@@ -2,7 +2,7 @@
   "name": "js-sdk",
   "title": "Echo JS SDK",
   "description": "Javascript SDK for Echo applications",
-  "version": "3.0.15",
+  "version": "3.0.16",
   "homepage": "http://echoappsteam.github.io/js-sdk/",
   "author": {
     "name": "Echo",
@@ -21,17 +21,28 @@
       "url": "https://github.com/EchoAppsTeam/js-sdk/blob/master/LICENSE"
     }
   ],
-  "dependencies": {
-    "grunt-contrib": "~0.1.7",
-    "wd": "~0.0.3",
-    "q": "~0.9.3",
-    "request": "~2.21.0",
-    "ftp": "~0.1.5",
-    "recess": "1.1.8",
-    "async": "~0.2.8"
+  "engines": {
+    "node": ">=0.8"
   },
-  "keywords": [],
-  "scripts": {
-     "test": "grunt ci --env=test"
-  }
+  "dependencies": {
+    "grunt": "~0.4.2",
+    "lodash": "~2.2.1",
+    "async": "~0.2.9",
+    "sphere": "~0.1.0",
+    "grunt-contrib-cssmin": "~0.6.2",
+    "grunt-contrib-clean": "~0.5.0",
+    "grunt-contrib-copy": "~0.4.1",
+    "grunt-contrib-concat": "~0.3.0",
+    "grunt-contrib-uglify": "~0.2.5",
+    "grunt-contrib-jshint": "~0.7.1",
+    "grunt-recess": "~0.4.0",
+    "underscore.string": "~2.3.3",
+    "grunt-saucelabs": "~4.1.2",
+    "grunt-express": "~1.2.1"
+  },
+  "devDependencies": {
+    "grunt-contrib-watch": "~0.5.3",
+    "time-grunt": "~0.2.5"
+  },
+  "private": true
 }

@@ -53,11 +53,7 @@ Comments.renderers.submit = function(element) {
 		"component": "Echo.StreamServer.Controls.Submit",
 		"config": {
 			"target": element,
-			"infoMessages": {"enabled": false},
-			"plugins": [{
-				"name": "FormAuth",
-				"identityManager": "{config:identityManager}"
-			}]
+			"infoMessages": {"enabled": false}
 		}
 	});
 	return element;

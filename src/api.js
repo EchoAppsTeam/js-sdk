@@ -332,7 +332,10 @@ Echo.API.Transports.AJAX.prototype._getTransportObject = function() {
 		},
 		"success": this.config.get("onData"),
 		"complete": this.config.get("onClose"),
-		"beforeSend": this.config.get("onOpen")
+		"beforeSend": function(jqXHR) {
+			self.transportObject = jqXHR;
+			self.config.get("onOpen").apply(null, arguments);
+		}
 	}, this.config.get("settings"));
 };
 
@@ -728,7 +731,6 @@ Echo.API.Request.prototype.request = function(params) {
 				this._getTransportConfig()
 			)
 		);
-		this.transport.send(params);
 		if (timeout && this.config.get("onError")) {
 			this._timeoutId = setTimeout(function() {
 				self.config.get("onError")({
@@ -740,14 +742,16 @@ Echo.API.Request.prototype.request = function(params) {
 				self.transport.abort();
 			}, timeout * 1000);
 		}
+		this.transport.send(params);
 	}
 	return this.deferred.transport.promise();
 };
 
 Echo.API.Request.prototype.abort = function() {
 	this.transport && this.transport.abort();
-	if (this.deferred.transport && this.deferred.transport.state() === "pending") {
-		this.deferred.transport.resolve();
+	clearTimeout(this._timeoutId);
+	if (this.deferred.transport) {
+		this.deferred.transport.reject();
 	}
 };
 

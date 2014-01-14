@@ -1,5 +1,7 @@
 # About
 
+[![Built with Grunt](https://cdn.gruntjs.com/builtwith.png)](http://gruntjs.com/)
+
 Echo offers a collection of [powerful Cloud Services](http://aboutecho.com/WhatWeOffer/EchoPlatform) that do the heavy lifting for real-time, social applications. This SDK is designed to make it easy for JavaScript app developers to consume these cloud services while producing more interoperable and consistent apps by addressing the following general app development challenges:
 
 + JS API - Easier access to server-side APIs via the client side
@@ -16,7 +18,7 @@ Echo offers a collection of [powerful Cloud Services](http://aboutecho.com/WhatW
 
 0. Clone this repository.
 1. Download and install NodeJS and npm from [http://nodejs.org](http://nodejs.org) (either from package or the source).
-2. sudo npm install -g grunt@0.3.17
+2. sudo npm install grunt-cli -g
 3. Run the following command in the project directory: npm install
 4. Now you can use 'grunt' command to build the project
 5. Install ruby, rubygems, yaml.

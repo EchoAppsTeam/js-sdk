@@ -274,10 +274,6 @@ suite.prototype.cases.websockets = function(callback) {
 				submitReq.send();
 			}
 		});
-		// Opening a socket does require some time so we first initiate polling and switch
-		// to socket when it's initiated. But at this particular moment live updates must
-		// use polling mechanism.
-		QUnit.ok(req.liveUpdates instanceof Echo.StreamServer.API.Polling, "Check that live updates instantiated with polling");
 	});
 };
 
@@ -322,6 +318,33 @@ suite.prototype.cases.webSocketSinceCase = function(callback) {
 		submit.send();
 	});
 };
+
+suite.prototype.cases.websocketFallback = function(callback) {
+	// temporary override method which establishes WS connection
+	var stub = sinon.stub(Echo.API.Transports.WebSockets.prototype,  "_prepareTransportObject", $.noop);
+	var req = Echo.StreamServer.API.request({
+		"endpoint": "search",
+		"data": $.extend(true, {}, this.params),
+		"liveUpdates": {
+			"enabled": true,
+			"transport": "websockets",
+			"polling": {
+				"timeout": 3
+			},
+			"websockets": {
+				"waitingForConnection": [1, 2]
+			},
+			"onOpen": function(data) {
+				QUnit.ok(req.liveUpdates instanceof Echo.StreamServer.API.Polling && !(req.liveUpdates instanceof Echo.StreamServer.API.WebSockets), "Checking WS connection fallback");
+				stub.restore();
+				req.abort();
+				callback();
+			}
+		}
+	});
+	req.send();
+};
+
 
 suite.prototype.cases.multipleWebsocketRequests = function(callback) {
 	var item = $.extend(true, {}, this.items.post);
@@ -407,7 +430,7 @@ suite.prototype.tests = {};
 suite.prototype.tests.PublicInterfaceTests = {
 	 "config": {
 		 "async": true,
-		 "testTimeout": 60000 // 60 secs
+		 "testTimeout": 80000 // 80 secs
 	},
 	"check": function() {
 		var sequentialTests = [
@@ -429,7 +452,7 @@ suite.prototype.tests.PublicInterfaceTests = {
 		}
 		// WebSocket specific tests
 		if (Echo.API.Transports.WebSockets.available()) {
-			sequentialTests = sequentialTests.concat(["websockets", "multipleWebsocketRequests", "webSocketSinceCase"]);
+			sequentialTests = sequentialTests.concat(["websockets", "multipleWebsocketRequests", "websocketFallback", "webSocketSinceCase"]);
 		}
 		this.sequentialAsyncTests(sequentialTests, "cases");
 	}

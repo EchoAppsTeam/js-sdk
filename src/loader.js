@@ -16,7 +16,7 @@ var protocol = /^https?/.test(window.location.protocol) ? window.location.protoc
  */
 Echo.Loader = {
 	/** @private @readonly */
-	"version": "",
+	"version": "{%=packageVersion%}",
 	/** @ignore */
 	"debug": false,
 	/** @private */

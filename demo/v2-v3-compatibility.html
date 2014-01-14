@@ -1,282 +1,276 @@
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
-    <title>v2 - v3 compatibility check</title>
-    <link rel="stylesheet" type="text/css" href="demo.css" />
+	<title>v2 - v3 compatibility check</title>
+	<link rel="stylesheet" type="text/css" href="demo.css" />
 
-    <!-- Default v3 scripts inclusion -->
-    <script type="text/javascript" src="{%=baseURLs.sdk%}/loader.js"></script>
-    <script type="text/javascript" src="{%=baseURLs.sdk%}/backplane.js"></script>
-    <script type="text/javascript" src="{%=baseURLs.sdk%}/third-party/jquery.pack.js"></script>
-    <script type="text/javascript" src="{%=baseURLs.sdk%}/environment.pack.js"></script>
-    <script type="text/javascript" src="{%=baseURLs.sdk%}/streamserver.pack.js"></script>
-    <script type="text/javascript" src="{%=baseURLs.sdk%}/identityserver.pack.js"></script>
-    <!-- Default v2 scripts inclusion -->
-    <script src="http://cdn.echoenabled.com/clientapps/v2/packs/full-pack.js"></script>
+	<!-- Default v3 scripts inclusion -->
+	<script type="text/javascript" src="{%=baseURLs.sdk%}/loader.js"></script>
+	<script type="text/javascript" src="{%=baseURLs.sdk%}/backplane.js"></script>
+	<script type="text/javascript" src="{%=baseURLs.sdk%}/third-party/jquery.pack.js"></script>
+	<script type="text/javascript" src="{%=baseURLs.sdk%}/environment.pack.js"></script>
+	<script type="text/javascript" src="{%=baseURLs.sdk%}/streamserver.pack.js"></script>
+	<script type="text/javascript" src="{%=baseURLs.sdk%}/identityserver.pack.js"></script>
+	<!-- Default v2 scripts inclusion -->
+	<script src="http://cdn.echoenabled.com/clientapps/v2/packs/full-pack.js"></script>
 
-    <script>
-        Backplane.init({
-            "serverBaseURL": "https:{%=baseURLs.api.backplane%}/v1",
-            "busName": "jskit"
-        });
-        var identityManager = {"width": 400, "height": 240, "url": "https://echo.rpxnow.com/openid/embed?flags=stay_in_window,no_immediate&token_url=http%3A%2F%2Fechoenabled.com%2Fapps%2Fjanrain%2Fwaiting.html&bp_channel="};
-    </script>
+	<script>
+		Backplane.init({
+			"serverBaseURL": "https:{%=baseURLs.api.backplane%}/v1",
+			"busName": "jskit"
+		});
+		var identityManager = {"width": 400, "height": 240, "url": "https://echo.rpxnow.com/openid/embed?flags=stay_in_window,no_immediate&token_url=http%3A%2F%2Fechoenabled.com%2Fapps%2Fjanrain%2Fwaiting.html&bp_channel="};
+	</script>
 </head>
 <body>
 <div class="container">
-    <div id="container-v2">
-        <h2>Echo Apps v2</h2>
-        <div class="wrapper">
-            <!-- Echo.Stream v2 -->
-            <b>Stream</b>
-            <div id="stream-v2"></div>
+	<div id="container-v2">
+		<h2>Echo Apps v2</h2>
+		<div class="wrapper">
+			<!-- Echo.Stream v2 -->
+			<b>Stream</b>
+			<div id="stream-v2"></div>
 
-            <script type="text/javascript">
-                new Echo.Stream({
-                    "target": document.getElementById("stream-v2"),
-                    "appkey": "echo.jssdk.demo.aboutecho.com",
-                    "query": "childrenof:http://example.com/* itemsPerPage:1",
-                    "viaLabel": { "icon": true, "text": true },
-                    "plugins": [{
-                        "name": "TwitterIntents"
-                    }, {
-                        "name": "CommunityFlag",
-                        "showUserList": true
-                    }, {
-                        "name": "Like"
-                    }, {
-                        "name": "Reply",
-                        "useDisplayName": true,
-                        "actionString": "Write reply here...",
-                        "nestedPlugins": [
-                            {
-                                "name": "SubmitTextCounter"
-                            }, {
-                                "name": "FormAuth",
-                                "identityManagerLogin": identityManager,
-                                "identityManagerSignup": identityManager,
-                                "identityManagerEdit": identityManager
-                            }
-                        ]
-                    }, {
-                        "name": "Edit"
-                    }, {
-                        "name": "MetadataManager",
-                        "controls": [{
-                            "tag": "sticky",
-                            "labelMark": "Pin",
-                            "labelUnmark": "Unpin",
-                            "visible": {
-                                "user.roles": ["moderator"],
-                                "user.state": ["ModeratorApproved"]
-                            }
-                        }]
-                    }]
-                });
-            </script>
-            <!-- // -->
-        </div>
+			<script type="text/javascript">
+				new Echo.Stream({
+					"target": document.getElementById("stream-v2"),
+					"appkey": "echo.jssdk.demo.aboutecho.com",
+					"query": "childrenof:http://example.com/* itemsPerPage:1",
+					"viaLabel": { "icon": true, "text": true },
+					"plugins": [{
+						"name": "TwitterIntents"
+					}, {
+						"name": "CommunityFlag",
+						"showUserList": true
+					}, {
+						"name": "Like"
+					}, {
+						"name": "Reply",
+						"useDisplayName": true,
+						"actionString": "Write reply here...",
+						"nestedPlugins": [
+							{
+								"name": "SubmitTextCounter"
+							}, {
+								"name": "FormAuth",
+								"identityManagerLogin": identityManager,
+								"identityManagerSignup": identityManager,
+								"identityManagerEdit": identityManager
+							}
+						]
+					}, {
+						"name": "Edit"
+					}, {
+						"name": "MetadataManager",
+						"controls": [{
+							"tag": "sticky",
+							"labelMark": "Pin",
+							"labelUnmark": "Unpin",
+							"visible": {
+								"user.roles": ["moderator"],
+								"user.state": ["ModeratorApproved"]
+							}
+						}]
+					}]
+				});
+			</script>
+			<!-- // -->
+		</div>
 
-        <div class="wrapper">
-            <!-- Echo.Auth v2 -->
-            <b>FormAuth</b>
-            <div id="auth-form-v2"></div>
-            <script type="text/javascript">
-                new Echo.Auth({
-                    "target": document.getElementById("auth-form-v2"),
-                    "appkey": "echo.jssdk.demo.aboutecho.com",
-                    "identityManager": {
-                        "login": identityManager,
-                        "signup": identityManager
-                    }
-                });
-            </script>
-            <!-- // -->
-        </div>
+		<div class="wrapper">
+			<!-- Echo.Auth v2 -->
+			<b>FormAuth</b>
+			<div id="auth-form-v2"></div>
+			<script type="text/javascript">
+				new Echo.Auth({
+					"target": document.getElementById("auth-form-v2"),
+					"appkey": "echo.jssdk.demo.aboutecho.com",
+					"identityManager": {
+						"login": identityManager,
+						"signup": identityManager
+					}
+				});
+			</script>
+			<!-- // -->
+		</div>
 
-        <div class="wrapper">
-            <!-- Echo.Submit v2 -->
-            <b>Submit</b>
-            <div id="submit-form-v2"></div>
-            <script type="text/javascript">
-                new Echo.Submit({
-                    "target": document.getElementById("submit-form-v2"),
-                    "appkey": "echo.jssdk.demo.aboutecho.com",
-                    "targetURL": "http://example.com/js-sdk",
-                    "plugins": [{
-                        "name": "FormAuth",
-                        "identityManagerLogin": identityManager,
-                        "identityManagerSignup": identityManager,
-                        "identityManagerEdit": identityManager,
-                        "submitPermissions": "forceLogin"
-                    } , {
-                        "name": "SubmitTextCounter",
-                        "limit": 40,
-                        "label": "You have typed {typed} chars, {left} chars left"
-                    }]
-                });
-            </script>
-            <!-- // -->
-        </div>
+		<div class="wrapper">
+			<!-- Echo.Submit v2 -->
+			<b>Submit</b>
+			<div id="submit-form-v2"></div>
+			<script type="text/javascript">
+				new Echo.Submit({
+					"target": document.getElementById("submit-form-v2"),
+					"appkey": "echo.jssdk.demo.aboutecho.com",
+					"targetURL": "http://example.com/js-sdk",
+					"plugins": [{
+						"name": "FormAuth",
+						"identityManagerLogin": identityManager,
+						"identityManagerSignup": identityManager,
+						"identityManagerEdit": identityManager,
+						"submitPermissions": "forceLogin"
+					} , {
+						"name": "SubmitTextCounter",
+						"limit": 40,
+						"label": "You have typed {typed} chars, {left} chars left"
+					}]
+				});
+			</script>
+			<!-- // -->
+		</div>
 
-        <div class="wrapper">
-            <!-- Echo.Counter v2 -->
-            <b>Counter</b>
-            <div id="counter-v2"></div>
-            <script type="text/javascript">
-                new Echo.Counter({
-                    "target": document.getElementById("counter-v2"),
-                    "appkey": "echo.jssdk.demo.aboutecho.com",
-                    "query": "childrenof:http://example.com/*"
-                });
-            </script>
-            <!-- // -->
-        </div>
+		<div class="wrapper">
+			<!-- Echo.Counter v2 -->
+			<b>Counter</b>
+			<div id="counter-v2"></div>
+			<script type="text/javascript">
+				new Echo.Counter({
+					"target": document.getElementById("counter-v2"),
+					"appkey": "echo.jssdk.demo.aboutecho.com",
+					"query": "childrenof:http://example.com/*"
+				});
+			</script>
+			<!-- // -->
+		</div>
 
-        <div class="wrapper">
-            <!-- Echo.UserList v2 -->
-            <b>User List</b>
-            <div id="user-list-v2"></div>
-            <script type="text/javascript">
-                new Echo.UserList({
-                    "target": document.getElementById("user-list-v2"),
-                    "appkey": "echo.jssdk.demo.aboutecho.com",
-                    "query": "childrenof:http://example.com/*",
-                    "suffixText": " commented on aboutecho.com",
-                    "item": {"avatar": true, "text": true}
-                });
-            </script>
-            <!-- // -->
-        </div>
-    </div>
+		<div class="wrapper">
+			<!-- Echo.UserList v2 -->
+			<b>User List</b>
+			<div id="user-list-v2"></div>
+			<script type="text/javascript">
+				new Echo.UserList({
+					"target": document.getElementById("user-list-v2"),
+					"appkey": "echo.jssdk.demo.aboutecho.com",
+					"query": "childrenof:http://example.com/*",
+					"suffixText": " commented on aboutecho.com",
+					"item": {"avatar": true, "text": true}
+				});
+			</script>
+			<!-- // -->
+		</div>
+	</div>
 
-    <div id="container-v3">
-        <h2>JS SDK v3 Controls</h2>
-        <div class="wrapper">
-            <!-- Echo.StreamServer.Controls.Stream v3 -->
-            <b>Stream</b>
-            <div id="stream-v3"></div>
-            <script>
-                new Echo.StreamServer.Controls.Stream({
-                    "target": document.getElementById("stream-v3"),
-                    "query": "childrenof:http://example.com/* itemsPerPage:1",
-                    "appkey": "echo.jssdk.demo.aboutecho.com",
-                    "item": {
-                        "viaLabel": { "icon": true, "text": true }
-                    },
-                    "plugins": [{
-                        "name": "TweetDisplay"
-                    }, {
-                        "name": "Reply",
-                        "nestedPlugins": [{
-                            "name": "FormAuth",
-                            "identityManager": {
-                                "login": identityManager,
-                                "signup": identityManager
-                            }
-                        }]
-                    }, {
-                        "name": "MetadataManager",
-                        "controls": [{
-                            "marker": "sticky",
-                            "labelMark": "Pin",
-                            "labelUnmark": "Unpin"
-                        }, {
-                            "tag": "football",
-                            "labelMark": "Set Football tag",
-                            "labelUnmark": "Unset Football tag"
-                        }]
-                    }, {
-                        "name": "Like"
-                    }, {
-                        "name": "Edit"
-                    }, {
-                        "name": "CommunityFlag",
-                        "showUserList": true
-                    }, {
-                        "name": "Moderation"
-                    }, {
-                        "name": "ItemAccumulatorDisplay"
-                    }]
-                });
-            </script>
-            <!-- // -->
-        </div>
+	<div id="container-v3">
+		<h2>JS SDK v3 Controls</h2>
+		<div class="wrapper">
+			<!-- Echo.StreamServer.Controls.Stream v3 -->
+			<b>Stream</b>
+			<div id="stream-v3"></div>
+			<script>
+				new Echo.StreamServer.Controls.Stream({
+					"target": document.getElementById("stream-v3"),
+					"query": "childrenof:http://example.com/* itemsPerPage:1",
+					"appkey": "echo.jssdk.demo.aboutecho.com",
+					"item": {
+						"viaLabel": { "icon": true, "text": true }
+					},
+					"plugins": [{
+						"name": "TweetDisplay"
+					}, {
+						"name": "Reply",
+						"nestedPlugins": [{
+							"name": "JanrainAuth",
+							"appId": "echo"
+						}]
+					}, {
+						"name": "MetadataManager",
+						"controls": [{
+							"marker": "sticky",
+							"labelMark": "Pin",
+							"labelUnmark": "Unpin"
+						}, {
+							"tag": "football",
+							"labelMark": "Set Football tag",
+							"labelUnmark": "Unset Football tag"
+						}]
+					}, {
+						"name": "Like"
+					}, {
+						"name": "Edit"
+					}, {
+						"name": "CommunityFlag",
+						"showUserList": true
+					}, {
+						"name": "Moderation"
+					}, {
+						"name": "ItemAccumulatorDisplay"
+					}]
+				});
+			</script>
+			<!-- // -->
+		</div>
 
-        <div class="wrapper">
-            <!-- Echo.Auth v3 -->
-            <b>FormAuth</b>
-            <div id="auth-form-v3"></div>
-            <script type="text/javascript">
-                new Echo.IdentityServer.Controls.Auth({
-                    "target": document.getElementById("auth-form-v3"),
-                    "appkey": "echo.jssdk.demo.aboutecho.com",
-                    "identityManager": {
-                        "login": identityManager,
-                        "signup": identityManager
-                    }
-                });
-            </script>
-            <!-- // -->
-        </div>
+		<div class="wrapper">
+			<!-- Echo.Auth v3 -->
+			<b>Auth</b>
+			<div id="auth-form-v3"></div>
+			<script type="text/javascript">
+				new Echo.IdentityServer.Controls.Auth({
+					"target": document.getElementById("auth-form-v3"),
+					"appkey": "echo.jssdk.demo.aboutecho.com",
+					"plugins": [{
+						"name": "JanrainConnector",
+						"appId": "echo"
+					}]
+				});
+			</script>
+			<!-- // -->
+		</div>
 
-        <div class="wrapper">
-            <!-- Echo.StreamServer.Controls.Submit v3 -->
-            <b>Submit</b>
-            <div id="submit-form-v3"></div>
-            <script type="text/javascript">
-                new Echo.StreamServer.Controls.Submit({
-                    "target": document.getElementById("submit-form-v3"),
-                    "appkey": "echo.jssdk.demo.aboutecho.com",
-                    "targetURL": "http://example.com/test-js-sdk",
-                    "plugins": [{
-                        "name": "FormAuth",
-                        "submitPermissions": "forceLogin",
-                        "identityManager": {
-                            "login": identityManager,
-                            "signup": identityManager
-                        }
-                    }, {
-                        "name": "TextCounter",
-                        "limit": 40,
-                        "label": "You have typed {typed} chars, {left} chars left"
-                    }]
-                });
-            </script>
-            <!-- // -->
-        </div>
+		<div class="wrapper">
+			<!-- Echo.StreamServer.Controls.Submit v3 -->
+			<b>Submit</b>
+			<div id="submit-form-v3"></div>
+			<script type="text/javascript">
+				new Echo.StreamServer.Controls.Submit({
+					"target": document.getElementById("submit-form-v3"),
+					"appkey": "echo.jssdk.demo.aboutecho.com",
+					"targetURL": "http://example.com/test-js-sdk",
+					"plugins": [{
+						"name": "JanrainAuth",
+						"appId": "echo",
+						"submitPermissions": "forceLogin"
+					}, {
+						"name": "TextCounter",
+						"limit": 40,
+						"label": "You have typed {typed} chars, {left} chars left"
+					}]
+				});
+			</script>
+			<!-- // -->
+		</div>
 
-        <div class="wrapper">
-            <!-- Echo.StreamServer.Controls.Counter v3 -->
-            <b>Counter</b>
-            <div id="counter-v3"></div>
-            <script type="text/javascript">
-                new Echo.StreamServer.Controls.Counter({
-                    "target": document.getElementById("counter-v3"),
-                    "appkey": "echo.jssdk.demo.aboutecho.com",
-                    "query" : "childrenof:http://example.com/*"
-                });
-            </script>
-            <!-- // -->
-        </div>
+		<div class="wrapper">
+			<!-- Echo.StreamServer.Controls.Counter v3 -->
+			<b>Counter</b>
+			<div id="counter-v3"></div>
+			<script type="text/javascript">
+				new Echo.StreamServer.Controls.Counter({
+					"target": document.getElementById("counter-v3"),
+					"appkey": "echo.jssdk.demo.aboutecho.com",
+					"query" : "childrenof:http://example.com/*"
+				});
+			</script>
+			<!-- // -->
+		</div>
 
-        <div class="wrapper">
-            <!-- Echo.StreamServer.Controls.FacePile v3 -->
-            <b>Face Pile</b>
-            <div id="face-pile-v3"></div>
-            <script type="text/javascript">
-                new Echo.StreamServer.Controls.FacePile({
-                    "target": document.getElementById("face-pile-v3"),
-                    "appkey": "echo.jssdk.demo.aboutecho.com",
-                    "query": "childrenof:http://example.com/*",
-                    "suffixText": " commented on aboutecho.com",
-                    "item": {"avatar": true, "text": true}
-                });
-            </script>
-            <!-- // -->
-        </div>
-    </div>
-    <div class="clear"></div>
+		<div class="wrapper">
+			<!-- Echo.StreamServer.Controls.FacePile v3 -->
+			<b>Face Pile</b>
+			<div id="face-pile-v3"></div>
+			<script type="text/javascript">
+				new Echo.StreamServer.Controls.FacePile({
+					"target": document.getElementById("face-pile-v3"),
+					"appkey": "echo.jssdk.demo.aboutecho.com",
+					"query": "childrenof:http://example.com/*",
+					"suffixText": " commented on aboutecho.com",
+					"item": {"avatar": true, "text": true}
+				});
+			</script>
+			<!-- // -->
+		</div>
+	</div>
+	<div class="clear"></div>
 </div>
 </body>
 </html>

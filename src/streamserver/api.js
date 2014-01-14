@@ -12,7 +12,7 @@ Echo.StreamServer.API = {};
 /**
  * @class Echo.StreamServer.API.Request
  * Class implements the interaction with the
- * <a href="http://wiki.aboutecho.com/w/page/35105642/API-section-items" target="_blank">Echo StreamServer API</a>
+ * <a href="http://echoplatform.com/streamserver/docs/rest-api/items-api/" target="_blank">Echo StreamServer API</a>
  *
  *     var request = Echo.StreamServer.API.request({
  *         "endpoint": "search",
@@ -96,7 +96,8 @@ Echo.StreamServer.API.Request = Echo.Utils.inherit(Echo.API.Request, function(co
 		 *
 		 * __Note__: The API endpoint "mux" allows to "multiplex" requests,
 		 * i.e. use a single API call to "wrap" several requests. More information
-		 * about "mux" can be found [here](http://wiki.aboutecho.com/w/page/32433803/API-method-mux).
+		 * about "mux" can be found
+		 * <a href="http://echoplatform.com/streamserver/docs/rest-api/other-api/mux/" target="_blank">here</a>.
 		 */
 		"liveUpdates": {
 			"transport": "polling", // or "websockets"
@@ -118,6 +119,8 @@ Echo.StreamServer.API.Request = Echo.Utils.inherit(Echo.API.Request, function(co
 					"timeout": 10,
 					"divergence": 5
 				},
+				/** @ignore */
+				"waitingForConnection": 5,
 				"URL": "{%=baseURLs.api.ws%}/v1/"
 			}
 		},
@@ -265,7 +268,7 @@ Echo.StreamServer.API.Request.prototype._prepareURL = function() {
 
 Echo.StreamServer.API.Request.prototype._initLiveUpdates = function(data) {
 	var ws, self = this;
-	var polling = this.liveUpdates = Echo.StreamServer.API.Polling.init(
+	var polling = Echo.StreamServer.API.Polling.init(
 		$.extend(true, this._getLiveUpdatesConfig("polling"), {
 			"request": {
 				"data": {
@@ -275,7 +278,7 @@ Echo.StreamServer.API.Request.prototype._initLiveUpdates = function(data) {
 		})
 	);
 	if (this.config.get("liveUpdates.transport") === "websockets" && Echo.API.Transports.WebSockets.available()) {
-		ws = Echo.StreamServer.API.WebSockets.init(
+		ws = this.liveUpdates = Echo.StreamServer.API.WebSockets.init(
 			$.extend(true, this._getLiveUpdatesConfig("websockets"), {
 				"request": {
 					"data": {
@@ -285,6 +288,8 @@ Echo.StreamServer.API.Request.prototype._initLiveUpdates = function(data) {
 			})
 		);
 		this._liveUpdatesWatcher(polling, ws);
+	} else {
+		this.liveUpdates = polling;
 	}
 };
 
@@ -334,6 +339,7 @@ Echo.StreamServer.API.Request.prototype._getLiveUpdatesConfig = function(name) {
 
 Echo.StreamServer.API.Request.prototype._liveUpdatesWatcher = function(polling, ws) {
 	var self = this;
+	var config = this.config.get("liveUpdates.websockets");
 	var switchTo = function(inst) {
 		return function() {
 			if (self.liveUpdates.connected()) {
@@ -343,23 +349,36 @@ Echo.StreamServer.API.Request.prototype._liveUpdatesWatcher = function(polling, 
 			self.liveUpdates.start();
 		}
 	};
+	var fallbackTimeout, waitingForConnectionTimeout;
 	ws.on("close", function() {
-		var timeout, config = self.config.get("liveUpdates.websockets.fallback");
+		var timeout, fallback = config.fallback;
 		if (self.liveUpdates.closeReason !== "abort") {
 			timeout = Echo.Utils.random(
-				config.timeout - config.divergence,
-				config.timeout + config.divergence
+				fallback.timeout - fallback.divergence,
+				fallback.timeout + fallback.divergence
 			) * 1000;
-			setTimeout(switchTo(polling), timeout);
+			fallbackTimeout = setTimeout(function() {
+				clearTimeout(waitingForConnectionTimeout);
+				switchTo(polling)();
+			}, timeout);
 		}
 	});
 	// TODO: remove it after more general approach will be implemented
 	ws.on("quotaExceeded", switchTo(polling));
+	waitingForConnectionTimeout = setTimeout(function() {
+		clearTimeout(fallbackTimeout);
+		switchTo(polling)();
+	}, config.waitingForConnection * 1000);
 	if (ws.connected()) {
-		switchTo(ws)();
+		clearTimeout(waitingForConnectionTimeout)
 		return;
 	}
-	ws.on("open", switchTo(ws));
+	ws.on("open", function() {
+		if (!(self.liveUpdates instanceof Echo.StreamServer.API.WebSockets)) {
+			switchTo(ws)();
+		}
+		clearTimeout(waitingForConnectionTimeout);
+	});
 };
 
 Echo.StreamServer.API.Request.prototype._isWaitingForData = function(data) {
@@ -696,7 +715,7 @@ Echo.StreamServer.API.WebSockets = Echo.Utils.inherit(Echo.StreamServer.API.Poll
 		"time": (new Date()).getTime()
 	};
 	this.requestObject = this.getRequestObject();
-	if (this.connected()) {
+	if (this.requestObject && this.connected()) {
 		this.requestObject.config.get("onOpen")();
 	}
 });

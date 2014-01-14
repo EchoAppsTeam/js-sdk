@@ -1,47 +1,20 @@
 module.exports = function(grunt) {
+	"use strict";
 
 	var shared = require("../lib.js").init(grunt);
-	var _ = grunt.utils._;
+	var _ = require("lodash");
 	var http = require("http");
 	var async = require("async");
 	var url = require("url");
 
 	grunt.registerInitTask("check", "Different checks (versions, pre-release, post-release, ...)", function(target) {
 		var done = this.async();
-		if (!target) target = "config";
-		if (target === "config") {
-			checkConfigVersion(this.args[1] === "all", done);
-		} else if (target === "uploaded") {
+		if (target === "uploaded") {
 			checkUploadedFiles(done);
 		} else if (target === "docs") {
 			checkDocs(done);
 		}
 	});
-
-	function checkConfigVersion(checkAll, done) {
-		var cfg = grunt.config("envConfig");
-		if (_.isEmpty(cfg)) {
-			grunt.fail.fatal("Environment config files are absent. Execute `" + "grunt generate:config".cyan + "`");
-		}
-		var sample = grunt.file.readJSON("config/environments/sample.json");
-		if (sample.version > cfg.version) {
-			grunt.fail.fatal("Environment config files are outdated. Execute `" + "grunt generate:config".cyan + "`");
-		}
-		var check = function(env) {
-			var filename = "config/environments/" + env + ".json";
-			var content = grunt.file.read(filename);
-			if (content.indexOf("[PLACEHOLDER]") !== -1) {
-				grunt.fail.fatal("There are unfilled fields in the file " + filename.cyan + " . Find [PLACEHOLDER] string and replace it with the corresponding value.".yellow);
-			}
-		};
-		if (!checkAll) {
-			check(shared.config("env"));
-		} else {
-			_.each(shared.config("environments"), check);
-		}
-		grunt.log.ok("Environment config files are good.");
-		done();
-	}
 
 	function checkUploadedFiles(done) {
 		if (shared.config("env") !== "production") {
@@ -83,25 +56,25 @@ module.exports = function(grunt) {
 			}
 			return headers;
 		};
-		var collectURLs = function(uploads) {
-			_.each(uploads, function(upload) {
-				var baseSrcPath = grunt.template.process(upload.baseSrcPath);
-				var dest = grunt.template.process(upload.dest);
-				var src = grunt.file.expandFiles(baseSrcPath + upload.src);
-				_.each(src, function(srcName) {
-					URLs.push("http:" + grunt.config("envConfig.baseURLs.cdn") + dest + srcName.replace(baseSrcPath, ""));
+		URLs = _(grunt.config("release"))
+			.chain()
+			.reduce(function(acc, config, key) {
+				if (key !== "options") {
+					acc = acc.concat(_.values(config.options.deployTargets));
+				}
+				return acc;
+			}, [])
+			.map(function(upload) {
+				var files = grunt.file.expand({
+					"cwd": upload.cwd,
+					"filter": "isFile"
+				}, upload.src);
+				return _.map(files, function(name) {
+					return "http:" + grunt.config("envConfig.baseURLs.cdn") + upload.dest + name;
 				});
-			});
-		};
-		_.each(grunt.config("envConfig.release.targets"), function(uploads) {
-			if (_.isArray(uploads)) {
-				collectURLs(uploads);
-			} else {
-				_.each(uploads, function(upload) {
-					collectURLs(upload);
-				});
-			}
-		});
+			})
+			.flatten()
+			.value();
 		URLs.sort();
 		async.eachSeries(URLs, function(URL, next) {
 			var type = URL.match(/\.([^\.]+)$/)[1];
@@ -109,7 +82,13 @@ module.exports = function(grunt) {
 			urlOptions.headers = {
 				"Accept-Encoding": "gzip,deflate"
 			};
-			grunt.log.write("[" + ++i + "/" + URLs.length + "] " + URL.yellow + " ... ");
+			i++;
+			grunt.log.write("[" + i + "/" + URLs.length + "] " + URL.yellow + " ... ");
+			if (shared.config("debug")) {
+				grunt.log.writeln("skipped");
+				next();
+				return;
+			}
 			http.get(urlOptions, function(response) {
 				var headers = {};
 				if (response.statusCode === 404) {
@@ -145,8 +124,9 @@ module.exports = function(grunt) {
 	}
 
 	function checkDocs(done) {
-		grunt.log.subhead("Searching for dead wiki links");
-		shared.exec("grep -roZE 'https?://wiki.aboutecho.com[^\"\)]+' src/ docs/", function(stdout) {
+		grunt.log.subhead("Searching for dead links");
+		// TODO: remove wiki.aboutecho.com domain in late Q1 2014 (for now it's backwards compatibility)
+		shared.exec("grep -roZE 'https?://(wiki.aboutecho.com|echoplatform.com)[^\")]+' src/ docs/", function(stdout) {
 			var lines = stdout.trim().split(/[\r\n]+/);
 			async.eachSeries(lines, function(line, next) {
 				var parts = line.split("\0");
