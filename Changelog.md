@@ -6,7 +6,7 @@
 
 * StreamServer live update **errors received via WebSockets connection were displayed within a Stream UI** (instead of the Stream items). The logic was updated to avoid live update errors rendering in the main UI.
 
-** While making **"POST" requests via Echo.API machinery in IE**, a timeout handler was initialized in an incorrect place. As a result, an error callback was still fired even though a request was completed successfully. This problem was resolved to avoid error callbacks from being executed after successful operation completion. The most visible manifestation of this issue was an error popup displayed after successful item submission via a Submit form. 
+* While making **"POST" requests via Echo.API machinery in IE**, a timeout handler was initialized in an incorrect place. As a result, an error callback was still fired even though a request was completed successfully. This problem was resolved to avoid error callbacks from being executed after successful operation completion. The most visible manifestation of this issue was an error popup displayed after successful item submission via a Submit form.
 
 ##v3.0.15 - November 18, 2013
 
