@@ -147,7 +147,3 @@ div#north-region {
 .class-overview .hierarchy:hover * {
     display: inherit;
 }
-
-#north-region .dropdown {
-	background-position-y: 30px;
-}

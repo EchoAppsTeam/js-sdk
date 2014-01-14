@@ -86,9 +86,9 @@ module.exports = function(grunt) {
 
 	var destinations = {
 		"sdk": {
-			"min": "<%= dirs.dest %>/v<%= pkg.versions.major %>",
-			"dev": "<%= dirs.dest %>/v<%= pkg.versions.major %>/dev",
-			"final": "<%= dirs.dest %>/v<%= pkg.versions.major %>"
+			"min": "<%= dirs.dest %>/v<%= pkg.majorVersion %>",
+			"dev": "<%= dirs.dest %>/v<%= pkg.majorVersion %>/dev",
+			"final": "<%= dirs.dest %>/v<%= pkg.majorVersion %>"
 		}
 	};
 
@@ -264,7 +264,7 @@ module.exports = function(grunt) {
 			" * See the License for the specific language governing permissions and\n" +
 			" * limitations under the License.\n" +
 			" *\n" +
-			" * Version: <%= pkg.versions.full %> (<%= grunt.template.today(\"UTC:yyyy-mm-dd HH:MM:ss Z\") %>)\n" +
+			" * Version: <%= pkg.version %> (<%= grunt.template.today(\"UTC:yyyy-mm-dd HH:MM:ss Z\") %>)\n" +
 			" */\n",
 		"clean": {
 			"build": [
@@ -422,7 +422,7 @@ module.exports = function(grunt) {
 			"loader-build": {
 				"options": {
 					"patcher": function(text, filepath, flags) {
-						var version = grunt.config("pkg.versions." + (flags.stable ? "full" : "major")) + (flags.beta ? ".beta" : "");
+						var version = grunt.config("pkg." + (flags.stable ? "version" : "majorVersion")) + (flags.beta ? ".beta" : "");
 						text = text.replace(/("?version"?: ?").*?(",)/, '$1' + version + '$2');
 						if (shared.config("build")) {
 							// patch debug field only when we are building files
@@ -441,7 +441,7 @@ module.exports = function(grunt) {
 			"loader-release": {
 				"options": {
 					"patcher": function(text, filepath, flags) {
-						var version = grunt.config("pkg.versions." + (flags.stable ? "full" : "major")) + (flags.beta ? ".beta" : "");
+						var version = grunt.config("pkg." + (flags.stable ? "version" : "majorVersion")) + (flags.beta ? ".beta" : "");
 						return text.replace(/("?version"?: ?").*?(",)/, '$1' + version + '$2');
 					}
 				},
@@ -473,13 +473,13 @@ module.exports = function(grunt) {
 					"deployTargets": {
 						"code:latest": {
 							"src": "**",
-							"cwd": "<%= dirs.dest %>/v<%= pkg.versions.major %>/",
-							"dest": "<%= release.options.remoteRoot %>/sdk/v<%= pkg.versions.major %>/"
+							"cwd": "<%= dirs.dest %>/v<%= pkg.majorVersion %>/",
+							"dest": "<%= release.options.remoteRoot %>/sdk/v<%= pkg.majorVersion %>/"
 						},
 						"code:stable": {
 							"src": "**",
-							"cwd": "<%= dirs.dest %>/v<%= pkg.versions.major %>/",
-							"dest": "<%= release.options.remoteRoot %>/sdk/v<%= pkg.versions.full %>/"
+							"cwd": "<%= dirs.dest %>/v<%= pkg.majorVersion %>/",
+							"dest": "<%= release.options.remoteRoot %>/sdk/v<%= pkg.version %>/"
 						},
 						"apps": {
 							"src": "**",
@@ -489,8 +489,8 @@ module.exports = function(grunt) {
 					},
 					"purgeTitle": "SDK",
 					"purgePaths": [
-						"/sdk/v<%= pkg.versions.major %>/",
-						"/sdk/v<%= pkg.versions.full %>/",
+						"/sdk/v<%= pkg.majorVersion %>/",
+						"/sdk/v<%= pkg.version %>/",
 						"/apps/"
 					],
 					"beforeDeploy": ["patch:loader-release:stable"],
@@ -502,13 +502,13 @@ module.exports = function(grunt) {
 					"deployTargets": {
 						"code:beta": {
 							"src": "**",
-							"cwd": "<%= dirs.dest %>/v<%= pkg.versions.major %>/",
-							"dest": "<%= release.options.remoteRoot %>/sdk/v<%= pkg.versions.major %>.beta/"
+							"cwd": "<%= dirs.dest %>/v<%= pkg.majorVersion %>/",
+							"dest": "<%= release.options.remoteRoot %>/sdk/v<%= pkg.majorVersion %>.beta/"
 						}
 					},
 					"purgeTitle": "SDK BETA",
 					"purgePaths": [
-						"/sdk/v<%= pkg.versions.major %>.beta/"
+						"/sdk/v<%= pkg.majorVersion %>.beta/"
 					],
 					"beforeDeploy": ["patch:loader-release:beta"]
 				}
@@ -586,12 +586,7 @@ module.exports = function(grunt) {
 	};
 
 	grunt.initConfig(config);
-	var versionParts = grunt.config("pkg.version").split(".");
-	grunt.config("pkg.versions", {
-		"major": versionParts[0],
-		"main": versionParts[0] + "." + versionParts[1],
-		"full": grunt.config("pkg.version")
-	});
+	grunt.config("pkg.majorVersion", grunt.config("pkg.version").split(".")[0]);
 
 	function assembleEnvConfig() {
 		var env = shared.config("env");
@@ -631,8 +626,8 @@ module.exports = function(grunt) {
 		if (env === "development") {
 			data.baseURLs.sdk += "/dev";
 		}
-		// TODO: (?) properly calculate "versions.*" placeholder value and use it in Echo.Loader.version
-		data.packageVersions = grunt.config("pkg.versions");
+		// TODO: (?) properly calculate "packageVersion" placeholder value and use it in Echo.Loader.version
+		data.packageVersion = grunt.config("pkg.majorVersion");
 		grunt.config("envConfig", data);
 	}
 

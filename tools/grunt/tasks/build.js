@@ -67,8 +67,7 @@ module.exports = function(grunt) {
 					"copy:build",
 					"copy:demo",
 					"copy:tests",
-					"copy:apps",
-					"copy:redirect-page"
+					"copy:apps"
 				];
 				break;
 		}
@@ -125,14 +124,13 @@ module.exports = function(grunt) {
 					"dest": "<%= dirs.build %>"
 				}]
 			};
-			_.each(["demo", "tests"], function(type) {
+			_.each(["demo", "tests", "apps"], function(type) {
 				spec[type] = {
 					"files": [{
 						"expand": true,
 						"cwd": type,
 						"src": grunt.config("sources." + type),
-						"dest": "<%= dirs.dist %>/" + type + "/v<%= pkg.versions.main %>"
-
+						"dest": "<%= dirs.dist %>/" + type
 					}],
 					"options": {
 						"processContent": shared.replacePlaceholdersOnCopy,
@@ -140,28 +138,6 @@ module.exports = function(grunt) {
 					}
 				};
 			});
-			spec["apps"] = {
-				"files": [{
-					"expand": true,
-					"cwd": "apps",
-					"src": grunt.config("sources.apps"),
-					"dest": "<%= dirs.dist %>/apps"
-
-				}],
-				"options": {
-					"processContent": shared.replacePlaceholdersOnCopy,
-					"processContentExclude": "**/*.{png,jpg,jpeg,gif}"
-				}
-			};
-			spec["redirect-page"] = {
-				"files": [{
-					"src": "<%= dirs.src %>/version-redirect.html",
-					"dest": "<%= dirs.dist %>/demo/index.html"
-				}, {
-					"src": "<%= dirs.src %>/version-redirect.html",
-					"dest": "<%= dirs.dist %>/tests/index.html"
-				}]
-			};
 		} else {
 			spec["css"] = {
 				"files": [{
