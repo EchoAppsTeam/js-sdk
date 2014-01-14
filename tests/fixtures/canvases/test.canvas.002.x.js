@@ -1,5 +1,5 @@
-Echo.define({
-    "id": "test-canvas-002-1",
+window.Echo && Echo.Loader && Echo.Loader._storeCanvasConfig && Echo.Loader._storeCanvasConfig("js-sdk-tests/test-canvas-002-1", {
+    "id": "test.canvas.002.1",
     "title": "Test canvas with Auth control",
     "backplane": {
         "serverBaseURL": "https://api.echoenabled.com/v1",
@@ -18,8 +18,8 @@ Echo.define({
         }
     }]
 });
-Echo.define({
-    "id": "test-canvas-002-2",
+window.Echo && Echo.Loader && Echo.Loader._storeCanvasConfig && Echo.Loader._storeCanvasConfig("js-sdk-tests/test-canvas-002-2", {
+    "id": "test.canvas.002.2",
     "title": "Test canvas with Auth control",
     "backplane": {
         "serverBaseURL": "https://api.echoenabled.com/v1",
@@ -38,8 +38,8 @@ Echo.define({
         }
     }]
 });
-Echo.define({
-    "id": "test-canvas-002-3",
+window.Echo && Echo.Loader && Echo.Loader._storeCanvasConfig && Echo.Loader._storeCanvasConfig("js-sdk-tests/test-canvas-002-3", {
+    "id": "test.canvas.002.3",
     "title": "Test canvas with Auth control",
     "backplane": {
         "serverBaseURL": "https://api.echoenabled.com/v1",
@@ -58,8 +58,8 @@ Echo.define({
         }
     }]
 });
-Echo.define({
-    "id": "test-canvas-002-4",
+window.Echo && Echo.Loader && Echo.Loader._storeCanvasConfig && Echo.Loader._storeCanvasConfig("js-sdk-tests/test-canvas-002-4", {
+    "id": "test.canvas.002.4",
     "title": "Test canvas with Auth control",
     "backplane": {
         "serverBaseURL": "https://api.echoenabled.com/v1",
@@ -78,8 +78,8 @@ Echo.define({
         }
     }]
 });
-Echo.define({
-    "id": "test-canvas-002-5",
+window.Echo && Echo.Loader && Echo.Loader._storeCanvasConfig && Echo.Loader._storeCanvasConfig("js-sdk-tests/test-canvas-002-5", {
+    "id": "test.canvas.002.5",
     "title": "Test canvas with Auth control",
     "backplane": {
         "serverBaseURL": "https://api.echoenabled.com/v1",

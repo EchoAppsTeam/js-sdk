@@ -1,5 +1,5 @@
-Echo.define({
-    "id": "test-canvas-007",
+window.Echo && Echo.Loader && Echo.Loader._storeCanvasConfig && Echo.Loader._storeCanvasConfig("js-sdk-tests/test-canvas-007", {
+    "id": "test.canvas.007",
     "title": "Test canvas with custom development/production scripts definition",
     "backplane": {
         "serverBaseURL": "https://api.echoenabled.com/v1",
