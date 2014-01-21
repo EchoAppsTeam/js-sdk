@@ -419,34 +419,40 @@ canvas.methods._fetchConfig = function(callback) {
 		})
 	});
 
-	$.ajax({
-		"url": URL,
-		"crossDomain": true,
-		"dataType": "script",
-		"cache": mode !== "dev",
-		"timeout": Echo.Loader.config.errorTimeout,
-		"success": function() {
-			var config = getConfig();
-			if (!config || !config.apps || !config.apps.length) {
-				var message = self.labels.get("error_no_" + (config ? "apps" : "config"));
+	// we rely on asynchronius beahavor of the $.ajax method call
+	// to implement store/fetch mechanism. In case of fetching
+	// a cached file it fails in some heuristic cases. So we try to avoid
+	// this situation by making $.ajax function async in all cases.
+	setTimeout(function() {
+		$.ajax({
+			"url": URL,
+			"crossDomain": true,
+			"dataType": "script",
+			"cache": mode !== "dev",
+			"timeout": Echo.Loader.config.errorTimeout,
+			"success": function() {
+				var config = getConfig();
+				if (!config || !config.apps || !config.apps.length) {
+					var message = self.labels.get("error_no_" + (config ? "apps" : "config"));
+					self._error({
+						"args": {"config": config, "target": target},
+						"code": "invalid_canvas_config",
+						"message": message
+					});
+					return;
+				}
+				self.set("data", config); // store Canvas data into the instance
+				callback.call(self);
+			},
+			"error": function() {
 				self._error({
-					"args": {"config": config, "target": target},
-					"code": "invalid_canvas_config",
-					"message": message
+					"args": arguments,
+					"code": "unable_to_retrieve_app_config",
+					"renderError": true
 				});
-				return;
 			}
-			self.set("data", config); // store Canvas data into the instance
-			callback.call(self);
-		},
-		"error": function() {
-			self._error({
-				"args": arguments,
-				"code": "unable_to_retrieve_app_config",
-				"renderError": true
-			});
-		}
-	});
+		});
+	}, 0);
 };
 
 Echo.Control.create(canvas);
