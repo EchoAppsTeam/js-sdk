@@ -407,12 +407,32 @@ Echo.Loader._initCanvas = function(target, initMode, config) {
 		if (initMode !== "when-visible" || Echo.Loader._isInViewport(target)) {
 			event && onViewportChange("unsubscribe", init);
 			Echo.Loader.initEnvironment(function() {
-				Echo.Loader.canvases.push(new Echo.Canvas(config));
+				Echo.Loader.canvases.push(new Echo.Canvas(Echo.Loader._prepareCanvasData(config)));
 			});
 		} else if (!event) {
 			onViewportChange("subscribe", init);
 		}
 	})();
+};
+
+// we are changing Comments app script
+// location from Echo CDN to original CDN
+Echo.Loader._prepareCanvasData = function(canvasData) {
+	if (!canvasData.data) return canvasData;
+	var replace = function(script) {
+		return script.replace(/((?:https?:)?\/\/)?cdn\.echoenabled\.com\/apps\/rtb\/comments/, function(match, protocol) {
+			var prefix = protocol === "https://"
+				? "ssl"
+				: (/^https/.test(window.location.protocol) && protocol !== "http://"
+					? "ssl" : "cdn");
+			return protocol + prefix + ".realtidbits.com/libs";
+		});
+	};
+	Echo.Loader._map(canvasData.data.apps || [], function(app) {
+		app.script = replace(Echo.Canvas.prototype._getAppScriptURL(app));
+		app.scripts && delete app.scripts;
+	});
+	return canvasData;
 };
 
 Echo.Loader._storeCanvasConfig = function(id, config) {
