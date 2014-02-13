@@ -419,10 +419,10 @@ canvas.methods._fetchConfig = function(callback) {
 		})
 	});
 
-	// we rely on asynchronius beahavor of the $.ajax method call
-	// to implement store/fetch mechanism. In case of fetching
-	// a cached file it fails in some heuristic cases. So we try to avoid
-	// this situation by making $.ajax function async in all cases.
+	// We rely on asynchronous behavior of the $.ajax method call
+	// to implement store/fetch mechanics. But it can occasionally
+	// be synchronous while fetching cached response. In order to
+	// avoid this issue, we always make $.ajax call asynchronously.
 	setTimeout(function() {
 		$.ajax({
 			"url": URL,
