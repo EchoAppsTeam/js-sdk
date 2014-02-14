@@ -55,7 +55,7 @@ Echo.StreamServer.API.Request = Echo.Utils.inherit(Echo.API.Request, function(co
 		 * @cfg {Boolean} [liveUpdates.enabled=false]
 		 * Parameter to enable/disable live updates.
 		 *
-		 * @cfg {String} [liveUpdates.transport="polling"]
+		 * @cfg {String} [liveUpdates.transport="websockets"]
 		 * Preferred live updates receiveing machinery transport.
 		 * The following transports are supported:
 		 *
@@ -100,7 +100,7 @@ Echo.StreamServer.API.Request = Echo.Utils.inherit(Echo.API.Request, function(co
 		 * <a href="http://echoplatform.com/streamserver/docs/rest-api/other-api/mux/" target="_blank">here</a>.
 		 */
 		"liveUpdates": {
-			"transport": "polling", // or "websockets"
+			"transport": "websockets", // or "polling"
 			// picking up enabled value
 			// for backwards compatibility
 			"enabled": liveUpdatesEnabled,
@@ -320,13 +320,14 @@ Echo.StreamServer.API.Request.prototype._getLiveUpdatesConfig = function(name) {
 			"resubscribe.resetPeriod": "liveUpdates.websockets.resetPeriod",
 			"resubscribe.maxResetsPerPeriod": "liveUpdates.websockets.maxResetsPerPeriod",
 			"request.settings.maxConnectRetries": "liveUpdates.websockets.maxConnectRetries",
-			"request.settings.serverPingInterval": "liveUpdates.websockets.serverPingInterval"
+			"request.settings.serverPingInterval": "liveUpdates.websockets.serverPingInterval",
+			"request.settings.closeSocketTimeout": "liveUpdates.websockets.closeSocketTimeout"
 		}
 	};
 
 	var mapped = Echo.Utils.foldl({}, map[name], function(from, acc, to) {
 		var value = function fetch(key) {
-			var parts, val = self.config.get(key);
+			var val = self.config.get(key);
 			if (typeof val === "undefined" && key) {
 				return fetch(key.split(".").slice(1).join("."));
 			}
