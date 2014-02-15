@@ -306,11 +306,14 @@ Echo.API.Transports.WebSockets.prototype._tryReconnect = function() {
 
 Echo.API.Transports.WebSockets.prototype._reconnect = function() {
 	var self = this;
-	var socket = Echo.API.Transports.WebSockets.socketByURI[this.config.get("uri")].socket;
+	var uri = this.config.get("uri");
+	var socket = Echo.API.Transports.WebSockets.socketByURI[uri].socket;
 	// override "onclose" handler because we do not need
 	// to publish "onClose" event in case of reconnection
+	// and also do not need to clear states
 	socket.onclose = function() {
-		self._clear();
+		delete Echo.API.Transports.WebSockets.socketByURI[uri];
+		clearTimeout(self.timers.close);
 		self._connect();
 	};
 	this.abort(true);
