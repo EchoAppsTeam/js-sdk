@@ -60,8 +60,8 @@ Echo.API.Transports.WebSockets = utils.inherit(Echo.API.Transport, function(conf
 	config = $.extend(true, {
 		"settings": {
 			"maxConnectRetries": 3,
-			"serverPingInterval": 30, // client-server ping-pong interval
-			"closeSocketTimeout": 10,
+			"serverPingInterval": 30, // client-server ping-pong interval (in seconds)
+			"closeSocketTimeout": 10, // time (in seconds) we can give WS to close connection
 			"protocols": ["liveupdate.ws.echoenabled.com"]
 		}
 	}, config || {});
@@ -141,6 +141,8 @@ Echo.API.Transports.WebSockets.prototype.abort = function(force) {
 		if ($.isEmptyObject(socket.subscribers) || force && this.connected()) {
 			this._clearTimers();
 			this.transportObject.close();
+			// if closing a coonection to WS takes more time than
+			// setting "closeSocketTimeout" is - we force switchover to Polling
 			this.timers.close = setTimeout(
 				$.proxy(this._onCloseHandler, this),
 				this.config.get("settings.closeSocketTimeout") * 1000
