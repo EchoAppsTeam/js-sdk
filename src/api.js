@@ -138,7 +138,7 @@ Echo.API.Transports.WebSockets.prototype.abort = function(force) {
 	if (socket) {
 		delete socket.subscribers[this.unique];
 		// close socket connection if the last subscriber left
-		if ($.isEmptyObject(socket.subscribers) || force && this.connected()) {
+		if (($.isEmptyObject(socket.subscribers) || force) && this.connected()) {
 			this._clearTimers();
 			this.transportObject.close();
 			// if closing a coonection to WS takes more time than
@@ -302,23 +302,8 @@ Echo.API.Transports.WebSockets.prototype._tryReconnect = function() {
 	// exit when the connection attempt is scheduled (to prevent
 	// multiple connections) or if no connection attempts left
 	if (this.attemptsRemaining === 0) {
-		this._reconnect();
+		this.abort(true);
 	}
-};
-
-Echo.API.Transports.WebSockets.prototype._reconnect = function() {
-	var self = this;
-	var uri = this.config.get("uri");
-	var socket = Echo.API.Transports.WebSockets.socketByURI[uri].socket;
-	// override "onclose" handler because we do not need
-	// to publish "onClose" event in case of reconnection
-	// and also do not need to clear states
-	socket.onclose = function() {
-		delete Echo.API.Transports.WebSockets.socketByURI[uri];
-		clearTimeout(self.timers.close);
-		self._connect();
-	};
-	this.abort(true);
 };
 
 Echo.API.Transports.WebSockets.available = function() {
