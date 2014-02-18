@@ -134,19 +134,24 @@ Echo.API.Transports.WebSockets.prototype.unsubscribe = function unsubscribe(arg)
 Echo.API.Transports.WebSockets.prototype.abort = function(force) {
 	var self = this;
 	var socket = Echo.API.Transports.WebSockets.socketByURI[this.config.get("uri")];
-	$.map(["onData", "onOpen", "onError"], $.proxy(this.unsubscribe, this));
 	if (socket) {
 		delete socket.subscribers[this.unique];
+		this._clearTimers();
+		this.subscribe("onClose", {
+			"once": true,
+			"handler": function() {
+				self.unsubscribe();
+			}
+		});
 		// close socket connection if the last subscriber left
 		if (($.isEmptyObject(socket.subscribers) || force) && this.connected()) {
-			this._clearTimers();
-			this.transportObject.close();
 			// if closing a coonection to WS takes more time than
 			// setting "closeSocketTimeout" is - we force switchover to Polling
 			this.timers.close = setTimeout(
 				$.proxy(this._onCloseHandler, this),
 				this.config.get("settings.closeSocketTimeout") * 1000
 			);
+			this.transportObject.close();
 		}
 	}
 };
@@ -183,6 +188,9 @@ Echo.API.Transports.WebSockets.prototype._getTransportObject = function() {
 		self.subscribe(topic, {
 			"handler": function(_, data) {
 				self.config.get(topic)(data);
+				if (topic === "onClose") {
+					clearTimeout(self.timers.close);
+				}
 			},
 			// when we receive data - send it to the appropriate
 			// subscribers only (do not send it to all subscribers)
@@ -249,14 +257,6 @@ Echo.API.Transports.WebSockets.prototype._onCloseHandler = function() {
 
 Echo.API.Transports.WebSockets.prototype._clear = function() {
 	var context = this.config.get("uri").replace(/\//g, "-");
-	this.unsubscribe();
-	clearTimeout(this.timers.close);
-	$.map(["onData", "onOpen", "onClose", "onError"], function(name) {
-		Echo.Events.unsubscribe({
-			"topic": "Echo.API.Transports.WebSockets." + name,
-			"context": context
-		});
-	});
 	delete Echo.API.Transports.WebSockets.socketByURI[this.config.get("uri")];
 };
 
