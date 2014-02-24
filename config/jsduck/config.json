@@ -1,6 +1,6 @@
 {
 	"--title": "Echo JS SDK Documentation Center",
-	"--footer": "<a class=\"policy\" target=\"_blank\" href=\"http://aboutecho.com/Privacy\">Privacy Policy</a> | © 2013 Echo. All rights reserved.",
+	"--footer": "<a class=\"policy\" target=\"_blank\" href=\"http://aboutecho.com/Privacy\">Privacy Policy</a> | © 2014 Echo. All rights reserved.",
 	"--": ["../../build"],
 	"--output": "../../web/docs",
 	"--tags": "../../tools/jsduck/custom-tags.rb",
