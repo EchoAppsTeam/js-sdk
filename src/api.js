@@ -60,11 +60,16 @@ Echo.API.Transports.WebSockets = utils.inherit(Echo.API.Transport, function(conf
 	config = $.extend(true, {
 		"settings": {
 			"maxConnectRetries": 3,
-			"serverPingInterval": 30, // client-server ping-pong interval
+			"serverPingInterval": 30, // client-server ping-pong interval (in seconds)
+			"closeSocketTimeout": 10, // time (in seconds) we can give WS to close connection
 			"protocols": ["liveupdate.ws.echoenabled.com"]
 		}
 	}, config || {});
-	this.timers = {};
+	this.timers = {
+		"ping": null,
+		"pong": null,
+		"close": null
+	};
 	this.subscriptionIds = {};
 	this.unique = Echo.Utils.getUniqueString();
 	Echo.API.Transports.WebSockets.parent.constructor.call(this, config);
@@ -129,14 +134,24 @@ Echo.API.Transports.WebSockets.prototype.unsubscribe = function unsubscribe(arg)
 Echo.API.Transports.WebSockets.prototype.abort = function(force) {
 	var self = this;
 	var socket = Echo.API.Transports.WebSockets.socketByURI[this.config.get("uri")];
-	$.map(["onData", "onOpen", "onError"], $.proxy(this.unsubscribe, this));
 	if (socket) {
 		delete socket.subscribers[this.unique];
-		// close socket connection if the last subscriber left
-		if ($.isEmptyObject(socket.subscribers) || force) {
-			if (this.connected()) {
-				this.transportObject.close();
+		this._clearTimers();
+		this.subscribe("onClose", {
+			"once": true,
+			"handler": function() {
+				self.unsubscribe();
 			}
+		});
+		// close socket connection if the last subscriber left
+		if (($.isEmptyObject(socket.subscribers) || force) && this.connected()) {
+			// if closing a coonection to WS takes more time than
+			// setting "closeSocketTimeout" is - we force switchover to Polling
+			this.timers.close = setTimeout(
+				$.proxy(this._onCloseHandler, this),
+				this.config.get("settings.closeSocketTimeout") * 1000
+			);
+			this.transportObject.close();
 		}
 	}
 };
@@ -173,6 +188,9 @@ Echo.API.Transports.WebSockets.prototype._getTransportObject = function() {
 		self.subscribe(topic, {
 			"handler": function(_, data) {
 				self.config.get(topic)(data);
+				if (topic === "onClose") {
+					clearTimeout(self.timers.close);
+				}
 			},
 			// when we receive data - send it to the appropriate
 			// subscribers only (do not send it to all subscribers)
@@ -214,8 +232,7 @@ Echo.API.Transports.WebSockets.prototype._prepareTransportObject = function() {
 		self._publish("onData", data, data && data.subscription);
 	};
 	socket.onclose = function() {
-		self._publish("onClose");
-		self._clear();
+		self._onCloseHandler();
 	};
 	socket.onerror = function(error) {
 		self._publish("onError", self._wrapErrorResponse(error));
@@ -233,18 +250,13 @@ Echo.API.Transports.WebSockets.prototype._clearTimers = function() {
 	this.timers = {};
 };
 
+Echo.API.Transports.WebSockets.prototype._onCloseHandler = function() {
+	this._publish("onClose");
+	this._clear();
+};
+
 Echo.API.Transports.WebSockets.prototype._clear = function() {
-	var self = this;
-	var socket = Echo.API.Transports.WebSockets.socketByURI[this.config.get("uri")];
 	var context = this.config.get("uri").replace(/\//g, "-");
-	this._clearTimers();
-	this.unsubscribe();
-	$.map(["onData", "onOpen", "onClose", "onError"], function(name) {
-		Echo.Events.unsubscribe({
-			"topic": "Echo.API.Transports.WebSockets." + name,
-			"context": context
-		});
-	});
 	delete Echo.API.Transports.WebSockets.socketByURI[this.config.get("uri")];
 };
 
@@ -290,13 +302,8 @@ Echo.API.Transports.WebSockets.prototype._tryReconnect = function() {
 	// exit when the connection attempt is scheduled (to prevent
 	// multiple connections) or if no connection attempts left
 	if (this.attemptsRemaining === 0) {
-		this._reconnect();
+		this.abort(true);
 	}
-};
-
-Echo.API.Transports.WebSockets.prototype._reconnect = function() {
-	this.abort(true);
-	this._connect();
 };
 
 Echo.API.Transports.WebSockets.available = function() {

@@ -36,7 +36,7 @@ Release notes are posted to our [Developer Forum](https://groups.google.com/foru
 We welcome your contributions. Please submit all pull requests to the master branch and the Echo team will help coordinate.
 
 # License
-Copyright 2013 Echo
+Copyright 2014 Echo
 
 Licensed under the Apache License, Version 2.0 (the "License"); you may not use this work except in compliance with the License. You may obtain a copy of the License in the LICENSE file, or at:
 

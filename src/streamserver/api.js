@@ -178,10 +178,13 @@ Echo.StreamServer.API.Request = Echo.Utils.inherit(Echo.API.Request, function(co
  * Method to stop live updates requests.
  */
 Echo.StreamServer.API.Request.prototype.abort = function() {
+	var self = this;
 	Echo.StreamServer.API.Request.parent.abort.call(this);
 	if (this.liveUpdates) {
+		this.liveUpdates.on("close", function() {
+			delete self.liveUpdates;
+		});
 		this.liveUpdates.stop();
-		delete this.liveUpdates;
 	}
 };
 
@@ -320,13 +323,14 @@ Echo.StreamServer.API.Request.prototype._getLiveUpdatesConfig = function(name) {
 			"resubscribe.resetPeriod": "liveUpdates.websockets.resetPeriod",
 			"resubscribe.maxResetsPerPeriod": "liveUpdates.websockets.maxResetsPerPeriod",
 			"request.settings.maxConnectRetries": "liveUpdates.websockets.maxConnectRetries",
-			"request.settings.serverPingInterval": "liveUpdates.websockets.serverPingInterval"
+			"request.settings.serverPingInterval": "liveUpdates.websockets.serverPingInterval",
+			"request.settings.closeSocketTimeout": "liveUpdates.websockets.closeSocketTimeout"
 		}
 	};
 
 	var mapped = Echo.Utils.foldl({}, map[name], function(from, acc, to) {
 		var value = function fetch(key) {
-			var parts, val = self.config.get(key);
+			var val = self.config.get(key);
 			if (typeof val === "undefined" && key) {
 				return fetch(key.split(".").slice(1).join("."));
 			}
@@ -352,13 +356,13 @@ Echo.StreamServer.API.Request.prototype._liveUpdatesWatcher = function(polling, 
 	var fallbackTimeout, waitingForConnectionTimeout;
 	ws.on("close", function() {
 		var timeout, fallback = config.fallback;
-		if (self.liveUpdates.closeReason !== "abort") {
+		clearTimeout(waitingForConnectionTimeout);
+		if (self.liveUpdates && self.liveUpdates.closeReason !== "abort") {
 			timeout = Echo.Utils.random(
 				fallback.timeout - fallback.divergence,
 				fallback.timeout + fallback.divergence
 			) * 1000;
 			fallbackTimeout = setTimeout(function() {
-				clearTimeout(waitingForConnectionTimeout);
 				switchTo(polling)();
 			}, timeout);
 		}
@@ -370,7 +374,7 @@ Echo.StreamServer.API.Request.prototype._liveUpdatesWatcher = function(polling, 
 		switchTo(polling)();
 	}, config.waitingForConnection * 1000);
 	if (ws.connected()) {
-		clearTimeout(waitingForConnectionTimeout)
+		clearTimeout(waitingForConnectionTimeout);
 		return;
 	}
 	ws.on("open", function() {
@@ -709,7 +713,7 @@ Echo.StreamServer.API.WebSockets = Echo.Utils.inherit(Echo.StreamServer.API.Poll
 	});
 	this.queue = [];
 	this.subscribed = false;
-	this.subscriptionIds = [];
+	this.closeReason = "unknown";
 	this.subscriptionResets = {
 		"count": 0,
 		"time": (new Date()).getTime()
@@ -786,7 +790,6 @@ Echo.StreamServer.API.WebSockets.prototype.on = function(event, fn, params) {
 			"handler": fn
 		}
 	);
-	this.subscriptionIds.push(id);
 	return id;
 };
 
@@ -798,13 +801,12 @@ Echo.StreamServer.API.WebSockets.prototype.connected = function() {
 
 Echo.StreamServer.API.WebSockets.prototype.stop = function() {
 	var self = this;
-	this._clearSubscriptions();
+	this.closeReason = "abort";
 	if (this.connected()) {
 		this.queue.push(function() {
 			if (self.subscribed) {
 				self.requestObject.request({"event": "unsubscribe/request"});
 			}
-			self.closeReason = "abort";
 			self.requestObject.abort();
 		});
 		this._runQueue();
@@ -852,7 +854,6 @@ Echo.StreamServer.API.WebSockets.prototype._reconnect = function() {
 	};
 	this.closeReason = "reconnect";
 	this.requestObject.abort();
-	this._clearSubscriptions();
 	if (this.requestObject.transport.closing()) {
 		var id = this.on("close", function() {
 			closeHandler();
@@ -903,11 +904,6 @@ Echo.StreamServer.API.WebSockets.prototype._resubscribeAllowed = function() {
 			return false;
 		}
 	}
-};
-
-Echo.StreamServer.API.WebSockets.prototype._clearSubscriptions = function() {
-	$.map(this.subscriptionIds, $.proxy(this.requestObject.transport.unsubscribe, this.requestObject.transport));
-	this.subscriptionIds = [];
 };
 
 Echo.StreamServer.API.WebSockets.prototype._runQueue = function() {

@@ -1,5 +1,11 @@
 # Echo JS SDK CHANGELOG:
 
+##v3.0.17 - February 27, 2014
+
+* **Canvas config loading machinery was updated** to avoid race conditions when a browser tries to retrieve config which was cached by a browser previously. We updated the logic to make sure that an execution order always remains the same.
+
+* **WebSockets connection reestablishment logic** was improved to be more fault tolerant to socket connection closing delays. Previously it caused a delay (up to a few minutes) to switchover to Polling method. Now if the socket is not closed within 10 seconds, we drop the connection and switch to Polling immediately to avoid any delays in live update items appearance.
+
 ##v3.0.16 - January 14, 2014
 
 * **StreamServer live updates connection logic was updated** and now if WebSockets are enabled, we try to establish a connection using WS first and fall back to Polling if our attempt failed or timed out (within 5 seconds). Previously both Polling and WebSockets were initialized in parallel and Polling got disabled when WS connection is established. This new connection logic is more efficient from both server-side and client-side standpoints.

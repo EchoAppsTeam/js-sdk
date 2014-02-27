@@ -759,6 +759,9 @@ Echo.Tests.asyncTest("canvases initialization", function() {
 			$.map(["stream", "submit"], function(app) {
 				var def = Echo.jQuery.Deferred();
 				Echo.Loader.override(id + extra, app, {
+					"liveUpdates": {
+						"enabled": false
+					},
 					"ready": function() {
 						def.resolve();
 					}
