@@ -3,8 +3,8 @@
 <head>
 	<title>"CommunityFlag" Plugin Demo</title>
 	<link rel="stylesheet" type="text/css" href="demo.css" />
-	<script type="text/javascript" src="//sdk.safin.ul.js-kit.com/sdk/v3/loader.js"></script>
-	<script type="text/javascript" src="//sdk.safin.ul.js-kit.com/sdk/v3/third-party/jquery.pack.js"></script>
+	<script type="text/javascript" src="//cdn.echoenabled.com/sdk/v3/loader.js"></script>
+	<script type="text/javascript" src="//cdn.echoenabled.com/sdk/v3/third-party/jquery.pack.js"></script>
 </head>
 <body>
 	<style>
@@ -40,7 +40,7 @@
 		};
 		// init Auth app
 		Echo.Loader.initApplication({
-			"script": "//sdk.safin.ul.js-kit.com/sdk/v3/identityserver.pack.js",
+			"script": "//cdn.echoenabled.com/sdk/v3/identityserver.pack.js",
 			"component": "Echo.IdentityServer.Controls.Auth",
 			"backplane": backplane,
 			"config": {
@@ -55,7 +55,7 @@
 
 		// init Stream app
 		Echo.Loader.initApplication({
-			"script": "//sdk.safin.ul.js-kit.com/sdk/v3/streamserver.pack.js",
+			"script": "//cdn.echoenabled.com/sdk/v3/streamserver.pack.js",
 			"component": "Echo.StreamServer.Controls.Stream",
 			"backplane": backplane,
 			"config": {
