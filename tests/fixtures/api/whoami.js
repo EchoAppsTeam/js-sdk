@@ -34,7 +34,7 @@ Echo.Tests.Fixtures.api.whoami = {
 					}],
 					"photos": [{
 						"type": "avatar",
-						"value": "//cdn.echoenabled.com/images/avatar-default.png"
+						"value": "//sdk.safin.ul.js-kit.com/images/avatar-default.png"
 					}],
 					"loggedIn": "false"
 				}]

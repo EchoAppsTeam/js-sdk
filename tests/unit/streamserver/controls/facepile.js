@@ -43,7 +43,7 @@ suite.prototype.tests.staticWorkflow = {
 			data.entries.push({
 				"actor" : {
 					"id"     : i,
-					"avatar" : "//cdn.echoenabled.com/images/avatar-default.png",
+					"avatar" : "//sdk.safin.ul.js-kit.com/images/avatar-default.png",
 					"title"  : "TestActor" + i
 				}
 			});

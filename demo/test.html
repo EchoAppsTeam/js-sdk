@@ -1,53 +1,258 @@
+
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml">
-	<head>
-	<title>Stream Demo</title>
-	<link rel="stylesheet" type="text/css" href="demo.css" />
+<html>
+<head>
+	<title>Loader</title>
 
-	<!-- Default scripts inclusion -->
-		<script type="text/javascript" src="http://cdn.echoenabled.com/sdk/v3/loader.js"></script>
-		<script type="text/javascript" src="http://cdn.echoenabled.com/sdk/v3/backplane.js"></script>
-		<script type="text/javascript" src="http://cdn.echoenabled.com/sdk/v3/third-party/jquery.pack.js"></script>
-		<script type="text/javascript" src="http://cdn.echoenabled.com/sdk/v3/environment.pack.js"></script>
+	<!--<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/chosen/1.0/chosen.css">-->
+	<!--<script src="//cdnjs.cloudflare.com/ajax/libs/chosen/1.0/chosen.jquery.js"></script>-->
+	<!--<link rel="stylesheet" href="http://silviomoreto.github.io/bootstrap-select/stylesheets/bootstrap-select.css">-->
+	<!--<script src="http://silviomoreto.github.io/bootstrap-select/javascripts/bootstrap-select.js"></script>-->
+	<style>
+		*:focus {
+			outline: none !important;
+		}
+		body {
+			background:	url(http://fgnass.github.io/spin.js/assets/bg.png);
+			padding: 15px;
+		}
+		.panel {
+			border-bottom: 2px solid rgba(0, 0, 0, 0.25);
+		}
+		.card {
+			width: 300px;
+		}
+		.loader {
+			height: 30px;
+			width: 30px;
+			margin: 0 auto;
+		}
+		.card .dropdown-menu.inner {
+			font-size: 12px;
+		}
+		.btn,
+		.btn:hover {
+			text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.3);
+			border-color: rgba(0, 0, 0, 0.6);
+		}
 
-		<script type="text/javascript" src="http://cdn.echoenabled.com/sdk/v3/streamserver/controls/stream.js"></script>
-		<script type="text/javascript" src="http://cdn.echoenabled.com/sdk/v3/streamserver/plugins/like.js"></script>
-		<script type="text/javascript" src="http://cdn.echoenabled.com/sdk/v3/streamserver/plugins/reply.js"></script>
+		.container .btn-success {
+			background-image: -webkit-linear-gradient(#78cc78, #62c462 60%, #53be53);
+			background-image: linear-gradient(#78cc78, #62c462 60%, #53be53);
+			background-repeat: no-repeat;
+			filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#ff78cc78', endColorstr='#ff53be53', GradientType=0);
+			filter: none;
+		}
 
-	<!--<script type="text/javascript" src="http://safin.ul.js-kit.com/js-sdk/sdk/v3/streamserver.pack.js"></script>-->
-	<!--<script type="text/javascript" src="http://safin.ul.js-kit.com/js-sdk/sdk/v3/identityserver.pack.js"></script>-->
+		.container .btn-info {
+			background-image: -webkit-linear-gradient(#74cae3, #5bc0de 60%, #4ab9db);
+			background-image: linear-gradient(#74cae3, #5bc0de 60%, #4ab9db);
+			background-repeat: no-repeat;
+			filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#ff74cae3', endColorstr='#ff4ab9db', GradientType=0);
+			filter: none;
+		}
+
+		.container .btn-warning {
+			background-image: -webkit-linear-gradient(#faa123, #f89406 60%, #e48806);
+			background-image: linear-gradient(#faa123, #f89406 60%, #e48806);
+			background-repeat: no-repeat;
+			filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#fffaa123', endColorstr='#ffe48806', GradientType=0);
+			filter: none;
+		}
+
+		.container .btn-danger {
+			background-image: -webkit-linear-gradient(#f17a77, #ee5f5b 60%, #ec4d49);
+			background-image: linear-gradient(#f17a77, #ee5f5b 60%, #ec4d49);
+			background-repeat: no-repeat;
+			filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#fff17a77', endColorstr='#ffec4d49', GradientType=0);
+			filter: none;
+		}
+
+		.btn-success:hover {
+			background-image: -webkit-linear-gradient(#2f7d2f, #379337 40%, #3da23d);
+			background-image: linear-gradient(#2f7d2f, #379337 40%, #3da23d);
+			background-repeat: no-repeat;
+			filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#ff2f7d2f', endColorstr='#ff3da23d', GradientType=0);
+			filter: none;
+		}
+
+		.btn-info:hover {
+			background-image: -webkit-linear-gradient(#20829f, #2596b8 40%, #28a4c9);
+			background-image: linear-gradient(#20829f, #2596b8 40%, #28a4c9);
+			background-repeat: no-repeat;
+			filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#ff20829f', endColorstr='#ff28a4c9', GradientType=0);
+			filter: none;
+		}
+
+		.btn-warning:hover {
+			background-image: -webkit-linear-gradient(#804d03, #9e5f04 40%, #b26a04);
+			background-image: linear-gradient(#804d03, #9e5f04 40%, #b26a04);
+			background-repeat: no-repeat;
+			filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#ff804d03', endColorstr='#ffb26a04', GradientType=0);
+			filter: none;
+		}
+
+		.btn-danger:hover {
+			background-image: -webkit-linear-gradient(#bb1813, #d71c16 40%, #e7201a);
+			background-image: linear-gradient(#bb1813, #d71c16 40%, #e7201a);
+			background-repeat: no-repeat;
+			filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#ffbb1813', endColorstr='#ffe7201a', GradientType=0);
+			filter: none;
+		}
+
+		.container .list-group {
+			margin-top: 15px;
+		}
+
+		.event-list.list-group .list-group-item:hover {
+			background-color: #F5F5F5;
+		}
+
+		.container .bottom-flat {
+			border-bottom-right-radius: 0px;
+			border-bottom-left-radius: 0px;
+		}
+
+		.container .top-flat {
+			border-top-right-radius: 0px;
+			border-top-left-radius: 0px;
+		}
+
+		input.title {
+			margin-bottom: 15px;
+		}
+		
+		input.title:focus + .new-event {
+			display: block;
+		}
+
+		.new-event {
+			display: none;
+		}
+	</style>
+
+	<script>
+		var require = {
+			"paths": {
+				"jquery": "http://cdnjs.cloudflare.com/ajax/libs/jquery/2.0.3/jquery.min",
+				"spin": "http://cdnjs.cloudflare.com/ajax/libs/spin.js/1.3.2/spin.min",
+				"css": "http://raw.github.com/guybedford/require-css/master/css",
+				"async": "https://raw.github.com/millermedeiros/requirejs-plugins/master/src/async",
+				"bootstrap/js": "http://netdna.bootstrapcdn.com/bootstrap/3.0.3/js/bootstrap.min",
+				"handlebars": "http://cdnjs.cloudflare.com/ajax/libs/handlebars.js/1.0.0/handlebars"
+			},
+			"map": {
+				"*": {
+					"bootstrap/css": "css!http://netdna.bootstrapcdn.com/bootstrap/3.0.3/css/bootstrap.min",
+					"google/maps": "async!https://maps.googleapis.com/maps/api/js?key=AIzaSyBjOKmHs6KJaJZw6txbXgAj_ryNUMLSZAE&sensor=false"
+				}
+			},
+			"shim": {
+				"bootstrap/js": ["jquery"]
+			}
+		};
+	</script>
+	<script src="//cdnjs.cloudflare.com/ajax/libs/require.js/2.1.9/require.min.js"></script>
 </head>
 <body>
-	<div id="container">
-		<div id="documentation"><a href="http://echoappsteam.github.com/js-sdk/docs/#!/api/Echo.StreamServer.Controls.Stream" target="_blank">Documentation</a></div>
-		<h1>Stream Demo</h1>
-		<div class="wrapper">
-			<div id="stream"></div>
+<div class="container">
+	<div class="row">
+		<div class="col-md-4">
+			<div class="panel panel-default">
+				<div class="panel-body">
+          <div>
+						<form class="form-signin" role="form">
+							<input class="form-control title" type="text" placeholder="Schedule new event" />
+							<div class="new-event">
+								<textarea class="form-control" placeholder="Type description"></textarea>
+								<button class="btn btn-warning btn-block" type="submit">Schedule new event</button>
+							</div>
+						</form>
+          </div>
+
+					<div class="list-group event-list">
+						<div class="list-group-item">
+							<h4 class="list-group-item-heading">List group item heading</h4>
+							<p class="list-group-item-text">...</p>
+							<button class="btn btn-xs btn-primary">Show</button>
+						</div>
+						<div class="list-group-item">
+							<h4 class="list-group-item-heading">List group item heading</h4>
+							<p class="list-group-item-text">...</p>
+							<button class="btn btn-xs btn-info">Show</button>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="col-md-8">
+			<div class="panel panel-default">
+				<div class="panel-body">
+					<div id="map-canvas" style="height: 200px;"></div>
+				</div>
+			</div>
 		</div>
 	</div>
+</div>
 
-	<!-- Client initialization -->
-	<script type="text/javascript">
-		Backplane.init({
-			"serverBaseURL": "http://api.echoenabled.com/v1",
-			"busName": "jskit"
-		});
-		var identityManager = {"width": 400, "height": 240, "url": "https://echo.rpxnow.com/openid/embed?flags=stay_in_window,no_immediate&token_url=http%3A%2F%2Fjs-kit.com%2Fapps%2Fjanrain%2Fwaiting.html&bp_channel="};
+<div style="display: none;" class="card panel panel-default">
+	<div class="panel-body">
+		<div class="loader"></div>
+		<!--<div class="categories"></div>-->
+		<!--<input class="input-sm" type="text" placeholder=".input-sm">-->
+	</div>
+</div>
+<script>
+	require([
+		"jquery",
+		"spin",
+		"bootstrap/js",
+		"bootstrap/css"
+	], function($, Spinner) {
+		var opts = {
+			lines: 10, // The number of lines to draw
+			length: 4, // The length of each line
+			width: 2, // The line thickness
+			radius: 4, // The radius of the inner circle
+			corners: 0.6, // Corner roundness (0..1)
+			rotate: 0, // The rotation offset
+			direction: 1, // 1: clockwise, -1: counterclockwise
+			color: '#000', // #rgb or #rrggbb or array of colors
+			speed: 1, // Rounds per second
+			trail: 37, // Afterglow percentage
+			shadow: false, // Whether to render a shadow
+			hwaccel: true, // Whether to use hardware acceleration
+		};
 
-		var stream = new Echo.StreamServer.Controls.Stream({
-			"target": document.getElementById("stream"),
-			"query": "childrenof:http://example.com/js-sdk -state:ModeratorDeleted itemsPerPage:2 sortOrder:likesDescending children:2 childrenItemsPerPage:2 -state:ModeratorDeleted",
-			"appkey": "test.js-kit.com",
-			"item": {
-//				"defaultAvatar": "https://secure.gravatar.com/avatar/8e7717f3eb16cb2666e13ed10d3904b9"
-				"defaultAvatar": "{sdk}/images/info70.png"
-			},
-			"plugins": [{
-				"name": "Reply"
-			} , {
-				"name": "Like"
-			}]
+		var mapTarget = $("#map-canvas").get(0);
+		var spin = new Spinner(opts).spin(mapTarget);
+
+		require(["google/maps"], function() {
+			var mapOptions = {
+				center: new google.maps.LatLng(-34.397, 150.644),
+				zoom: 8
+			};
+			var map = new google.maps.Map(mapTarget, mapOptions);
+			spin.stop();
 		});
-	</script>
+	});
+	/*$.get("https://api.foursquare.com/v2/venues/categories", {
+		"oauth_token": "VRRBTV1XBAXFX4EUW43C0WK03IY4UNU4FC3MVYLHQNBDWLZQ",
+		"v": "2013093"
+	}).done(function(data) {
+		if (data.meta.code !== 200) return;
+		$(".loader").hide();
+		var items = data.response.categories;
+
+		var opt = $.map(items, function(item) {
+			return '<option value="' + item.id + '">' + item.name + '</option>';
+		}).join("\n");
+
+		var $select = $('<select class="" multiple data-style="btn btn-default btn-sm">' + opt + '</select>');
+		$(".categories").append($select);
+		$select.selectpicker();
+	});*/
+</script>
 </body>
 </html>
+

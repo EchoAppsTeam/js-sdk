@@ -268,7 +268,7 @@ stream.config = {
 	 * @cfg {Boolean} [liveUpdates.enabled=true]
 	 * Parameter to enable/disable live updates.
 	 *
-	 * @cfg {String} [liveUpdates.transport=&quot;polling&quot;]
+	 * @cfg {String} [liveUpdates.transport=&quot;websockets&quot;]
 	 * Preferred live updates receiveing machinery transport.
 	 * The following transports are supported:
 	 *
@@ -301,7 +301,7 @@ stream.config = {
 	 * to keep the connection alive.
 	 */
 	&quot;liveUpdates&quot;: {
-		&quot;transport&quot;: &quot;polling&quot;, // or &quot;websockets&quot;
+		&quot;transport&quot;: &quot;websockets&quot;, // or &quot;polling&quot;
 		&quot;enabled&quot;: true,
 		&quot;polling&quot;: {
 			&quot;timeout&quot;: 10

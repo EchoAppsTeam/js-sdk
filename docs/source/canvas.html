@@ -436,34 +436,40 @@ canvas.methods._fetchConfig = function(callback) {
 		})
 	});
 
-	$.ajax({
-		&quot;url&quot;: URL,
-		&quot;crossDomain&quot;: true,
-		&quot;dataType&quot;: &quot;script&quot;,
-		&quot;cache&quot;: mode !== &quot;dev&quot;,
-		&quot;timeout&quot;: Echo.Loader.config.errorTimeout,
-		&quot;success&quot;: function() {
-			var config = getConfig();
-			if (!config || !config.apps || !config.apps.length) {
-				var message = self.labels.get(&quot;error_no_&quot; + (config ? &quot;apps&quot; : &quot;config&quot;));
+	// We rely on asynchronous behavior of the $.ajax method call
+	// to implement store/fetch mechanics. But it can occasionally
+	// be synchronous while fetching cached response. In order to
+	// avoid this issue, we always make $.ajax call asynchronously.
+	setTimeout(function() {
+		$.ajax({
+			&quot;url&quot;: URL,
+			&quot;crossDomain&quot;: true,
+			&quot;dataType&quot;: &quot;script&quot;,
+			&quot;cache&quot;: mode !== &quot;dev&quot;,
+			&quot;timeout&quot;: Echo.Loader.config.errorTimeout,
+			&quot;success&quot;: function() {
+				var config = getConfig();
+				if (!config || !config.apps || !config.apps.length) {
+					var message = self.labels.get(&quot;error_no_&quot; + (config ? &quot;apps&quot; : &quot;config&quot;));
+					self._error({
+						&quot;args&quot;: {&quot;config&quot;: config, &quot;target&quot;: target},
+						&quot;code&quot;: &quot;invalid_canvas_config&quot;,
+						&quot;message&quot;: message
+					});
+					return;
+				}
+				self.set(&quot;data&quot;, config); // store Canvas data into the instance
+				callback.call(self);
+			},
+			&quot;error&quot;: function() {
 				self._error({
-					&quot;args&quot;: {&quot;config&quot;: config, &quot;target&quot;: target},
-					&quot;code&quot;: &quot;invalid_canvas_config&quot;,
-					&quot;message&quot;: message
+					&quot;args&quot;: arguments,
+					&quot;code&quot;: &quot;unable_to_retrieve_app_config&quot;,
+					&quot;renderError&quot;: true
 				});
-				return;
 			}
-			self.set(&quot;data&quot;, config); // store Canvas data into the instance
-			callback.call(self);
-		},
-		&quot;error&quot;: function() {
-			self._error({
-				&quot;args&quot;: arguments,
-				&quot;code&quot;: &quot;unable_to_retrieve_app_config&quot;,
-				&quot;renderError&quot;: true
-			});
-		}
-	});
+		});
+	}, 0);
 };
 
 Echo.Control.create(canvas);
