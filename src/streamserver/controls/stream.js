@@ -129,6 +129,12 @@ stream.init = function() {
 	}
 };
 
+stream.destroy = function() {
+	$.map(this.items, function(item) {
+		item.destroy();
+	});
+};
+
 stream.config = {
 	/**
 	 * @cfg {String} query
@@ -1325,7 +1331,6 @@ stream.methods._spotUpdates.remove = function(item, options) {
 			"global": false,
 			"propagation": false
 		});
-		this._applyStructureUpdates("delete", item, options);
 	} else {
 		var parent = this._getParentItem(item);
 		if (parent) {
@@ -1339,7 +1344,6 @@ stream.methods._spotUpdates.remove = function(item, options) {
 				"target": parent.view.get("childrenByCurrentActorLive"),
 				"extra": options
 			});
-			this._applyStructureUpdates("delete", item, options);
 			parent.view.render({"name": "container"});
 		}
 	}
@@ -1409,7 +1413,6 @@ stream.methods._spotUpdates.animate.remove = function(item, config) {
 		// if the item is being moved, we should keep all jQuery handlers
 		// for the nested elements (children), thus we use "detach" instead of "remove"
 		item.config.get("target")[config.keepChildren ? "detach" : "remove"]();
-		item.set("vars", {});
 		var itemsCount = Echo.Utils.foldl(0, self.items, function(_item, acc) {
 			return acc + 1;
 		});
@@ -1420,6 +1423,7 @@ stream.methods._spotUpdates.animate.remove = function(item, config) {
 				"target": self.view.get("body")
 			});
 		}
+		self._applyStructureUpdates("delete", item, config);
 		self.activities.animations--;
 		self._executeNextActivity();
 	};
@@ -1756,8 +1760,12 @@ stream.methods._applyStructureUpdates = function(action, item, options) {
 			}
 			container.splice(this._getItemListIndex(item, container), 1);
 			if (!options.keepChildren) {
+				var itemIndex = this._getItemListIndex(item, this.lastRequest.data);
+				this.lastRequest.data.splice(itemIndex, 1);
+				item.destroy();
 				item.traverse(item.get("children"), function(child) {
 					delete self.items[child.get("data.unique")];
+					child.destroy();
 				});
 				item.set("children", []);
 			}
