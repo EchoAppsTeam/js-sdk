@@ -2900,7 +2900,6 @@ var _smileys = {
 };
 
 item.methods._initSmileysConfig = function() {
-	var self = this;
 	if (_smileys.codes.length) {
 		return _smileys;
 	}
@@ -2914,7 +2913,7 @@ item.methods._initSmileysConfig = function() {
 	});
 	_smileys.regexps.test = new RegExp(escapedCodes.join("|"));
 	_smileys.tag = function(smiley) {
-		return self.substitute({"template": '<img class="{class:smiley-icon}" src="{config:cdnBaseURL.sdk-assets}/images/smileys/emoticon_' + smiley.file + '" title="' + smiley.title + '" alt="' + smiley.title + '">'});
+		return '<img class="{class:smiley-icon}" src="{config:cdnBaseURL.sdk-assets}/images/smileys/emoticon_' + smiley.file + '" title="' + smiley.title + '" alt="' + smiley.title + '">';
 	};
 	return _smileys;
 };
@@ -2967,7 +2966,7 @@ item.methods._assembleButtons = function() {
 		});
 	});
 	// keep correct order of plugins and buttons
-	self.buttonsOrder = buttonsOrder.concat(self.buttonsOrder);
+	this.buttonsOrder = buttonsOrder.concat(this.buttonsOrder);
 };
 
 item.methods._sortButtons = function() {
@@ -3125,6 +3124,7 @@ item.methods._sortButtons = function() {
 	};
 
 	var _replaceSmileys = function(text, extra) {
+		var self = this;
 		if (extra.contentTransformations.smileys) {
 			if (text !== extra.textBeforeAutoLinking) {
 				var data = _meta2tags.call(this, text, extra);
@@ -3135,7 +3135,10 @@ item.methods._sortButtons = function() {
 			var smileys = this._initSmileysConfig();
 			if (text.match(smileys.regexps.test)) {
 				$.each(smileys.codes, function(i, code) {
-					text = text.replace(smileys.regexps[code], smileys.tag(smileys.hash[code]));
+					text = text.replace(
+						smileys.regexps[code],
+						self.substitute({"template": smileys.tag(smileys.hash[code])})
+					);
 				});
 			}
 		}
