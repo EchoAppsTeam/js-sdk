@@ -191,10 +191,10 @@ Echo.Events.publish = function(params) {
 	params = $.extend({
 		"bubble": true,
 		"propagation": true,
-		"global": true
+		"global": true,
+		"context": "global"
 	}, params);
 	delete _lastHandlerResult[params.topic];
-	params.context = _initContext(params.topic, params.context);
 	_executeForDeepestContext(params.topic, params.context, function(obj, lastContext, restContexts) {
 		_callHandlers(obj[lastContext], params, restContexts);
 	});
@@ -243,9 +243,14 @@ var _executeForDeepestContext = function(topic, context, callback) {
 	var parts = context.split("/");
 	var lastContext = parts.pop();
 	var obj = Echo.Events._subscriptions[topic];
+	if (!obj) return;
 	$.each(parts, function(i, part) {
+		if (!obj[part] || $.isEmptyObject(obj[part].contexts)) return false;
 		obj = obj[part].contexts;
 	});
+	while (!obj[lastContext] && parts.length) {
+		lastContext = parts.pop();
+	}
 	if (obj[lastContext]) {
 		callback(obj, lastContext, parts);
 	}
