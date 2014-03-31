@@ -102,6 +102,14 @@ submit.init = function() {
 	this.ready();
 };
 
+submit.destroy = function() {
+	var self = this;
+	this.view.get("postButton").off("click");
+	$.each(this.posting.subscriptions, function(id) {
+		self.events.unsubscribe({"handlerId": id});
+	});
+};
+
 submit.config = {
 	/**
 	 * @cfg {String} [targetURL=document.location.href]
