@@ -591,24 +591,23 @@ Echo.Control.prototype.checkAppKey = function() {
 };
 
 Echo.Control.prototype._init = function(subsystems) {
-	var control = this;
 	if (!subsystems || !subsystems.length) return;
 	var func = subsystems.shift();
 	var parts = func.split(":");
 	var subsystem = {
 		"name": parts[0],
-		"init": control._initializers[parts[0]],
+		"init": this._initializers[parts[0]],
 		"type": parts[1] || "sync"
 	};
 	if (subsystem.type === "sync") {
-		var result = subsystem.init.call(control);
+		var result = subsystem.init.call(this);
 		if (typeof result !== "undefined") {
-			control[subsystem.name] = result;
+			this[subsystem.name] = result;
 		}
-		control._init(subsystems);
+		this._init(subsystems);
 	} else {
-		subsystem.init.call(control, function() {
-			control._init(subsystems);
+		subsystem.init.call(this, function() {
+			this._init(subsystems);
 		});
 	}
 };
@@ -853,7 +852,7 @@ Echo.Control.prototype._initializers.loading = function() {
 };
 
 Echo.Control.prototype._initializers.dependencies = function(callback) {
-	this._loadScripts(this._manifest("dependencies"), callback);
+	this._loadScripts(this._manifest("dependencies"), $.proxy(callback, this));
 };
 
 Echo.Control.prototype._initializers.user = function(callback) {
@@ -887,8 +886,8 @@ Echo.Control.prototype._initializers.user = function(callback) {
 };
 
 Echo.Control.prototype._initializers.plugins = function(callback) {
-	var control = this;
 	this._loadPluginScripts(function() {
+		var control = this;
 		$.map(control.config.get("pluginsOrder"), function(name) {
 			var Plugin = Echo.Plugin.getClass(name, control.name);
 			if (Plugin) {
@@ -899,7 +898,7 @@ Echo.Control.prototype._initializers.plugins = function(callback) {
 				}
 			}
 		});
-		callback.call(control);
+		callback.call(this);
 	});
 };
 
@@ -1025,12 +1024,11 @@ Echo.Control.prototype._manifest = function(key) {
 };
 
 Echo.Control.prototype._loadScripts = function(resources, callback) {
-	var control = this;
 	if (!resources || !resources.length) {
-		callback.call(control);
+		callback.call(this);
 		return;
 	}
-	resources = $.map(resources, function(resource) {
+	resources = $.map(resources, $.proxy(function(resource) {
 		if (!resource.loaded) {
 			var key = resource.app && "App" ||
 				resource.control && "Control" ||
@@ -1043,13 +1041,13 @@ Echo.Control.prototype._loadScripts = function(resources, callback) {
 			}
 		}
 		return $.extend(resource, {
-			"url": control.substitute({"template": resource.url})
+			"url": this.substitute({"template": resource.url})
 		});
-	});
-	Echo.Loader.download(resources, function() {
-		callback.call(control);
-	}, {
-		"errorTimeout": control.config.get("scriptLoadErrorTimeout")
+	}, this));
+	Echo.Loader.download(resources, $.proxy(function() {
+		callback.call(this);
+	}, this), {
+		"errorTimeout": this.config.get("scriptLoadErrorTimeout")
 	});
 };
 
@@ -1083,9 +1081,8 @@ Echo.Control.prototype._loadPluginScripts = function(callback) {
 			}
 		});
 	};
-
 	control._loadScripts(get("plugins"), function() {
-		control._loadScripts(get("dependencies"), callback);
+		this._loadScripts(get("dependencies"), callback);
 	});
 };
 
