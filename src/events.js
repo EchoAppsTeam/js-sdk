@@ -133,9 +133,6 @@ Echo.Events.unsubscribe = function(params) {
 					}
 				});
 				if (!obj[lastContext].handlers.length) {
-					if (_dataByHandlerId[params.handlerId]) {
-						delete _dataByHandlerId[params.handlerId];
-					}
 					if ($.isEmptyObject(obj[lastContext].contexts)) {
 						delete obj[lastContext];
 					}
