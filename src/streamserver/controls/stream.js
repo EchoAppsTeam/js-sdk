@@ -2900,21 +2900,23 @@ var _smileys = {
 };
 
 item.methods._initSmileysConfig = function() {
+	var self = this;
 	if (_smileys.codes.length) {
 		return _smileys;
 	}
 	var esc = function(v) { return v.replace(/([\W])/g, "\\$1"); };
 	var escapedCodes = [];
-	$.each(_smileys.hash, function(code) {
+	$.each(_smileys.hash, function(code, smiley) {
 		var escaped = esc(code);
 		escapedCodes.push(escaped);
 		_smileys.codes.push(code);
 		_smileys.regexps[code] = new RegExp(escaped, "g");
+		smiley.tag = self.substitute({
+			"template": '<img class="{class:smiley-icon}" src="{config:cdnBaseURL.sdk-assets}/images/smileys/emoticon_' + smiley.file + '" title="' + smiley.title + '" alt="' + smiley.title + '">'
+		});
+
 	});
 	_smileys.regexps.test = new RegExp(escapedCodes.join("|"));
-	_smileys.tag = function(smiley) {
-		return '<img class="{class:smiley-icon}" src="{config:cdnBaseURL.sdk-assets}/images/smileys/emoticon_' + smiley.file + '" title="' + smiley.title + '" alt="' + smiley.title + '">';
-	};
 	return _smileys;
 };
 
@@ -3137,7 +3139,7 @@ item.methods._sortButtons = function() {
 				$.each(smileys.codes, function(i, code) {
 					text = text.replace(
 						smileys.regexps[code],
-						self.substitute({"template": smileys.tag(smileys.hash[code])})
+						smileys.hash[code].tag
 					);
 				});
 			}
