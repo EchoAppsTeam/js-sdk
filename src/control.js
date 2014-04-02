@@ -1081,7 +1081,7 @@ Echo.Control.prototype._loadPluginScripts = function(callback) {
 			}
 		});
 	};
-	control._loadScripts(get("plugins"), function() {
+	this._loadScripts(get("plugins"), function() {
 		this._loadScripts(get("dependencies"), callback);
 	});
 };
