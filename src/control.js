@@ -792,7 +792,7 @@ Echo.Control.prototype._initializers.subscriptions = function() {
 
 	// subscribe all root level controls to the user login/logout event
 	// and call the "refresh" control method
-	if (!control.dependent()) {
+	if (!control.dependent() && this.config.get("refreshOnUserInvalidate")) {
 		control.events.subscribe({
 			"topic": "Echo.UserSession.onInvalidate",
 			"context": "global",
@@ -1246,6 +1246,12 @@ manifest.config = {
 	"context": "",
 	"scriptLoadErrorTimeout": 5000, // 5 sec
 	"query": "",
+
+	/**
+	 * @cfg {Boolean} refreshOnUserInvalidate=true
+	 * If true control will be automatically refreshed after user login/logout
+	 */
+	"refreshOnUserInvalidate": true,
 
 	/**
 	 * @cfg {String} defaultAvatar
