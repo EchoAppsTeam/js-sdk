@@ -1762,11 +1762,11 @@ stream.methods._applyStructureUpdates = function(action, item, options) {
 			if (!options.keepChildren) {
 				var itemIndex = this._getItemListIndex(item, this.lastRequest.data);
 				this.lastRequest.data.splice(itemIndex, 1);
-				item.destroy();
 				item.traverse(item.get("children"), function(child) {
 					delete self.items[child.get("data.unique")];
 					child.destroy();
 				});
+				item.destroy();
 				item.set("children", []);
 			}
 			delete this.items[item.get("data.unique")];
