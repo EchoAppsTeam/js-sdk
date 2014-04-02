@@ -121,7 +121,8 @@ Echo.Events.unsubscribe = function(params) {
 		params.context = _initContext(params.topic, params.context);
 	}
 	if (params.handlerId || params.topic) {
-		var obj = _executeForDeepestContext(params.topic, params.context, function(obj, lastContext) {
+		var obj = _executeForDeepestContext(params.topic, params.context, function callback(obj, lastContext, rest) {
+			if ($.isEmptyObject(obj)) return;
 			if (params.handlerId) {
 				$.each(obj[lastContext].handlers, function(i, data) {
 					if (data.id === params.handlerId) {
@@ -146,10 +147,14 @@ Echo.Events.unsubscribe = function(params) {
 				delete obj[lastContext];
 				unsubscribed = true;
 			}
+			if (rest.length) {
+				_executeForDeepestContext(params.topic, rest.join("/"), callback);
+			}
 		});
 	} else {
 		$.each(Echo.Events._subscriptions, function(topic, data) {
 			_executeForDeepestContext(topic, params.context, function(obj, lastContext) {
+				if ($.isEmptyObject(obj)) return;
 				$.each(obj[lastContext].handlers, function(i, data) {
 					delete _dataByHandlerId[data.id];
 				});
@@ -245,15 +250,9 @@ var _executeForDeepestContext = function(topic, context, callback) {
 	var obj = Echo.Events._subscriptions[topic];
 	if (!obj) return;
 	$.each(parts, function(i, part) {
-		if (!obj[part] || $.isEmptyObject(obj[part].contexts)) return false;
-		obj = obj[part].contexts;
+		obj = obj[part] && obj[part].contexts || {};
 	});
-	while (!obj[lastContext] && parts.length) {
-		lastContext = parts.pop();
-	}
-	if (obj[lastContext]) {
-		callback(obj, lastContext, parts);
-	}
+	callback(obj, lastContext, parts);
 };
 
 var _shouldStopEvent = function(stopperType, topic) {
@@ -268,7 +267,7 @@ var _shouldStopEvent = function(stopperType, topic) {
 
 var _callHandlers = function(obj, params, restContexts) {
 	// use copy of handler list so that inner unsubscribe actions couldn't mess it up
-	var _params, handlers = (obj.handlers || []).slice(0);
+	var _params, handlers = (obj && obj.handlers || []).slice(0);
 	$.each(handlers, function(i, data) {
 		_lastHandlerResult[params.topic] = data.handler(params.topic, params.data);
 		if (_shouldStopEvent("propagation.siblings", params.topic)) {
@@ -288,7 +287,7 @@ var _callHandlers = function(obj, params, restContexts) {
 		_params = $.extend({}, params);
 		_params.global = false;
 		_params.bubble = false;
-		$.each(obj.contexts, function(id, context) {
+		$.each(obj && obj.contexts || [], function(id, context) {
 			_callHandlers(context, _params, []);
 			if (_shouldStopEvent("propagation.siblings", _params.topic)) {
 				return false;
