@@ -1028,6 +1028,10 @@ Echo.Control.prototype._loadScripts = function(resources, callback) {
 		callback.call(this);
 		return;
 	}
+	// In case of plugin "resource.loaded" function stores globally
+	// to the constructor object. Thus we should avoid any
+	// context preservation by its scope to avoid memory leaks.
+	// In this case we bind the map-iteration function to that context.
 	resources = $.map(resources, $.proxy(function(resource) {
 		if (!resource.loaded) {
 			var key = resource.app && "App" ||
