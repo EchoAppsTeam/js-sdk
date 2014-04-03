@@ -364,7 +364,7 @@ Echo.Loader.initApplication = function(app) {
 		Echo.Loader._initCanvas(target, app.init, {
 			"target": app.config.target,
 			"useSecureAPI": !!app.config.useSecureAPI,
-			"refreshOnUserInvalidate": !!app.refreshOnUserInvalidate,
+			"refreshOnUserInvalidate": app.refreshOnUserInvalidate,
 			"data": { // as we receive if from the Canvas Storage
 				"apps": [app],
 				"backplane": app.backplane
