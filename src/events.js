@@ -137,15 +137,16 @@ Echo.Events.unsubscribe = function(params) {
 						delete obj[lastContext];
 					}
 				}
+				// try to clean up empty parent contexts
+				if (rest.length) {
+					_executeForDeepestContext(params.topic, rest.join("/"), callback);
+				}
 			} else {
 				$.each(obj[lastContext].handlers, function(i, data) {
 					delete _dataByHandlerId[data.id];
 				});
 				delete obj[lastContext];
 				unsubscribed = true;
-			}
-			if (rest.length) {
-				_executeForDeepestContext(params.topic, rest.join("/"), callback);
 			}
 		});
 	} else {
@@ -284,7 +285,7 @@ var _callHandlers = function(obj, params, restContexts) {
 		_params = $.extend({}, params);
 		_params.global = false;
 		_params.bubble = false;
-		$.each(obj && obj.contexts || [], function(id, context) {
+		$.each(obj && obj.contexts || {}, function(id, context) {
 			_callHandlers(context, _params, []);
 			if (_shouldStopEvent("propagation.siblings", _params.topic)) {
 				return false;

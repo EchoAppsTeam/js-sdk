@@ -120,6 +120,7 @@ Echo.Tests.test("public methods", function() {
 	QUnit.ok(unsubscribe(undefined, undefined, "a2"), "Unsubscribe: all events, all handlers, context \"a2\"");
 	QUnit.ok(!unsubscribe("A.test", s1.id, "a1/b1/c1"), "Unsubscribe from previously unsubscribed handler using all available data: nothing to do");
 	QUnit.ok(!unsubscribe(undefined, s1.id), "Unsubscribe from previously unsubscribed handler using only handlerId: nothing to do");
+	QUnit.ok(unsubscribe("A.test", undefined, "a1/b1/x1"), "Unsubscribe from undefined context with undefined handlerId");
 	var subscriptions2 = {
 		"A.test": {
 			"a1": {
