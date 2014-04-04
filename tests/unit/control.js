@@ -880,32 +880,31 @@ suite.prototype.cases.inheritedEvent = function(callback) {
 	});
 };
 
-
 suite.prototype.cases.controlRefreshingOnUserInvalidate = function(callback) {
 	var invalidateUser = function() {
 		Echo.Events.publish({"topic": "Echo.UserSession.onInvalidate", "data": {}});
 	};
 	Echo.Control.create({
-		"name": "Echo.Tests.RefreshingControl",
+		"name": "Echo.Tests.Fixtures.RefreshingControl",
 		"templates": {"main": '<div class="{class:container}"></div>'}
 	});
-	$.map([true, false], function(isRefresh) {
+	$.each([true, false], function(idx, isRefresh) {
 		var refreshCallback = sinon.spy();
 		suite.initTestControl({
 			"refreshOnUserInvalidate": isRefresh,
 			"ready": function() {
 				this.events.subscribe({
-					"topic": "Echo.Tests.RefreshingControl.onRefresh",
+					"topic": "Echo.Tests.Fixtures.RefreshingControl.onRefresh",
 					"handler": refreshCallback
 				});
 				invalidateUser();
 				QUnit.ok(
 					isRefresh ? refreshCallback.calledOnce : !refreshCallback.called,
-					"Check if control is " + (isRefresh ? "refreshed" : "not refreshed") + " if refreshOnUserInvalidate=" + isRefresh.toString()
+					"Check if control is " + (isRefresh ? "refreshed" : "not refreshed") + " when refreshOnUserInvalidate=" + isRefresh.toString()
 				);
 				this.destroy();
 			}
-		}, "Echo.Tests.RefreshingControl");
+		}, "Echo.Tests.Fixtures.RefreshingControl");
 	});
 };
 
