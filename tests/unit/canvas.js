@@ -61,32 +61,6 @@ Echo.Tests.asyncTest("common workflow", function() {
 	}));
 });
 
-Echo.Tests.asyncTest("Canvas refreshing on user invalidate", function() {
-	var target = $("#qunit-fixture");
-	var canvases = [{"isRefresh": true}, {"isRefresh": false}];
-	var cnt = 0;
-	var callback = function(isRefresh, isSubscribed) {
-		QUnit.ok(isRefresh === isSubscribed, "Canvas with refreshOnUserInvalidate=" + isRefresh.toString() + " " + (isSubscribed ? "is" : "is not") + " subscribed to Echo.UserSession.onInvalidate");
-		cnt++;
-		if (cnt === canvases.length) QUnit.start();
-	};
-	$.map(canvases, function(canvasData, idx) {
-		target.append('<div id="echo-canvas-' + idx + '" data-canvas-id="js-sdk-tests/test-canvas-008"></div>');
-		Echo.Loader.canvases.push(new Echo.Canvas({
-			"target": $("#echo-canvas-" + idx),
-			"refreshOnUserInvalidate": canvasData.isRefresh,
-			"ready": function() {
-				var canvas = this;
-				var isSubscribed = $.map(Echo.Events._subscriptions["Echo.UserSession.onInvalidate"].global.handlers, function(handler) {
-					return canvas.subscriptionIDs[handler.id];
-				}).length > 0;
-				callback(canvasData.isRefresh, isSubscribed);
-				this.destroy();
-			}
-		}));
-	});
-});
-
 Echo.Tests.asyncTest("select app script url", function() {
 	var target = $("#qunit-fixture");
 	target.append($('<div id="echo-canvas" data-canvas-id="js-sdk-tests/test-canvas-001"></div>'));

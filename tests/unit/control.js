@@ -96,7 +96,8 @@ suite.prototype.tests.PublicInterfaceTests = {
 			"destroyBroadcasting",
 			"manifestBaseInheritance",
 			"nestedReadyCallbacks",
-			"inheritedEvent"
+			"inheritedEvent",
+			"controlRefreshingOnUserInvalidate"
 		], "cases");
 
 	}
@@ -876,6 +877,35 @@ suite.prototype.cases.inheritedEvent = function(callback) {
 			QUnit.strictEqual(s, "Echo.Test.Child1.Child1Echo.Test.Child1Echo.Test.Parent", "Check that inherited event published with the appropriate params (propagation: false)");
 			callback();
 		});
+	});
+};
+
+
+suite.prototype.cases.controlRefreshingOnUserInvalidate = function(callback) {
+	var invalidateUser = function() {
+		Echo.Events.publish({"topic": "Echo.UserSession.onInvalidate", "data": {}});
+	};
+	Echo.Control.create({
+		"name": "Echo.Tests.RefreshingControl",
+		"templates": {"main": '<div class="{class:container}"></div>'}
+	});
+	$.map([true, false], function(isRefresh) {
+		var refreshCallback = sinon.spy();
+		suite.initTestControl({
+			"refreshOnUserInvalidate": isRefresh,
+			"ready": function() {
+				this.events.subscribe({
+					"topic": "Echo.Tests.RefreshingControl.onRefresh",
+					"handler": refreshCallback
+				});
+				invalidateUser();
+				QUnit.ok(
+					isRefresh ? refreshCallback.calledOnce : !refreshCallback.called,
+					"Check if control is " + (isRefresh ? "refreshed" : "not refreshed") + " if refreshOnUserInvalidate=" + isRefresh.toString()
+				);
+				this.destroy();
+			}
+		}, "Echo.Tests.RefreshingControl");
 	});
 };
 
