@@ -27,7 +27,6 @@ var docElement            = doc.documentElement,
     // If you have a better solution, we are actively looking to solve the problem
     isGecko               = ( "MozAppearance" in docElement.style ),
     isGeckoLTE18          = isGecko && !! doc.createRange().compareNode,
-    insBeforeObj          = isGeckoLTE18 ? docElement : firstScript.parentNode,
     // Thanks to @jdalton for showing us this opera detection (by way of @kangax) (and probably @miketaylr too, or whatever...)
     isOpera               = window.opera && toString.call( window.opera ) == "[object Opera]",
     isIE                  = !! doc.attachEvent && !isOpera,
@@ -210,7 +209,7 @@ var docElement            = doc.documentElement,
 
         if ( first ) {
           if ( elem != "img" ) {
-            sTimeout(function(){ insBeforeObj.removeChild( preloadElem ) }, 50);
+            sTimeout(function(){ preloadElem.parentNode && preloadElem.parentNode.removeChild( preloadElem ); }, 50);
           }
 
           for ( var i in scriptCache[ url ] ) {
@@ -259,7 +258,7 @@ var docElement            = doc.documentElement,
       // If it's the first time, or we've already loaded it all the way through
       if ( firstFlag || scriptCache[ url ] === 2 ) {
         readFirstScript();
-        insBeforeObj.insertBefore( preloadElem, isGeckoLTE18 ? null : firstScript );
+        firstScript.parentNode.insertBefore( preloadElem, isGeckoLTE18 ? null : firstScript );
 
         // If something fails, and onerror doesn't fire,
         // continue after a timeout.
