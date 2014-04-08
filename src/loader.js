@@ -296,6 +296,7 @@ Echo.Loader.init = function(config) {
 		Echo.Loader._map(canvases, function(canvas) {
 			Echo.Loader._initCanvas(canvas, canvas.getAttribute("data-canvas-init"), {
 				"target": canvas,
+				"refreshOnUserInvalidate": canvas.getAttribute("data-canvas-refreshOnUserInvalidate") === "true",
 				"overrides": Echo.Loader.overrides[canvas.getAttribute("data-canvas-id")] || {}
 			});
 		});
@@ -363,6 +364,7 @@ Echo.Loader.initApplication = function(app) {
 		Echo.Loader._initCanvas(target, app.init, {
 			"target": app.config.target,
 			"useSecureAPI": !!app.config.useSecureAPI,
+			"refreshOnUserInvalidate": app.refreshOnUserInvalidate,
 			"data": { // as we receive if from the Canvas Storage
 				"apps": [app],
 				"backplane": app.backplane
