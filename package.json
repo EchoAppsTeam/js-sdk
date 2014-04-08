@@ -2,7 +2,7 @@
   "name": "js-sdk",
   "title": "Echo JS SDK",
   "description": "Javascript SDK for Echo applications",
-  "version": "3.0.17",
+  "version": "3.0.18",
   "homepage": "http://echoappsteam.github.io/js-sdk/",
   "author": {
     "name": "Echo",
