@@ -1,5 +1,9 @@
 # Echo JS SDK CHANGELOG:
 
+##v3.0.18 - April 8, 2014
+
+This release contains a fix for Echo Loader library which is responsible for dependency management and resource loading across all Echo JS SDK based applications. Sometimes it failed to load dependencies in Firefox and Internet Explorer browsers properly. It was caused by a bug in the Yepnope library which is used internally for Echo Loader. The library is now patched and covered with tests.
+
 ##v3.0.17 - February 27, 2014
 
 * **Canvas config loading machinery was updated** to avoid race conditions when a browser tries to retrieve config which was cached by a browser previously. We updated the logic to make sure that an execution order always remains the same.
