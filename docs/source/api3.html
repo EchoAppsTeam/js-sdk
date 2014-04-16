@@ -29,7 +29,7 @@ Echo.StreamServer.API = {};
 <span id='Echo-StreamServer-API-Request-method-constructor'><span id='Echo-StreamServer-API-Request'>/**
 </span></span> * @class Echo.StreamServer.API.Request
  * Class implements the interaction with the
- * &lt;a href=&quot;http://wiki.aboutecho.com/w/page/35105642/API-section-items&quot; target=&quot;_blank&quot;&gt;Echo StreamServer API&lt;/a&gt;
+ * &lt;a href=&quot;http://echoplatform.com/streamserver/docs/rest-api/items-api/&quot; target=&quot;_blank&quot;&gt;Echo StreamServer API&lt;/a&gt;
  *
  *     var request = Echo.StreamServer.API.request({
  *         &quot;endpoint&quot;: &quot;search&quot;,
@@ -113,7 +113,8 @@ Echo.StreamServer.API.Request = Echo.Utils.inherit(Echo.API.Request, function(co
 		 *
 		 * __Note__: The API endpoint &quot;mux&quot; allows to &quot;multiplex&quot; requests,
 		 * i.e. use a single API call to &quot;wrap&quot; several requests. More information
-		 * about &quot;mux&quot; can be found [here](http://wiki.aboutecho.com/w/page/32433803/API-method-mux).
+		 * about &quot;mux&quot; can be found
+		 * &lt;a href=&quot;http://echoplatform.com/streamserver/docs/rest-api/other-api/mux/&quot; target=&quot;_blank&quot;&gt;here&lt;/a&gt;.
 		 */
 		&quot;liveUpdates&quot;: {
 			&quot;transport&quot;: &quot;polling&quot;, // or &quot;websockets&quot;
@@ -135,6 +136,8 @@ Echo.StreamServer.API.Request = Echo.Utils.inherit(Echo.API.Request, function(co
 					&quot;timeout&quot;: 10,
 					&quot;divergence&quot;: 5
 				},
+<span id='global-property-waitingForConnection'>				/** @ignore */
+</span>				&quot;waitingForConnection&quot;: 5,
 				&quot;URL&quot;: &quot;//live.echoenabled.com/v1/&quot;
 			}
 		},
@@ -192,10 +195,13 @@ Echo.StreamServer.API.Request = Echo.Utils.inherit(Echo.API.Request, function(co
  * Method to stop live updates requests.
  */
 Echo.StreamServer.API.Request.prototype.abort = function() {
+	var self = this;
 	Echo.StreamServer.API.Request.parent.abort.call(this);
 	if (this.liveUpdates) {
+		this.liveUpdates.on(&quot;close&quot;, function() {
+			delete self.liveUpdates;
+		});
 		this.liveUpdates.stop();
-		delete this.liveUpdates;
 	}
 };
 
@@ -282,7 +288,7 @@ Echo.StreamServer.API.Request.prototype._prepareURL = function() {
 
 Echo.StreamServer.API.Request.prototype._initLiveUpdates = function(data) {
 	var ws, self = this;
-	var polling = this.liveUpdates = Echo.StreamServer.API.Polling.init(
+	var polling = Echo.StreamServer.API.Polling.init(
 		$.extend(true, this._getLiveUpdatesConfig(&quot;polling&quot;), {
 			&quot;request&quot;: {
 				&quot;data&quot;: {
@@ -292,7 +298,7 @@ Echo.StreamServer.API.Request.prototype._initLiveUpdates = function(data) {
 		})
 	);
 	if (this.config.get(&quot;liveUpdates.transport&quot;) === &quot;websockets&quot; &amp;&amp; Echo.API.Transports.WebSockets.available()) {
-		ws = Echo.StreamServer.API.WebSockets.init(
+		ws = this.liveUpdates = Echo.StreamServer.API.WebSockets.init(
 			$.extend(true, this._getLiveUpdatesConfig(&quot;websockets&quot;), {
 				&quot;request&quot;: {
 					&quot;data&quot;: {
@@ -302,6 +308,8 @@ Echo.StreamServer.API.Request.prototype._initLiveUpdates = function(data) {
 			})
 		);
 		this._liveUpdatesWatcher(polling, ws);
+	} else {
+		this.liveUpdates = polling;
 	}
 };
 
@@ -332,13 +340,14 @@ Echo.StreamServer.API.Request.prototype._getLiveUpdatesConfig = function(name) {
 			&quot;resubscribe.resetPeriod&quot;: &quot;liveUpdates.websockets.resetPeriod&quot;,
 			&quot;resubscribe.maxResetsPerPeriod&quot;: &quot;liveUpdates.websockets.maxResetsPerPeriod&quot;,
 			&quot;request.settings.maxConnectRetries&quot;: &quot;liveUpdates.websockets.maxConnectRetries&quot;,
-			&quot;request.settings.serverPingInterval&quot;: &quot;liveUpdates.websockets.serverPingInterval&quot;
+			&quot;request.settings.serverPingInterval&quot;: &quot;liveUpdates.websockets.serverPingInterval&quot;,
+			&quot;request.settings.closeSocketTimeout&quot;: &quot;liveUpdates.websockets.closeSocketTimeout&quot;
 		}
 	};
 
 	var mapped = Echo.Utils.foldl({}, map[name], function(from, acc, to) {
 		var value = function fetch(key) {
-			var parts, val = self.config.get(key);
+			var val = self.config.get(key);
 			if (typeof val === &quot;undefined&quot; &amp;&amp; key) {
 				return fetch(key.split(&quot;.&quot;).slice(1).join(&quot;.&quot;));
 			}
@@ -351,6 +360,7 @@ Echo.StreamServer.API.Request.prototype._getLiveUpdatesConfig = function(name) {
 
 Echo.StreamServer.API.Request.prototype._liveUpdatesWatcher = function(polling, ws) {
 	var self = this;
+	var config = this.config.get(&quot;liveUpdates.websockets&quot;);
 	var switchTo = function(inst) {
 		return function() {
 			if (self.liveUpdates.connected()) {
@@ -360,23 +370,36 @@ Echo.StreamServer.API.Request.prototype._liveUpdatesWatcher = function(polling, 
 			self.liveUpdates.start();
 		}
 	};
+	var fallbackTimeout, waitingForConnectionTimeout;
 	ws.on(&quot;close&quot;, function() {
-		var timeout, config = self.config.get(&quot;liveUpdates.websockets.fallback&quot;);
-		if (self.liveUpdates.closeReason !== &quot;abort&quot;) {
+		var timeout, fallback = config.fallback;
+		clearTimeout(waitingForConnectionTimeout);
+		if (self.liveUpdates &amp;&amp; self.liveUpdates.closeReason !== &quot;abort&quot;) {
 			timeout = Echo.Utils.random(
-				config.timeout - config.divergence,
-				config.timeout + config.divergence
+				fallback.timeout - fallback.divergence,
+				fallback.timeout + fallback.divergence
 			) * 1000;
-			setTimeout(switchTo(polling), timeout);
+			fallbackTimeout = setTimeout(function() {
+				switchTo(polling)();
+			}, timeout);
 		}
 	});
 	// TODO: remove it after more general approach will be implemented
 	ws.on(&quot;quotaExceeded&quot;, switchTo(polling));
+	waitingForConnectionTimeout = setTimeout(function() {
+		clearTimeout(fallbackTimeout);
+		switchTo(polling)();
+	}, config.waitingForConnection * 1000);
 	if (ws.connected()) {
-		switchTo(ws)();
+		clearTimeout(waitingForConnectionTimeout);
 		return;
 	}
-	ws.on(&quot;open&quot;, switchTo(ws));
+	ws.on(&quot;open&quot;, function() {
+		if (!(self.liveUpdates instanceof Echo.StreamServer.API.WebSockets)) {
+			switchTo(ws)();
+		}
+		clearTimeout(waitingForConnectionTimeout);
+	});
 };
 
 Echo.StreamServer.API.Request.prototype._isWaitingForData = function(data) {
@@ -707,13 +730,13 @@ Echo.StreamServer.API.WebSockets = Echo.Utils.inherit(Echo.StreamServer.API.Poll
 	});
 	this.queue = [];
 	this.subscribed = false;
-	this.subscriptionIds = [];
+	this.closeReason = &quot;unknown&quot;;
 	this.subscriptionResets = {
 		&quot;count&quot;: 0,
 		&quot;time&quot;: (new Date()).getTime()
 	};
 	this.requestObject = this.getRequestObject();
-	if (this.connected()) {
+	if (this.requestObject &amp;&amp; this.connected()) {
 		this.requestObject.config.get(&quot;onOpen&quot;)();
 	}
 });
@@ -784,7 +807,6 @@ Echo.StreamServer.API.WebSockets.prototype.on = function(event, fn, params) {
 			&quot;handler&quot;: fn
 		}
 	);
-	this.subscriptionIds.push(id);
 	return id;
 };
 
@@ -796,13 +818,12 @@ Echo.StreamServer.API.WebSockets.prototype.connected = function() {
 
 Echo.StreamServer.API.WebSockets.prototype.stop = function() {
 	var self = this;
-	this._clearSubscriptions();
+	this.closeReason = &quot;abort&quot;;
 	if (this.connected()) {
 		this.queue.push(function() {
 			if (self.subscribed) {
 				self.requestObject.request({&quot;event&quot;: &quot;unsubscribe/request&quot;});
 			}
-			self.closeReason = &quot;abort&quot;;
 			self.requestObject.abort();
 		});
 		this._runQueue();
@@ -850,7 +871,6 @@ Echo.StreamServer.API.WebSockets.prototype._reconnect = function() {
 	};
 	this.closeReason = &quot;reconnect&quot;;
 	this.requestObject.abort();
-	this._clearSubscriptions();
 	if (this.requestObject.transport.closing()) {
 		var id = this.on(&quot;close&quot;, function() {
 			closeHandler();
@@ -901,11 +921,6 @@ Echo.StreamServer.API.WebSockets.prototype._resubscribeAllowed = function() {
 			return false;
 		}
 	}
-};
-
-Echo.StreamServer.API.WebSockets.prototype._clearSubscriptions = function() {
-	$.map(this.subscriptionIds, $.proxy(this.requestObject.transport.unsubscribe, this.requestObject.transport));
-	this.subscriptionIds = [];
 };
 
 Echo.StreamServer.API.WebSockets.prototype._runQueue = function() {

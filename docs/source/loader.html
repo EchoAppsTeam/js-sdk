@@ -33,7 +33,7 @@ var protocol = /^https?/.test(window.location.protocol) ? window.location.protoc
  */
 Echo.Loader = {
 <span id='Echo-Loader-property-version'>	/** @private @readonly */
-</span>	&quot;version&quot;: &quot;&quot;,
+</span>	&quot;version&quot;: &quot;3&quot;,
 <span id='global-property-debug'>	/** @ignore */
 </span>	&quot;debug&quot;: false,
 <span id='Echo-Loader-property-config'>	/** @private */
@@ -313,6 +313,7 @@ Echo.Loader.init = function(config) {
 		Echo.Loader._map(canvases, function(canvas) {
 			Echo.Loader._initCanvas(canvas, canvas.getAttribute(&quot;data-canvas-init&quot;), {
 				&quot;target&quot;: canvas,
+				&quot;refreshOnUserInvalidate&quot;: canvas.getAttribute(&quot;data-canvas-refreshOnUserInvalidate&quot;) === &quot;true&quot;,
 				&quot;overrides&quot;: Echo.Loader.overrides[canvas.getAttribute(&quot;data-canvas-id&quot;)] || {}
 			});
 		});
@@ -380,6 +381,7 @@ Echo.Loader.initApplication = function(app) {
 		Echo.Loader._initCanvas(target, app.init, {
 			&quot;target&quot;: app.config.target,
 			&quot;useSecureAPI&quot;: !!app.config.useSecureAPI,
+			&quot;refreshOnUserInvalidate&quot;: app.refreshOnUserInvalidate,
 			&quot;data&quot;: { // as we receive if from the Canvas Storage
 				&quot;apps&quot;: [app],
 				&quot;backplane&quot;: app.backplane
@@ -424,12 +426,32 @@ Echo.Loader._initCanvas = function(target, initMode, config) {
 		if (initMode !== &quot;when-visible&quot; || Echo.Loader._isInViewport(target)) {
 			event &amp;&amp; onViewportChange(&quot;unsubscribe&quot;, init);
 			Echo.Loader.initEnvironment(function() {
-				Echo.Loader.canvases.push(new Echo.Canvas(config));
+				Echo.Loader.canvases.push(new Echo.Canvas(Echo.Loader._prepareCanvasData(config)));
 			});
 		} else if (!event) {
 			onViewportChange(&quot;subscribe&quot;, init);
 		}
 	})();
+};
+
+// we are changing Comments app script
+// location from Echo CDN to original CDN
+Echo.Loader._prepareCanvasData = function(canvasData) {
+	if (!canvasData.data) return canvasData;
+	var replace = function(script) {
+		return script.replace(/((?:https?:)?\/\/)?cdn\.echoenabled\.com\/apps\/rtb\/comments/, function(match, protocol) {
+			var prefix = protocol === &quot;https://&quot;
+				? &quot;ssl&quot;
+				: (/^https/.test(window.location.protocol) &amp;&amp; protocol !== &quot;http://&quot;
+					? &quot;ssl&quot; : &quot;cdn&quot;);
+			return protocol + prefix + &quot;.realtidbits.com/libs&quot;;
+		});
+	};
+	Echo.Loader._map(canvasData.data.apps || [], function(app) {
+		app.script = replace(Echo.Canvas.prototype._getAppScriptURL(app));
+		app.scripts &amp;&amp; delete app.scripts;
+	});
+	return canvasData;
 };
 
 Echo.Loader._storeCanvasConfig = function(id, config) {

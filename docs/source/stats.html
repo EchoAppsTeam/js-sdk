@@ -101,6 +101,7 @@ var _eventsPublish, _eventsSubscribe, _detailErrors = [];
 
 function testLogSpy(result) {
 	if (!result.result) {
+		// TODO: either remove or make saucelabs accept it
 		_detailErrors.push({
 			&quot;module&quot;: result.module,
 			&quot;name&quot;: result.name,
@@ -112,11 +113,7 @@ function testLogSpy(result) {
 }
 
 function exportStats(results) {
-	window.testResults = {
-		&quot;qunit&quot;: results,
-		&quot;detail&quot;: _detailErrors,
-		&quot;logs&quot;: Echo.Tests.logs || []
-	};
+	window.global_test_results = results;
 }
 
 function startEventsSpy() {
@@ -329,6 +326,7 @@ function showCoverageList(type, prefix) {
 	var html = &quot;&quot;, data = [];
 	var el = $(&quot;.echo-tests-stats-info&quot;);
 	var list = _coverage[prefix].processed[type];
+	list &amp;&amp; list.sort();
 	_isListVisible = !(_isListVisible &amp;&amp; _lastListType === prefix + &quot;-&quot; + type);
 	if (_isListVisible) {
 		if (prefix === &quot;functions&quot;) {

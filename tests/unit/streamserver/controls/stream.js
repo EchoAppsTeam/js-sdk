@@ -48,6 +48,7 @@ Echo.Tests.asyncTest("more button", function() {
 			new Echo.StreamServer.Controls.Stream({
 				"target": $("#qunit-fixture"),
 				"appkey": "echo.jssdk.tests.aboutecho.com",
+				"liveUpdates": {"enabled": false},
 				"query": test.query || "childrenof:http://example.com/sdk/stream/more-button itemsPerPage:" + test.itemsPerPage,
 				"ready": function() {
 					test.check.call(this);
@@ -66,7 +67,7 @@ var suite = Echo.Tests.Unit.Stream = function() {
 			"name": "Echo.StreamServer.Controls.Stream",
 			"config": {
 				"liveUpdates": {
-					"enabled" :false
+					"enabled": false
 				},
 				"query": "childrenof: " + this.config.dataBaseLocation
 			}
@@ -118,7 +119,8 @@ suite.prototype.tests.commonWorkflow = {
 					"addChildItem",
 					"moreButton",
 					"predefinedData",
-					"liveUpdateEmptyStream"
+					"liveUpdateEmptyStream",
+					"liveUpdatesErrorCase"
 				], "cases");
 			}
 		});
@@ -384,7 +386,14 @@ suite.prototype.cases.liveUpdateEmptyStream = function(callback) {
 				"endpoint": "submit",
 				"data": entry
 			});
-			request.send();
+			Echo.Events.subscribe({
+				"once": true,
+				"topic": "Echo.API.Transports.WebSockets.onOpen",
+				"handler": function() {
+					request.send();
+				},
+				"context": "live.echoenabled.com-v1-ws"
+			});
 		}
 	});
 
@@ -392,11 +401,44 @@ suite.prototype.cases.liveUpdateEmptyStream = function(callback) {
 		"topic": "Echo.StreamServer.Controls.Stream.Item.onRender",
 		"once": true,
 		"handler": function(topic, args) {
-			QUnit.ok(ok, "Check if item was rendered for empty Stream");
+			QUnit.ok(true, "Check if item was rendered for empty Stream");
 			callback();
 		}
 	});
 
+	stream.refresh();
+};
+
+suite.prototype.cases.liveUpdatesErrorCase = function(callback) {
+	var stream = suite.stream;
+	stream.config.set("query", "wrong_query");
+	stream.config.set("data", {
+		"id": "http://api.echoenabled.com/v1/search?q=childrenof:http://example.com/js-sdk/%20itemsPerPage:1%20children:0",
+		"updated": "2013-04-18T17:32:18Z",
+		"hasMoreChildren": "true",
+		"sortOrder": "reverseChronological",
+		"showFlags": "on",
+		"safeHTML": "aggressive",
+		"itemsPerPage": "1",
+		"children": {
+			"maxDepth": "0",
+			"sortOrder": "reverseChronological",
+			"itemsPerPage": "2",
+			"filter": "()"
+		},
+		"nextPageAfter": "1366306330.049437",
+		"nextSince": "1366306549.849118",
+		"liveUpdatesTimeout": "0",
+		"entries": []
+	});
+	stream.events.subscribe({
+		"topic": "Echo.StreamServer.Controls.Stream.onRefresh",
+		"once": true,
+		"handler": function() {
+			QUnit.strictEqual(0, stream.config.get("target").contents().find(".echo-app-message-error").length, "Check that live updates error handler doesn't execute \"showError\" message");
+			callback();
+		}
+	});
 	stream.refresh();
 };
 

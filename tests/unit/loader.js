@@ -305,23 +305,29 @@ Echo.Tests.asyncTest("yepnope corner cases", function() {
 		});
 	};
 	var removingFirstNode = Echo.Tests.isolate(function(callback) {
+		// Steps (all in iframe):
+		// 1. append some script to the HEAD element
+		// 2. append "loader" script to the BODY element
+		// 3. once it's loaded, remove first script
+		// 4. try to download something
+		var frame = this;
 		var script = $("<script>");
 		var head = $("head", this.document);
 		head.prepend(script);
 		$("<script>").on("load readystatechange", function() {
 			$(this).off("load readystatechange");
 			script.remove();
-			Echo.Loader.download([{
+			frame.Echo.Loader.download([{
 				"url": Echo.Tests.baseURL +
 					"fixtures/resources/loader/check-removing-first-script.js"
 			}], function() {
-				QUnit.ok(Echo.Tests.Fixtures.loader.firstScriptRemoved,
+				QUnit.ok(frame.firstScriptRemoved,
 					"Check if removing of firstNode doesn't cause side effects");
 				callback();
 			});
-		}).appendTo(head).attr({
+		}).appendTo(this.document.body).attr({
 			"type": "text/javascript",
-			"src": "http://cdn.echoenabled.com/sdk/v3/loader.js"
+			"src": "//cdn.echoenabled.com/sdk/v3/loader.js"
 		});
 	});
 	QUnit.expect(4);
@@ -759,6 +765,9 @@ Echo.Tests.asyncTest("canvases initialization", function() {
 			$.map(["stream", "submit"], function(app) {
 				var def = Echo.jQuery.Deferred();
 				Echo.Loader.override(id + extra, app, {
+					"liveUpdates": {
+						"enabled": false
+					},
 					"ready": function() {
 						def.resolve();
 					}

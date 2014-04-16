@@ -96,7 +96,8 @@ suite.prototype.tests.PublicInterfaceTests = {
 			"destroyBroadcasting",
 			"manifestBaseInheritance",
 			"nestedReadyCallbacks",
-			"inheritedEvent"
+			"inheritedEvent",
+			"controlRefreshingOnUserInvalidate"
 		], "cases");
 
 	}
@@ -879,6 +880,34 @@ suite.prototype.cases.inheritedEvent = function(callback) {
 	});
 };
 
+suite.prototype.cases.controlRefreshingOnUserInvalidate = function(callback) {
+	var invalidateUser = function() {
+		Echo.Events.publish({"topic": "Echo.UserSession.onInvalidate", "data": {}});
+	};
+	Echo.Control.create({
+		"name": "Echo.Tests.Fixtures.RefreshingControl",
+		"templates": {"main": '<div class="{class:container}"></div>'}
+	});
+	$.each([true, false], function(idx, isRefresh) {
+		var refreshCallback = sinon.spy();
+		suite.initTestControl({
+			"refreshOnUserInvalidate": isRefresh,
+			"ready": function() {
+				this.events.subscribe({
+					"topic": "Echo.Tests.Fixtures.RefreshingControl.onRefresh",
+					"handler": refreshCallback
+				});
+				invalidateUser();
+				QUnit.ok(
+					isRefresh ? refreshCallback.calledOnce : !refreshCallback.called,
+					"Check if control is " + (isRefresh ? "refreshed" : "not refreshed") + " when refreshOnUserInvalidate=" + isRefresh.toString()
+				);
+				this.destroy();
+			}
+		}, "Echo.Tests.Fixtures.RefreshingControl");
+	});
+};
+
 suite.prototype.cases.manifestBaseInheritance = function(callback) {
 	var initVar = "",
 		destroyVar = "";
@@ -1105,7 +1134,17 @@ suite.prototype.cases.manifestBaseInheritance = function(callback) {
 										"inherited": true
 									});
 									QUnit.strictEqual(eventsChecker.newEvent, 3, "Check event publishing with the parents prefixes");
-									callback && callback();
+									suite.initTestControl({
+										"target": $("<div>"),
+										"ready": function() {
+											QUnit.strictEqual(this._manifest("events").parentTestEvent.length, 2, "Check if parent event handlers and own are not mutated");
+											Echo.Events.publish({
+												"topic": "parentTestEvent",
+												"context": this.config.get("context")
+											});
+											callback && callback();
+										}
+									}, "Echo.TestControl1_Child1");
 								}
 							}, "Echo.TestControl1_Child1_Child2");
 						}

@@ -450,8 +450,8 @@ Echo.Control.prototype.extendTemplate = function(action, anchor, html) {
 	this.extension.template.push({&quot;action&quot;: action, &quot;anchor&quot;: anchor, &quot;html&quot;: html});
 };
 
-/*
- * Method extending the paticular renderer with defined function.
+<span id='Echo-Control-method-extendRenderer'>/**
+</span> * Method extending the paticular renderer with defined function.
  *
  * @param {String} name
  * Renderer name to be extended.
@@ -608,24 +608,23 @@ Echo.Control.prototype.checkAppKey = function() {
 };
 
 Echo.Control.prototype._init = function(subsystems) {
-	var control = this;
 	if (!subsystems || !subsystems.length) return;
 	var func = subsystems.shift();
 	var parts = func.split(&quot;:&quot;);
 	var subsystem = {
 		&quot;name&quot;: parts[0],
-		&quot;init&quot;: control._initializers[parts[0]],
+		&quot;init&quot;: this._initializers[parts[0]],
 		&quot;type&quot;: parts[1] || &quot;sync&quot;
 	};
 	if (subsystem.type === &quot;sync&quot;) {
-		var result = subsystem.init.call(control);
+		var result = subsystem.init.call(this);
 		if (typeof result !== &quot;undefined&quot;) {
-			control[subsystem.name] = result;
+			this[subsystem.name] = result;
 		}
-		control._init(subsystems);
+		this._init(subsystems);
 	} else {
-		subsystem.init.call(control, function() {
-			control._init(subsystems);
+		subsystem.init.call(this, function() {
+			this._init(subsystems);
 		});
 	}
 };
@@ -735,9 +734,10 @@ Echo.Control.prototype._initializers.events = function() {
 Echo.Control.prototype._initializers.subscriptions = function() {
 	var control = this;
 	$.each(control._manifest(&quot;events&quot;), function subscribe(topic, data) {
-		if ($.isArray(data) &amp;&amp; data.length) {
-			subscribe(topic, data.shift());
-			data.length &amp;&amp; subscribe(topic, data);
+		if ($.isArray(data)) {
+			for (var i = 0; i &lt; data.length; i++) {
+				subscribe(topic, data[i]);
+			}
 		} else {
 			data = $.isFunction(data) ? {&quot;handler&quot;: data} : data;
 			control.events.subscribe($.extend({&quot;topic&quot;: topic}, data));
@@ -808,7 +808,7 @@ Echo.Control.prototype._initializers.subscriptions = function() {
 
 	// subscribe all root level controls to the user login/logout event
 	// and call the &quot;refresh&quot; control method
-	if (!control.dependent()) {
+	if (!control.dependent() &amp;&amp; this.config.get(&quot;refreshOnUserInvalidate&quot;)) {
 		control.events.subscribe({
 			&quot;topic&quot;: &quot;Echo.UserSession.onInvalidate&quot;,
 			&quot;context&quot;: &quot;global&quot;,
@@ -869,7 +869,7 @@ Echo.Control.prototype._initializers.loading = function() {
 };
 
 Echo.Control.prototype._initializers.dependencies = function(callback) {
-	this._loadScripts(this._manifest(&quot;dependencies&quot;), callback);
+	this._loadScripts(this._manifest(&quot;dependencies&quot;), $.proxy(callback, this));
 };
 
 Echo.Control.prototype._initializers.user = function(callback) {
@@ -903,8 +903,8 @@ Echo.Control.prototype._initializers.user = function(callback) {
 };
 
 Echo.Control.prototype._initializers.plugins = function(callback) {
-	var control = this;
 	this._loadPluginScripts(function() {
+		var control = this;
 		$.map(control.config.get(&quot;pluginsOrder&quot;), function(name) {
 			var Plugin = Echo.Plugin.getClass(name, control.name);
 			if (Plugin) {
@@ -915,7 +915,7 @@ Echo.Control.prototype._initializers.plugins = function(callback) {
 				}
 			}
 		});
-		callback.call(control);
+		callback.call(this);
 	});
 };
 
@@ -1041,12 +1041,16 @@ Echo.Control.prototype._manifest = function(key) {
 };
 
 Echo.Control.prototype._loadScripts = function(resources, callback) {
-	var control = this;
 	if (!resources || !resources.length) {
-		callback.call(control);
+		callback.call(this);
 		return;
 	}
-	resources = $.map(resources, function(resource) {
+	// the &quot;resource.loaded&quot; function (responsible for detecting
+	// if a given resource is loaded or not) is stored globally
+	// thus in order to avoid memory leaks, we need to make sure that
+	// the context captured by that function doesn&#39;t include any references
+	// to any objects which should be garbage-collected later.
+	resources = $.map(resources, $.proxy(function(resource) {
 		if (!resource.loaded) {
 			var key = resource.app &amp;&amp; &quot;App&quot; ||
 				resource.control &amp;&amp; &quot;Control&quot; ||
@@ -1059,13 +1063,13 @@ Echo.Control.prototype._loadScripts = function(resources, callback) {
 			}
 		}
 		return $.extend(resource, {
-			&quot;url&quot;: control.substitute({&quot;template&quot;: resource.url})
+			&quot;url&quot;: this.substitute({&quot;template&quot;: resource.url})
 		});
-	});
-	Echo.Loader.download(resources, function() {
-		callback.call(control);
-	}, {
-		&quot;errorTimeout&quot;: control.config.get(&quot;scriptLoadErrorTimeout&quot;)
+	}, this));
+	Echo.Loader.download(resources, $.proxy(function() {
+		callback.call(this);
+	}, this), {
+		&quot;errorTimeout&quot;: this.config.get(&quot;scriptLoadErrorTimeout&quot;)
 	});
 };
 
@@ -1099,9 +1103,8 @@ Echo.Control.prototype._loadPluginScripts = function(callback) {
 			}
 		});
 	};
-
-	control._loadScripts(get(&quot;plugins&quot;), function() {
-		control._loadScripts(get(&quot;dependencies&quot;), callback);
+	this._loadScripts(get(&quot;plugins&quot;), function() {
+		this._loadScripts(get(&quot;dependencies&quot;), callback);
 	});
 };
 
@@ -1262,6 +1265,12 @@ manifest.config = {
 	&quot;context&quot;: &quot;&quot;,
 	&quot;scriptLoadErrorTimeout&quot;: 5000, // 5 sec
 	&quot;query&quot;: &quot;&quot;,
+
+<span id='Echo-Control-cfg-refreshOnUserInvalidate'>	/**
+</span>	 * @cfg {Boolean} refreshOnUserInvalidate=true
+	 * If true control will be automatically refreshed after user login/logout
+	 */
+	&quot;refreshOnUserInvalidate&quot;: true,
 
 <span id='Echo-Control-cfg-defaultAvatar'>	/**
 </span>	 * @cfg {String} defaultAvatar

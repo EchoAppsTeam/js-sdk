@@ -23,7 +23,7 @@ var $ = jQuery;
 <span id='Echo-StreamServer-Controls-Stream-method-constructor'><span id='Echo-StreamServer-Controls-Stream'>/**
 </span></span> * @class Echo.StreamServer.Controls.Stream
  * Echo Stream control which encapsulates interaction with the
- * &lt;a href=&quot;http://wiki.aboutecho.com/w/page/23491639/API-method-search&quot; target=&quot;_blank&quot;&gt;Echo Search API&lt;/a&gt;
+ * &lt;a href=&quot;http://echoplatform.com/streamserver/docs/rest-api/items-api/search/&quot; target=&quot;_blank&quot;&gt;Echo Search API&lt;/a&gt;
  * and displays live updating search results in a standard ‘news feed’ style format.
  *
  * 	var stream = new Echo.StreamServer.Controls.Stream({
@@ -113,7 +113,7 @@ stream.init = function() {
 			}
 		},
 		&quot;onError&quot;: function(data, options) {
-			if (typeof options.critical === &quot;undefined&quot; || options.critical || options.requestType === &quot;initial&quot;) {
+			if (typeof options.critical === &quot;undefined&quot; || options.critical &amp;&amp; options.requestType === &quot;initial&quot;) {
 				self.showError(data, $.extend(options, {
 					&quot;request&quot;: self.request
 				}));
@@ -146,12 +146,18 @@ stream.init = function() {
 	}
 };
 
+stream.destroy = function() {
+	$.map(this.items, function(item) {
+		item.destroy();
+	});
+};
+
 stream.config = {
 <span id='Echo-StreamServer-Controls-Stream-cfg-query'>	/**
 </span>	 * @cfg {String} query
 	 * Specifies the search query to generate the necessary data set.
 	 * It must be constructed according to the
-	 * &lt;a href=&quot;http://wiki.aboutecho.com/w/page/23491639/API-method-search&quot; target=&quot;_blank&quot;&gt;&quot;search&quot; API&lt;/a&gt;
+	 * &lt;a href=&quot;http://echoplatform.com/streamserver/docs/rest-api/items-api/search/&quot; target=&quot;_blank&quot;&gt;&quot;search&quot; API&lt;/a&gt;
 	 * method specification.
 	 *
 	 * 	new Echo.StreamServer.Controls.Stream({
@@ -268,7 +274,7 @@ stream.config = {
 	 * @cfg {Boolean} [liveUpdates.enabled=true]
 	 * Parameter to enable/disable live updates.
 	 *
-	 * @cfg {String} [liveUpdates.transport=&quot;polling&quot;]
+	 * @cfg {String} [liveUpdates.transport=&quot;websockets&quot;]
 	 * Preferred live updates receiveing machinery transport.
 	 * The following transports are supported:
 	 *
@@ -301,7 +307,7 @@ stream.config = {
 	 * to keep the connection alive.
 	 */
 	&quot;liveUpdates&quot;: {
-		&quot;transport&quot;: &quot;polling&quot;, // or &quot;websockets&quot;
+		&quot;transport&quot;: &quot;websockets&quot;, // or &quot;polling&quot;
 		&quot;enabled&quot;: true,
 		&quot;polling&quot;: {
 			&quot;timeout&quot;: 10
@@ -393,7 +399,7 @@ stream.config = {
 	 * Specifies predefined items data which should be rendered by the application.
 	 * Stream control works with the data format used by the &quot;search&quot; API endpoint.
 	 * More information about the data format can be found
-	 * &lt;a href=&quot;http://wiki.aboutecho.com/w/page/23491639/API-method-search#ResponseFormat&quot; target=&quot;_blank&quot;&gt;here&lt;/a&gt;.
+	 * &lt;a href=&quot;http://echoplatform.com/streamserver/docs/rest-api/items-api/search/#sect3&quot; target=&quot;_blank&quot;&gt;here&lt;/a&gt;.
 	 */
 
 <span id='Echo-StreamServer-Controls-Stream-cfg-asyncItemsRendering'>	/**
@@ -806,7 +812,7 @@ stream.methods._requestInitialItems = function() {
 				}
 			},
 			&quot;onError&quot;: function(data, options) {
-				if (typeof options.critical === &quot;undefined&quot; || options.critical || options.requestType === &quot;initial&quot;) {
+				if (typeof options.critical === &quot;undefined&quot; || options.critical &amp;&amp; options.requestType === &quot;initial&quot;) {
 					self.showError(data, $.extend(options, {
 						&quot;request&quot;: self.request
 					}));
@@ -1342,7 +1348,6 @@ stream.methods._spotUpdates.remove = function(item, options) {
 			&quot;global&quot;: false,
 			&quot;propagation&quot;: false
 		});
-		this._applyStructureUpdates(&quot;delete&quot;, item, options);
 	} else {
 		var parent = this._getParentItem(item);
 		if (parent) {
@@ -1356,7 +1361,6 @@ stream.methods._spotUpdates.remove = function(item, options) {
 				&quot;target&quot;: parent.view.get(&quot;childrenByCurrentActorLive&quot;),
 				&quot;extra&quot;: options
 			});
-			this._applyStructureUpdates(&quot;delete&quot;, item, options);
 			parent.view.render({&quot;name&quot;: &quot;container&quot;});
 		}
 	}
@@ -1426,7 +1430,6 @@ stream.methods._spotUpdates.animate.remove = function(item, config) {
 		// if the item is being moved, we should keep all jQuery handlers
 		// for the nested elements (children), thus we use &quot;detach&quot; instead of &quot;remove&quot;
 		item.config.get(&quot;target&quot;)[config.keepChildren ? &quot;detach&quot; : &quot;remove&quot;]();
-		item.set(&quot;vars&quot;, {});
 		var itemsCount = Echo.Utils.foldl(0, self.items, function(_item, acc) {
 			return acc + 1;
 		});
@@ -1437,6 +1440,7 @@ stream.methods._spotUpdates.animate.remove = function(item, config) {
 				&quot;target&quot;: self.view.get(&quot;body&quot;)
 			});
 		}
+		self._applyStructureUpdates(&quot;delete&quot;, item, config);
 		self.activities.animations--;
 		self._executeNextActivity();
 	};
@@ -1773,9 +1777,13 @@ stream.methods._applyStructureUpdates = function(action, item, options) {
 			}
 			container.splice(this._getItemListIndex(item, container), 1);
 			if (!options.keepChildren) {
+				var itemIndex = this._getItemListIndex(item, this.lastRequest.data);
+				this.lastRequest.data.splice(itemIndex, 1);
 				item.traverse(item.get(&quot;children&quot;), function(child) {
 					delete self.items[child.get(&quot;data.unique&quot;)];
+					child.destroy();
 				});
+				item.destroy();
 				item.set(&quot;children&quot;, []);
 			}
 			delete this.items[item.get(&quot;data.unique&quot;)];
@@ -2915,16 +2923,17 @@ item.methods._initSmileysConfig = function() {
 	}
 	var esc = function(v) { return v.replace(/([\W])/g, &quot;\\$1&quot;); };
 	var escapedCodes = [];
-	$.each(_smileys.hash, function(code) {
+	$.each(_smileys.hash, function(code, smiley) {
 		var escaped = esc(code);
 		escapedCodes.push(escaped);
 		_smileys.codes.push(code);
 		_smileys.regexps[code] = new RegExp(escaped, &quot;g&quot;);
+		smiley.tag = self.substitute({
+			&quot;template&quot;: &#39;&lt;img class=&quot;{class:smiley-icon}&quot; src=&quot;{config:cdnBaseURL.sdk-assets}/images/smileys/emoticon_&#39; + smiley.file + &#39;&quot; title=&quot;&#39; + smiley.title + &#39;&quot; alt=&quot;&#39; + smiley.title + &#39;&quot;&gt;&#39;
+		});
+
 	});
 	_smileys.regexps.test = new RegExp(escapedCodes.join(&quot;|&quot;));
-	_smileys.tag = function(smiley) {
-		return self.substitute({&quot;template&quot;: &#39;&lt;img class=&quot;{class:smiley-icon}&quot; src=&quot;{config:cdnBaseURL.sdk-assets}/images/smileys/emoticon_&#39; + smiley.file + &#39;&quot; title=&quot;&#39; + smiley.title + &#39;&quot; alt=&quot;&#39; + smiley.title + &#39;&quot;&gt;&#39;});
-	};
 	return _smileys;
 };
 
@@ -2976,7 +2985,7 @@ item.methods._assembleButtons = function() {
 		});
 	});
 	// keep correct order of plugins and buttons
-	self.buttonsOrder = buttonsOrder.concat(self.buttonsOrder);
+	this.buttonsOrder = buttonsOrder.concat(this.buttonsOrder);
 };
 
 item.methods._sortButtons = function() {
@@ -3134,6 +3143,7 @@ item.methods._sortButtons = function() {
 	};
 
 	var _replaceSmileys = function(text, extra) {
+		var self = this;
 		if (extra.contentTransformations.smileys) {
 			if (text !== extra.textBeforeAutoLinking) {
 				var data = _meta2tags.call(this, text, extra);
@@ -3144,7 +3154,10 @@ item.methods._sortButtons = function() {
 			var smileys = this._initSmileysConfig();
 			if (text.match(smileys.regexps.test)) {
 				$.each(smileys.codes, function(i, code) {
-					text = text.replace(smileys.regexps[code], smileys.tag(smileys.hash[code]));
+					text = text.replace(
+						smileys.regexps[code],
+						smileys.hash[code].tag
+					);
 				});
 			}
 		}
