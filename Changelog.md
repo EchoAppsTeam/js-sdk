@@ -1,5 +1,15 @@
 # Echo JS SDK CHANGELOG:
 
+##v3.0.19 - April 16, 2014
+
+As a part of our ongoing efforts to make JS SDK better we decided to conduct **SDK components performance audit**. We completed a first iteration of the audit and the main highlight of this release is the set of changes performed as a result of the audit. We started with the memory consumption analysis and found a few issues which affect user experience:
+
+* the main one is **incorrect Stream item data deallocation after its destruction**. For example if an item was removed from the Stream, some references to an item data (specifically to a target DOM element) were still kept which prevented data garbage-collection by the browser. We updated the code to destroy an item properly which helped us to avoid memory leaks.
+
+* we also **updated [Echo.Event](http://echoappsteam.github.io/js-sdk/docs/#!/api/Echo.Events) library** to consume less memory. Since this component is widely used across many apps and plugins, this update should help a lot.
+
+In addition to performance improvements, this release contains some modifications of the base [Echo.Control](http://echoappsteam.github.io/js-sdk/docs/#!/api/Echo.Control) class. We **added a new config parameter called [refreshOnUserInvalidate](http://echoappsteam.github.io/js-sdk/docs/#!/api/Echo.Control-cfg-refreshOnUserInvalidate)**, which provides an ability to control an app behavior on user login/logout. Previously if a user logs in/out an app was rebuilt from scratch to reflect that. However we faced a few cases where a complete app rebuilding is unnecessary and even harmful. In order to provide maximum flexibility and leverage complete re-rendering where appropriate, we kept the original logic but now you can control if you want Echo.Control basic functionality to take care of an app refresh or if you want to manage it within an app yourself.
+
 ##v3.0.18 - April 8, 2014
 
 This release contains a fix for Echo Loader library which is responsible for dependency management and resource loading across all Echo JS SDK based applications. Sometimes it failed to load dependencies in Firefox and Internet Explorer browsers properly. It was caused by a bug in the Yepnope library which is used internally for Echo Loader. The library is now patched and covered with tests.
