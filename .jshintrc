@@ -19,5 +19,11 @@
 	"jquery": true,
 	"devel": true,
 	"laxbreak": true,
-	"node": true
+	"node": true,
+	"globals": {
+		"Echo": false,
+		"Backplane": false,
+		"janrain": false,
+		"QUnit": false
+	}
 }
