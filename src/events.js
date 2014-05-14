@@ -121,7 +121,7 @@ Echo.Events.unsubscribe = function(params) {
 		params.context = _initContext(params.topic, params.context);
 	}
 	if (params.handlerId || params.topic) {
-		var obj = _executeForDeepestContext(params.topic, params.context, function callback(obj, lastContext, rest) {
+		_executeForDeepestContext(params.topic, params.context, function callback(obj, lastContext, rest) {
 			if ($.isEmptyObject(obj)) return;
 			if (params.handlerId) {
 				$.each(obj[lastContext].handlers, function(i, data) {

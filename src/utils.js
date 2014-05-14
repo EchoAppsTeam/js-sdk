@@ -474,6 +474,7 @@ Echo.Utils.objectToJSON = function(obj) {
 Echo.Utils.htmlTextTruncate = function(text, limit, postfix, forceClosingTags) {
 	if (!limit || text.length < limit) return text;
 
+	var i, symbol, current, tail, tag, source, isTagClosing;
 	var tags = [], count = 0, finalPos = 0;
 	var wordRegex = /(\w)+/;
 	var htmlSpecialCharRegex = /^(\S)+;/;
@@ -486,21 +487,21 @@ Echo.Utils.htmlTextTruncate = function(text, limit, postfix, forceClosingTags) {
 			);
 	}
 
-	for (var i = 0; i < text.length; i++) {
-		var symbol = text.charAt(i);
+	for (i = 0; i < text.length; i++) {
+		symbol = text.charAt(i);
 		if (symbol === "<") {
-			var tail = text.indexOf(">", i);
+			tail = text.indexOf(">", i);
 			if (tail < 0) return text;
-			var source = text.substring(i + 1, tail);
-			var tag = "";
-			var isTagClosing = false;
+			source = text.substring(i + 1, tail);
+			tag = "";
+			isTagClosing = false;
 			if (source.charAt(0) === "/") {
 				isTagClosing = true;
 				source = source.substring(1);
 			}
 			tag = source.match(wordRegex)[0];
 			if (isTagClosing) {
-				var current = tags.pop();
+				current = tags.pop();
 				if (!current || current !== tag) return text;
 			} else if (!this.cache.standaloneTags[tag]) {
 				tags.push(tag);
@@ -527,7 +528,7 @@ Echo.Utils.htmlTextTruncate = function(text, limit, postfix, forceClosingTags) {
 				text = text.substring(0, finalPos) + (postfix || "");
 			}
 		}
-		for (var i = tags.length - 1; i >= 0; i--) {
+		for (i = tags.length - 1; i >= 0; i--) {
 			text += "</" + tags[i] + ">";
 		}
 	}
@@ -639,7 +640,8 @@ Echo.Utils.getVisibleColor = function(element) {
 		if (color !== "" && color !== "transparent" && !/rgba\((0,\s*){3}0\)/.test(color) || $.nodeName(element.get(0), "body")) {
 			break;
 		}
-	} while (element = element.parent());
+		element = element.parent();
+	} while (element);
 	return color || "transparent";
 };
 

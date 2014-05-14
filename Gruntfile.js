@@ -328,7 +328,13 @@ module.exports = function(grunt) {
 			"options": {
 				"jshintrc": ".jshintrc"
 			},
-			"grunt": ["Gruntfile.js", "tools/grunt/**/*.js"]
+			"grunt": [
+				"Gruntfile.js",
+				"tools/grunt/**/*.js"
+			],
+			"sources": [
+				"<%= dirs.src %>/!(backplane).js"
+			]
 		},
 		"wrap": {
 			"echo-jquery": {

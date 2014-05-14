@@ -564,8 +564,8 @@ Echo.Control.prototype.placeImage = function(args) {
 		"onerror": args.onerror,
 		"onload": function () {
 			if (document.compatMode !== "CSS1Compat") {
-				$(this).addClass(this.width < this.height 
-						? "echo-image-stretched-vertically" 
+				$(this).addClass(this.width < this.height
+						? "echo-image-stretched-vertically"
 						: "echo-image-stretched-horizontally");
 			}
 			$.isFunction(args.onload) && args.onload.apply(this, arguments);
@@ -681,13 +681,13 @@ Echo.Control.prototype._initializers.events = function() {
 			// publish events with parents prefixes if appropriate flag provided
 			if (params.inherited) {
 				parent = control.constructor.parent;
-				names = function get(parent, acc) {
+				names = (function get(parent, acc) {
 					if (parent && parent.name) {
 						acc.unshift(parent.name);
 						get(parent.constructor.parent, acc);
 					}
 					return acc;
-				}(parent, []);
+				})(parent, []);
 				$.map(names, function(name) {
 					Echo.Events.publish(
 						$.extend({}, params, {
@@ -989,13 +989,13 @@ Echo.Control.prototype._getSubstitutionInstructions = function() {
 			var value, parent;
 			if (key) {
 				parent = control.constructor.parent;
-				value = function get(parent, acc) {
+				value = (function get(parent, acc) {
 					if (parent && parent.cssPrefix) {
 						acc.unshift(parent.cssPrefix + key);
 						get(parent.constructor.parent, acc);
 					}
 					return acc;
-				}(parent, []).join(" ");
+				})(parent, []).join(" ");
 			} else {
 				value = control.cssClass;
 			}
@@ -1443,7 +1443,7 @@ manifest.css = '.echo-secondaryBackgroundColor { background-color: #F4F4F4; }' +
 		'.echo-relative { position: relative; }' +
 		'.echo-clear { clear: both; }' +
 		'.echo-image-container.echo-image-position-fill { text-align: center; overflow: hidden; }' +
-		'.echo-image-container.echo-image-position-fill img { max-width: 100%; max-height: 100%; width: auto; height: auto; vertical-align: top; }' + 
+		'.echo-image-container.echo-image-position-fill img { max-width: 100%; max-height: 100%; width: auto; height: auto; vertical-align: top; }' +
 		'.echo-image-container.echo-image-position-fill img.echo-image-stretched-horizontally { width: 100%; height: auto; }' +
 		'.echo-image-container.echo-image-position-fill img.echo-image-stretched-vertically { width: auto; height: 100%; }' +
 
