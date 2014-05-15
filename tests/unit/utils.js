@@ -499,7 +499,13 @@ Echo.Tests.test("invoke()", function() {
 		["some string", "some string"],
 		[function() { return "test"; }, "test"],
 		[function() {}, undefined],
-		[function() { return this.a; }, undefined]
+		[function() {
+			// although _this_ is a _window_ object, reading property value
+			// on this object fails in strict mode, so we use try/catch
+			try {
+				return this.a;
+			} catch(e) {}
+		}, undefined]
 	];
 	var ctxSpecificTests = [
 		[function() { return this.a; }, 1],
