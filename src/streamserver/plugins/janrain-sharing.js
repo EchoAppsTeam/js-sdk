@@ -8,14 +8,14 @@ var $ = jQuery;
  * Plugin provides the ability to load Janrain sharing dialog after
  * the item has been posted using the Echo Submit control.
  *
- * 	new Echo.StreamServer.Controls.Submit({
- * 		"target": document.getElementById("echo-submit"),
- * 		"appkey": "echo.jssdk.demo.aboutecho.com",
- * 		"plugins": [{
- * 			"name": "JanrainSharing",
- * 			"appId": "echo"
- * 		}]
- * 	});
+ *		new Echo.StreamServer.Controls.Submit({
+ *			"target": document.getElementById("echo-submit"),
+ *			"appkey": "echo.jssdk.demo.aboutecho.com",
+ *			"plugins": [{
+ *				"name": "JanrainSharing",
+ *				"appId": "echo"
+ *			}]
+ *		});
  *
  * The plugin implementation employs the
  * <a href="http://developers.janrain.com/documentation/widgets/social-sharing-widget/users-guide/hosting-multiple-widgets/" target="_blank">Janrain recommendation</a>
@@ -68,14 +68,14 @@ plugin.config = {
 	 * Full list of available options can be found in the
 	 * <a href="http://developers.janrain.com/documentation/widgets/social-sharing-widget/sharing-widget-js-api/settings/" target="_blank">Sharing widget documentation</a>
 	 *
-	 * Example:
-	 * 	{
-	 * 		"shortenUrl": true
-	 * 		"title": "Some page title",
-	 * 		"description": "Some page description",
-	 * 		"image": "http://example.com/image.png"
-	 * 		// ...
-	 * 	}
+	 *		Example:
+	 *		{
+	 *			"shortenUrl": true
+	 *			"title": "Some page title",
+	 *			"description": "Some page description",
+	 *			"image": "http://example.com/image.png"
+	 *			// ...
+	 *		}
 	 */
 	"sharingWidgetConfig": {},
 
@@ -272,6 +272,7 @@ plugin.methods._isLegacy = function() {
 	return this.config.get("xdReceiver");
 };
 
+/* global RPXNOW: false */
 plugin.methods._shareLegacy = function(args) {
 	var plugin = this;
 	Echo.Loader.download([{
@@ -374,21 +375,19 @@ Echo.Plugin.create(plugin);
 (function(jQuery) {
 "use strict";
 
-var $ = jQuery;
-
 /**
  * @class Echo.StreamServer.Controls.Stream.Item.Plugins.JanrainSharing
  * Plugin provides the ability to load JanRain sharing dialog clicking
  * the "Share" button in the item.
  *
- * 	new Echo.StreamServer.Controls.Stream({
- * 		"target": document.getElementById("echo-stream"),
- * 		"appkey": "echo.jssdk.demo.aboutecho.com",
- * 		"plugins": [{
- * 			"name": "JanrainSharing",
- * 			"appId": "echo"
- * 		}]
- * 	});
+ *		new Echo.StreamServer.Controls.Stream({
+ *			"target": document.getElementById("echo-stream"),
+ *			"appkey": "echo.jssdk.demo.aboutecho.com",
+ *			"plugins": [{
+ *				"name": "JanrainSharing",
+ *				"appId": "echo"
+ *			}]
+ *		});
  *
  * The plugin implementation employs the
  * <a href="http://developers.janrain.com/documentation/widgets/social-sharing-widget/users-guide/hosting-multiple-widgets/" target="_blank">Janrain recommendation</a>
@@ -430,14 +429,14 @@ plugin.config = {
 	 * Full list of available options can be found in the
 	 * <a href="http://developers.janrain.com/documentation/widgets/social-sharing-widget/sharing-widget-js-api/settings/" target="_blank">Sharing widget documentation</a>
 	 *
-	 * Example:
-	 * 	{
-	 * 		"shortenUrl": true,
-	 * 		"title": "Some page title",
-	 * 		"description": "Some page description",
-	 * 		"image": "http://example.com/image.png"
-	 * 		// ...
-	 * 	}
+	 *		Example:
+	 *		{
+	 *			"shortenUrl": true,
+	 *			"title": "Some page title",
+	 *			"description": "Some page description",
+	 *			"image": "http://example.com/image.png"
+	 *			// ...
+	 *		}
 	 */
 	"sharingWidgetConfig": {}
 };
@@ -484,7 +483,6 @@ plugin.methods._assembleButton = function() {
 		plugin._share(plugin._prepareData(item.get("data")));
 	};
 	return function() {
-		var item = this;
 		return {
 			"name": "Share",
 			"label": plugin.labels.get("shareButton"),

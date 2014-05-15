@@ -128,7 +128,6 @@ mediaGallery.renderers.controls = function(element) {
 	$.each(this.elements, function(i, element) {
 		element = $(element);
 		self._normalizeFlashContent(element);
-		var ratio;
 		var isCurrentControl = (i === self.currentIndex);
 		var itemContainer = $('<div></div>').append(element).addClass(itemClass);
 		var showCurrentMedia = function() {
@@ -194,7 +193,7 @@ mediaGallery.methods._normalizeFlashContent = function(element) {
 		var query = parts.query;
 		query = query && ~query.indexOf("wmode")
 			? query.replace(/(wmode=)([^&?]+)/g, function($0, $1, $2) {
-				if ($2 != "opaque" || $2 != "transparent") {
+				if ($2 !== "opaque" || $2 !== "transparent") {
 					return $1 + "opaque";
 				}
 			})
@@ -208,7 +207,7 @@ mediaGallery.methods._normalizeFlashContent = function(element) {
 		}));
 	} else if (tagName === "embed") {
 		var wmode = element.attr("wmode");
-		if (wmode != "opaque" || wmode != "transparent") {
+		if (wmode !== "opaque" || wmode !== "transparent") {
 			element.attr("wmode", "opaque");
 		}
 	}
@@ -289,16 +288,16 @@ var $ = jQuery;
  * The PinboardVisualization plugin transforms Stream.Item control into a
  * pinboard-style block.
  *
- * 	new Echo.StreamServer.Controls.Stream({
- * 		"target": document.getElementById("echo-stream"),
- * 		"query": "childrenof:http://example.com/js-sdk",
- * 		"appkey": "echo.jssdk.demo.aboutecho.com",
- * 		"plugins": [{
- * 			"name": "PinboardVisualization",
- * 			"columnWidth": 100,
- * 			"gallery": {"resizeDuration": 550}
- * 		}]
- * 	});
+ *		new Echo.StreamServer.Controls.Stream({
+ *			"target": document.getElementById("echo-stream"),
+ *			"query": "childrenof:http://example.com/js-sdk",
+ *			"appkey": "echo.jssdk.demo.aboutecho.com",
+ *			"plugins": [{
+ *				"name": "PinboardVisualization",
+ *				"columnWidth": 100,
+ *				"gallery": {"resizeDuration": 550}
+ *			}]
+ *		});
  *
  * __Note__: PinboardVisualization plugin modifies not only the Stream layout,
  * but also the UI of the Stream.Item control. It is notable that "reTag" section
@@ -321,7 +320,6 @@ var plugin = Echo.Plugin.manifest("PinboardVisualization", "Echo.StreamServer.Co
 if (Echo.Plugin.isDefined(plugin)) return;
 
 plugin.init = function() {
-	var self = this, item = this.component;
 	this.extendTemplate("replace", "container", plugin.templates.container);
 };
 
@@ -355,10 +353,10 @@ plugin.config = {
 	 * 
 	 * Example (also used as a default value):
 	 *
-	 * 	"mediaSelector": function(content) {
-	 * 		var dom = $("<div>" + content + "</div>");
-	 * 		return $("img, video, embed, iframe", dom);
-	 * 	}
+	 *		"mediaSelector": function(content) {
+	 *			var dom = $("<div>" + content + "</div>");
+	 *			return $("img, video, embed, iframe", dom);
+	 *		}
 	 */
 	"mediaSelector": function(content) {
 		var dom = $("<div>" + content + "</div>");
@@ -387,7 +385,7 @@ plugin.config = {
 };
 
 plugin.enabled = function() {
-	return document.compatMode !== "BackCompat"
+	return document.compatMode !== "BackCompat";
 };
 
 plugin.labels = {
@@ -403,7 +401,7 @@ plugin.labels = {
 plugin.component.renderers.content = function(element) {
 	var plugin = this, item = this.component;
 	return item.parentRenderer('content', arguments).css({
-		"width": parseInt(plugin.config.get("columnWidth"))
+		"width": parseInt(plugin.config.get("columnWidth"), 10)
 	});
 };
 
@@ -545,7 +543,9 @@ plugin.renderers.media = function(element) {
 			"elements": mediaItems,
 			"item": item
 		});
+		/* jshint nonew: false */
 		new Echo.StreamServer.Controls.Stream.Item.MediaGallery(plugin.config.assemble(config));
+		/* jshint nonew: true */
 	} else {
 		element.hide();
 	}
@@ -553,10 +553,11 @@ plugin.renderers.media = function(element) {
 };
 
 plugin.methods._getCSSByLength = function(length) {
-	var plugin = this, item = this.component;
+	var plugin = this;
 	var handler = function(range, acc, className) {
 		if (length >= range[0] && length < range[1]) {
-			return (acc = className);
+			acc = className;
+			return acc;
 		}
 	};
 	return Echo.Utils.foldl("", plugin.config.get("itemCSSClassByContentLength"), handler);
@@ -583,8 +584,8 @@ plugin.templates.container =
 		'<div class="{class:wrapper}">' +
 			'<div class="{class:subcontainer}">' +
 				'<div class="{class:data}">' +
-					'<div class="{plugin.class:media}"></div>' + 
-					'<div class="{class:body} echo-primaryColor"> ' + 
+					'<div class="{plugin.class:media}"></div>' +
+					'<div class="{class:body} echo-primaryColor"> ' +
 						'<span class="{class:text}"></span>' +
 						'<span class="{class:textEllipses}">...</span>' +
 						'<span class="{class:textToggleTruncated} echo-linkColor echo-clickable"></span>' +
@@ -669,8 +670,6 @@ Echo.Plugin.create(plugin);
 (function(jQuery) {
 "use strict";
 
-var $ = jQuery;
-
 /**
  * @class Echo.StreamServer.Controls.Stream.Plugins.PinboardVisualization
  * The PinboardVisualization plugin transforms Echo Stream Client visualization
@@ -687,13 +686,13 @@ var $ = jQuery;
  * http://cdn.echoenabled.com/sdk/v3/streamserver/plugins/pinboard-visualization.js  
  * http://cdn.echoenabled.com/sdk/v3/dev/streamserver/plugins/pinboard-visualization.js
  *
- * 	new Echo.StreamServer.Controls.Stream({
- * 		"target": document.getElementById("echo-stream"),
- * 		"appkey": "echo.jssdk.demo.aboutecho.com",
- * 		"plugins": [{
- * 			"name": "PinboardVisualization"
- * 		}]
- * 	});
+ *		new Echo.StreamServer.Controls.Stream({
+ *			"target": document.getElementById("echo-stream"),
+ *			"appkey": "echo.jssdk.demo.aboutecho.com",
+ *			"plugins": [{
+ *				"name": "PinboardVisualization"
+ *			}]
+ *		});
  *
  * More information regarding the plugins installation can be found
  * in the [“How to initialize Echo components”](#!/guide/how_to_initialize_components-section-initializing-plugins) guide.
@@ -751,7 +750,7 @@ plugin.init = function() {
 };
 
 plugin.enabled = function() {
-	return document.compatMode !== "BackCompat"
+	return document.compatMode !== "BackCompat";
 };
 
 plugin.dependencies = [{
@@ -797,7 +796,7 @@ plugin.methods._refreshView = function() {
 		);
 };
 
-plugin.css = 
+plugin.css =
 	'.{plugin.class} .isotope { -webkit-transition-property: height, width; -moz-transition-property: height, width; -o-transition-property: height, width; transition-property: height, width;  -webkit-transition-duration: 0.8s; -moz-transition-duration: 0.8s; -o-transition-duration: 0.8s; transition-duration: 0.8s; }' +
 	'.{plugin.class} .isotope .isotope-item { -webkit-transition-property: -webkit-transform, opacity; -moz-transition-property: -moz-transform, opacity; -o-transition-property: top, left, opacity; transition-property:transform, opacity; -webkit-transition-duration: 0.8s; -moz-transition-duration: 0.8s; -o-transition-duration: 0.8s; transition-duration: 0.8s; }';
 

@@ -113,7 +113,7 @@ plugin.renderers.flaggedBy = function(element) {
 };
 
 plugin.methods._assembleButton = function(name) {
-	var plugin = this, item = this.component;
+	var plugin = this;
 	var callback = function() {
 		var item = this;
 		item.get("buttons." + plugin.name + "." + name + ".element")

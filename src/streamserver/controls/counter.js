@@ -9,11 +9,11 @@ var $ = jQuery;
  * <a href="http://echoplatform.com/streamserver/docs/rest-api/other-api/count/" target="_blank">Echo Count API</a>
  * and provides a simple live updating number.
  *
- * 	new Echo.StreamServer.Controls.Counter({
- * 		"target": document.getElementById("echo-counter"),
- * 		"appkey": "echo.jssdk.demo.aboutecho.com",
- * 		"query" : "childrenof:http://example.com/test/*"
- * 	});
+ *		new Echo.StreamServer.Controls.Counter({
+ *			"target": document.getElementById("echo-counter"),
+ *			"appkey": "echo.jssdk.demo.aboutecho.com",
+ *			"query" : "childrenof:http://example.com/test/*"
+ *		});
  *
  * More information regarding the possible ways of the Control initialization
  * can be found in the [“How to initialize Echo components”](#!/guide/how_to_initialize_components-section-initializing-an-app) guide.
@@ -107,11 +107,11 @@ counter.config = {
 	 * <a href="http://echoplatform.com/streamserver/docs/rest-api/items-api/search/" target="_blank">"search" API</a>
 	 * method specification.
 	 *
-	 * 	new Echo.StreamServer.Controls.Counter({
-	 * 		"target": document.getElementById("echo-counter"),
-	 * 		"appkey": "echo.jssdk.demo.aboutecho.com",
-	 * 		"query" : "childrenof:http://example.com/test/*"
-	 * 	});
+	 *		new Echo.StreamServer.Controls.Counter({
+	 *			"target": document.getElementById("echo-counter"),
+	 *			"appkey": "echo.jssdk.demo.aboutecho.com",
+	 *			"query" : "childrenof:http://example.com/test/*"
+	 *		});
 	 */
 	/**
 	 * @cfg {Object} data
@@ -120,11 +120,11 @@ counter.config = {
 	 * More information about the data format can be found
 	 * <a href="http://echoplatform.com/streamserver/docs/rest-api/other-api/count/#sect7" target="_blank">here</a>.
 	 *
-	 * 	new Echo.Counter({
-	 * 		...
-	 * 		"data": {"count": 100},
-	 * 		...
-	 * 	});
+	 *		new Echo.StreamServer.Controls.Counter({
+	 *			...
+	 *			"data": {"count": 100},
+	 *			...
+	 *		});
 	 */
 	"data": undefined,
 
@@ -177,7 +177,7 @@ counter.methods._getRequestObject = function(overrides) {
 };
 
 counter.methods._maybeUpdate = function(data) {
-	if ($.isEmptyObject(this.data) || this.data.count != data.count) {
+	if ($.isEmptyObject(this.data) || this.data.count !== data.count) {
 		/**
 		 * @echo_event Echo.StreamServer.Controls.Counter.onUpdate
 		 * Triggered when new value is received.

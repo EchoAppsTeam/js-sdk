@@ -1,8 +1,6 @@
 (function(jQuery) {
 "use strict";
 
-var $ = jQuery;
-
 /**
  * @class Echo.StreamServer.Controls.Submit.Plugins.TextCounter
  * Adds the character counter under the text field in the Echo Submit control.

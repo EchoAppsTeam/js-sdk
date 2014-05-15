@@ -204,7 +204,6 @@ plugin.methods._assembleButton = function(action, control) {
 		}).send();
 	};
 	return function() {
-		var item = this;
 		return {
 			"name": name,
 			"label": control["label" + action],

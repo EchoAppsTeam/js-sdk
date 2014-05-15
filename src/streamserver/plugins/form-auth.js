@@ -183,10 +183,12 @@ plugin.component.renderers.container = function(element) {
  */
 plugin.renderers.auth = function(element) {
 	var plugin = this;
+	/* jshint nonew: false */
 	new Echo.IdentityServer.Controls.Auth(plugin.config.assemble({
 		"target": element,
 		"identityManager": plugin.config.get("identityManager")
 	}));
+	/* jshint nonew: true */
 	return element;
 };
 
@@ -198,7 +200,7 @@ plugin.methods._validator = function() {
 			return false;
 		}
 		return true;
-	}
+	};
 };
 
 plugin.methods._permissions = function() {

@@ -38,7 +38,7 @@ $.map(["Complete", "Error"], function(action) {
 	plugin.events["Echo.StreamServer.Controls.Submit.Plugins.Edit.onEdit" + action] =
 		function(topic, args) {
 			this.component.render();
-		}
+		};
 });
 
 plugin.labels = {
@@ -75,7 +75,9 @@ plugin.methods._assembleButton = function() {
 				config["parent"] = plugin.component.config.getAsHash();
 				config["targetQuery"] = plugin.config.get("query", "");
 				config.plugins.push({"name": "Edit"});
+				/* jshint nonew: false */
 				new Echo.StreamServer.Controls.Submit(config);
+				/* jshint nonew: true */
 				item.config.get("target").get(0).scrollIntoView(true);
 			}
 		};
@@ -268,7 +270,7 @@ plugin.methods._getMetaDataUpdates = function(verb, type, data) {
 	return updates;
 };
 
-plugin.css = 
+plugin.css =
 	'.{plugin.class:cancelButtonContainer} { float: right; margin: 6px 15px 0px 0px; }';
 
 Echo.Plugin.create(plugin);

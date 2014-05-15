@@ -7,15 +7,15 @@ var $ = jQuery;
  * @class Echo.StreamServer.Controls.Submit.Plugins.JanrainAuth
  * Janrain Social Sign-in Widget integration with Echo Submit Control.
  *
- * 	new Echo.StreamServer.Controls.Submit({
- * 		"target": document.getElementById("submit"),
- * 		"appkey": "echo.jssdk.demo.aboutecho.com",
- * 		"plugins": [{
- * 			"name": "JanrainAuth",
- * 			"submitPermissions": "forceLogin",
- * 			"appId": "echo"
- * 		}]
- * 	});
+ *		new Echo.StreamServer.Controls.Submit({
+ *			"target": document.getElementById("submit"),
+ *			"appkey": "echo.jssdk.demo.aboutecho.com",
+ *			"plugins": [{
+ *				"name": "JanrainAuth",
+ *				"submitPermissions": "forceLogin",
+ *				"appId": "echo"
+ *			}]
+ *		});
  *
  * More information regarding the plugins installation can be found
  * in the ["How to initialize Echo components"](#!/guide/how_to_initialize_components-section-initializing-plugins) guide.
@@ -82,12 +82,12 @@ plugin.config = {
 	 * Full list of available options can be found in the
 	 * <a href="http://developers.janrain.com/documentation/widgets/social-sign-in-widget/social-sign-in-widget-api/settings/" target="_blank">documentation</a>
 	 *
-	 * Example:
-	 * 	{
-	 * 		"providersPerPage": 4,
-	 * 		"format": "two column"
-	 * 		// ...
-	 * 	}
+	 *		Example:
+	 *		{
+	 *			"providersPerPage": 4,
+	 *			"format": "two column"
+	 *			// ...
+	 *		}
 	 */
 	"signinWidgetConfig": {},
 
@@ -169,10 +169,12 @@ plugin.renderers.auth = function(element) {
 		}
 		return acc;
 	});
+	/* jshint nonew: false */
 	new Echo.IdentityServer.Controls.Auth(plugin.config.assemble({
 		"target": element,
 		"plugins": [janrainConnectorPlugin]
 	}));
+	/* jshint nonew: true */
 	return element;
 };
 
@@ -184,7 +186,7 @@ plugin.methods._validator = function() {
 			return false;
 		}
 		return true;
-	}
+	};
 };
 
 plugin.methods._permissions = function() {

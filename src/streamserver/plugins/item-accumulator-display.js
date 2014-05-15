@@ -1,20 +1,18 @@
 (function(jQuery) {
 "use strict";
 
-var $ = jQuery;
-
 /**
  * @class Echo.StreamServer.Controls.Stream.Item.Plugins.ItemAccumulatorDisplay
  * Shows one of the item accumulators in the top right corner of each item in
  * the Echo Stream control.
  *
- * 	new Echo.StreamServer.Controls.Stream({
- * 		"target": document.getElementById("echo-stream"),
- * 		"appkey": "echo.jssdk.demo.aboutecho.com",
- * 		"plugins": [{
- * 			"name": "ItemAccumulatorDisplay"
- * 		}]
- * 	});
+ *		new Echo.StreamServer.Controls.Stream({
+ *			"target": document.getElementById("echo-stream"),
+ *			"appkey": "echo.jssdk.demo.aboutecho.com",
+ *			"plugins": [{
+ *				"name": "ItemAccumulatorDisplay"
+ *			}]
+ *		});
  *
  * More information regarding the plugins installation can be found
  * in the [“How to initialize Echo components”](#!/guide/how_to_initialize_components-section-initializing-plugins) guide.
@@ -37,16 +35,16 @@ plugin.config = {
 	 * @cfg {Number} countTickTimeout
 	 * Specifies the timeout in seconds for sequential changes of the item
 	 * accumulator during the update.
- 	 *
-	 * 	new Echo.StreamServer.Controls.Stream({
-	 * 		"target": document.getElementById("echo-stream"),
-	 * 		"appkey": "echo.jssdk.demo.aboutecho.com",
-	 * 		"plugins": [{
-	 * 			"name": "ItemAccumulatorDisplay"
-	 * 			"countTickTimeout": 1,
-	 * 			"accumulator": "likesCount" 
-	 * 		}]
-	 * 	});
+	 *
+	 *	new Echo.StreamServer.Controls.Stream({
+	 *			"target": document.getElementById("echo-stream"),
+	 *			"appkey": "echo.jssdk.demo.aboutecho.com",
+	 *			"plugins": [{
+	 *				"name": "ItemAccumulatorDisplay"
+	 *				"countTickTimeout": 1,
+	 *				"accumulator": "likesCount" 
+	 *			}]
+	 *		});
 	 */
 	"countTickTimeout": 1,
 

@@ -242,8 +242,6 @@ Echo.Plugin.create(plugin);
 (function(jQuery) {
 "use strict";
 
-var $ = jQuery;
-
 /**
  * @class Echo.StreamServer.Controls.FacePile.Item.Plugins.Like
  * Adds extra controls to items in the Echo FacePile control.
