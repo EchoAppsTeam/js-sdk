@@ -1,4 +1,5 @@
 (function(jQuery) {
+"use strict";
 
 var $ = jQuery;
 
@@ -364,7 +365,7 @@ Echo.GUI.Tabs.prototype._getTabIndex = function(id) {
 		}
 	}
 	return -1;
-}
+};
 
 Echo.GUI.Tabs.prototype._getPanel = function(id) {
 	return this.getPanels().find("#" + this._getTabFullId(id));

@@ -1,4 +1,5 @@
 (function($) {
+"use strict";
 
 Echo.Tests.module("Echo.GUI.Button", {
 	"meta": {
@@ -73,7 +74,9 @@ Echo.Tests.test("common workflow", function() {
 Echo.Tests.test("taking data from HTML", function() {
 	var target = $("#qunit-fixture");
 	var element = $('<button disabled="disabled">ClickMe</button>').appendTo(target);
-	var button = new Echo.GUI.Button({"target": element});
+	/* jshint nonew: false */
+	new Echo.GUI.Button({"target": element});
+	/* jshint nonew: true */
 	QUnit.ok(target.html().match(/>ClickMe</),
 		"Checking that label value is taken from the element");
 	QUnit.ok(element.is(":disabled"),

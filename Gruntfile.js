@@ -333,7 +333,15 @@ module.exports = function(grunt) {
 				"tools/grunt/**/*.js"
 			],
 			"sources": [
-				"<%= dirs.src %>/!(backplane).js"
+				"<%= dirs.src %>/!(backplane).js",
+				"<%= dirs.src %>/third-party/bootstrap/plugins/*.js",
+				"<%= dirs.src %>/tests/harness/*.js"
+			],
+			"tests": [
+				"tests/config.js",
+				"tests/helpers/*.js",
+				"tests/fixtures/**/*.js",
+				"tests/unit/*.js"
 			]
 		},
 		"wrap": {

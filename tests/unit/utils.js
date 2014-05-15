@@ -1,4 +1,5 @@
 (function($) {
+"use strict";
 
 Echo.Tests.module("Echo.Utils", {
 	"meta": {
@@ -398,13 +399,14 @@ Echo.Tests.test("htmlTextTruncate()", function() {
 });
 
 Echo.Tests.test("getUniqueString()", function() {
-	QUnit.ok(typeof Echo.Utils.getUniqueString() == "string", "returned value is string");
+	QUnit.equal(typeof Echo.Utils.getUniqueString(), "string", "returned value is string");
+	var i, str;
 	var strings = [];
-	for (var i = 0; i < 5; i++) {
+	for (i = 0; i < 5; i++) {
 		strings.push(Echo.Utils.getUniqueString());
 	}
-	for (var i = 0; i < 4; i++) {
-		var str = strings.shift();
+	for (i = 0; i < 4; i++) {
+		str = strings.shift();
 		QUnit.ok(!~$.inArray(str, strings), "string \"" + str + "\" differs from others");
 	}
 });
@@ -431,7 +433,7 @@ Echo.Tests.test("log()", function() {
 		QUnit.ok(true, "Checking if no exceptions were thrown while executing the \"log\" function with valid and invalid params");
 	} catch(e) {
 		QUnit.pushFailure("Execution of the \"log\" function caused exception.");
-	};
+	}
 });
 
 Echo.Tests.test("hyperlink()", function() {
@@ -471,11 +473,11 @@ Echo.Tests.test("hyperlink()", function() {
 		"<a href=\"http://aboutecho.com\" target=\"_blank\"></a>",
 		"target is set to '_blank' value if openInNewWindow is true"
 	);
-	linkParams.data.href = "http://aboutecho.com\?&a=b";
+	linkParams.data.href = "http://aboutecho.com\\?&a=b";
 	linkParams.options.skipEscaping = false;
 	QUnit.equal(
 		Echo.Utils.hyperlink(linkParams.data, linkParams.options),
-		"<a href=\"http://aboutecho.com\?&amp;a=b\" target=\"_blank\"></a>",
+		"<a href=\"http://aboutecho.com\\?&amp;a=b\" target=\"_blank\"></a>",
 		"href attribute is htmlized if skipEscaping is false"
 	);
 });
@@ -660,15 +662,6 @@ Echo.Tests.test("testing templateSubstitution regexp", function() {
 });
 
 Echo.Tests.test("_prepareFieldAccessKey()", function() {
-	var data = {
-		"key1": "value1",
-		"key2": {
-			"key2-1": "value2-1",
-			"key2-2": {
-				"key2-2-1": "value2-2-1"
-			}
-		}
-	};
 	var cases = [
 		["", false, "empty string as a value"],
 		[false, false, "boolean 'false' as a value"],

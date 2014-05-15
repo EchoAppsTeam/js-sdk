@@ -24,6 +24,7 @@
 		"Echo": false,
 		"Backplane": false,
 		"janrain": false,
-		"QUnit": false
+		"QUnit": false,
+		"sinon": false
 	}
 }

@@ -1,4 +1,5 @@
 (function($) {
+"use strict";
 
 var suite = Echo.Tests.Unit.App = function() {};
 
@@ -21,7 +22,6 @@ suite.prototype.tests.PublicInterfaceTests = {
 		"async": true
 	},
 	"check": function() {
-		var self = this;
 		var manifest = {
 			"name": suite.getAppClassName(),
 			"vars": {},
@@ -196,8 +196,10 @@ suite.getComponentManifest = function(name) {
 };
 
 suite.initApp = function(config) {
+	/* jshint nonew: false */
 	var App = suite.getAppClass();
 	new App($.extend(true, {}, config));
+	/* jshint nonew: true */
 };
 
 suite.createApp = function(name) {
