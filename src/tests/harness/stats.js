@@ -357,7 +357,7 @@ function showCoverageList(type, prefix) {
 						}
 
 						if( type === "notTested" || type === "failed") {
-							html +=	' [<a class="echo-clickable" data-topic="' + topic + '">view data</a>] <div class="echo-tests-event-data">' + '</div>';
+							html +=	' [<a class="echo-clickable" data-topic="' + topic + '">view data</a>] <div class="echo-tests-event-data"></div>';
 						}
 						html +=	'</li>';
 					}
@@ -366,7 +366,7 @@ function showCoverageList(type, prefix) {
 				if (!html.length) {
 					html = "<ul><li>Empty list</li></ul>";
 				} else {
-					html = "<ul>"+html+"</ul>";
+					html = "<ul>" + html + "</ul>";
 				}
 			}
 
@@ -374,9 +374,11 @@ function showCoverageList(type, prefix) {
 				.find(".echo-clickable").click(function() {
 					var dataTag = $(this).parent().find(".echo-tests-event-data");
 					if (dataTag.html() === "") {
-						var data = $.map(events.raw.published[$(this).data("topic")].data, function(val) {
+						var topic = $(this).data("topic");
+						var data = $.map(events.raw.published[topic].data, function(val) {
 							return '<pre>' + QUnit.jsDump.parse(prepareEventData(val)) + '</pre>';
 						});
+						data.unshift("<pre><u>Expected</u>: " + QUnit.jsDump.parse(Echo.Tests.Events.contracts[topic]) + "</pre>");
 						dataTag.html(data.join(""));
 					}
 
@@ -437,7 +439,7 @@ function prepareEventData(obj, level) {
 	if (($.type(obj) === "object" || $.type(obj) === "array")) {
 		if (obj.tagName || obj.jquery) {
 			obj = "[object DOM]";
-		} else if (level <= 2) {
+		} else if (level <= 3) {
 			$.each(obj, function(key) {
 				obj[key] = prepareEventData(obj[key], level + 1);
 			});
