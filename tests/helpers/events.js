@@ -1,4 +1,24 @@
 (function($) {
+"use strict";
+
+var itemDataPattern = {
+	"id": "string",
+	"verbs": "array",
+	"normalized": "boolean",
+	"unique": "string",
+	"targets": "array",
+	"target": {
+		"conversationID": "string"
+	},
+	"object": {
+		"published": "string"
+	},
+	"provider": {
+		"icon": "string",
+		"name": "string",
+		"uri": "string"
+	}
+};
 
 var _stream = {};
 _stream.render = {
@@ -10,20 +30,7 @@ _stream.onItemReceive = {
 	"query": "string",
 	"target": "object",
 	"item": {
-		"data": {
-			"id": "string",
-			"unique": "string",
-			"target": {
-				"conversationID": "string"
-			},
-			"verbs": "array",
-			"provider": {
-				"icon": "string",
-				"name": "string",
-				"uri": "string"
-			},
-			"normalized": "boolean"
-		}
+		"data": itemDataPattern
 	}
 };
 
@@ -31,20 +38,7 @@ _stream.item = {
 	"query": "string",
 	"target": "object",
 	"item": {
-		"data": {
-			"id": "string",
-			"unique": "string",
-			"target": {
-				"conversationID": "string"
-			},
-			"verbs": "array",
-			"provider": {
-				"icon": "string",
-				"name": "string",
-				"uri": "string"
-			},
-			"normalized": "boolean"
-		},
+		"data": itemDataPattern,
 		"target": "object"
 	}
 };
@@ -151,18 +145,7 @@ Echo.Tests.Events.contracts = {
 		"target": "object",
 		"query": "string",
 		"item": {
-			"data": {
-				"id": "string",
-				"verbs": "array",
-				"targets": "array",
-				"postedTime": "string",
-				"normalized": "boolean",
-				"target": {
-					"id": "string",
-					"conversationID": "string"
-				},
-				"unique": "string"
-			},
+			"data": itemDataPattern,
 			"target": "object"
 		}
 	},
@@ -170,18 +153,7 @@ Echo.Tests.Events.contracts = {
 		"name": "string",
 		"plugin": "string",
 		"item": {
-			"data": {
-				"id": "string",
-				"verbs": "array",
-				"targets": "array",
-				"postedTime": "string",
-				"normalized": "boolean",
-				"target": {
-					"id": "string",
-					"conversationID": "string"
-				},
-				"unique": "string"
-			},
+			"data": itemDataPattern,
 			"target": "object"
 		},
 		"target": "object",
@@ -194,18 +166,7 @@ Echo.Tests.Events.contracts = {
 		"target": "object",
 		"query": "string",
 		"item": {
-			"data": {
-				"id": "string",
-				"verbs": "array",
-				"targets": "array",
-				"postedTime": "string",
-				"normalized": "boolean",
-				"target": {
-					"id": "string",
-					"conversationID": "string"
-				},
-				"unique": "string"
-			},
+			"data": itemDataPattern,
 			"target": "object"
 		}
 	},
@@ -343,4 +304,5 @@ Echo.Tests.Events.contracts = {
 	"Echo.Canvas.onRerender": {},
 	"Echo.Canvas.onRefresh": {}
 };
+
 })(Echo.jQuery);
