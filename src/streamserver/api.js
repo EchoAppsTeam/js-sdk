@@ -846,38 +846,33 @@ Echo.StreamServer.API.WebSockets.prototype._updateConnection = function(callback
 
 Echo.StreamServer.API.WebSockets.prototype._reconnect = function() {
 	var self = this;
-	var closeHandler = function() {
+	this.closeReason = "reconnect";
+	this.requestObject.abort();
+	this._close(function() {
 		self.requestObject = self.getRequestObject();
 		if (self.connected()) {
 			self.requestObject.config.get("onOpen")();
 		}
-	};
-	this.closeReason = "reconnect";
-	this.requestObject.abort();
-	if (this.requestObject.transport.closing()) {
-		var id = this.on("close", function() {
-			closeHandler();
-			Echo.Events.unsubscribe({"handlerId": id});
-		});
-	} else {
-		closeHandler();
-	}
+	});
 };
 
 Echo.StreamServer.API.WebSockets.prototype._resubscribe = function() {
 	var self = this;
-	var closeHandler = function() {
+	this._close(function() {
 		if (self.connected()) {
 			self.requestObject.config.get("onOpen")();
 		}
-	};
+	});
+};
+
+Echo.StreamServer.API.WebSockets.prototype._close = function(handler) {
 	if (this.requestObject.transport.closing()) {
 		var id = this.on("close", function() {
-			closeHandler();
+			handler();
 			Echo.Events.unsubscribe({"handlerId": id});
 		});
 	} else {
-		closeHandler();
+		handler();
 	}
 };
 
