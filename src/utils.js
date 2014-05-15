@@ -474,8 +474,7 @@ Echo.Utils.objectToJSON = function(obj) {
 Echo.Utils.htmlTextTruncate = function(text, limit, postfix, forceClosingTags) {
 	if (!limit || text.length < limit) return text;
 
-	var i, symbol, current, tail, tag, source, isTagClosing;
-	var tags = [], count = 0, finalPos = 0;
+	var i, tags = [], count = 0, finalPos = 0;
 	var wordRegex = /(\w)+/;
 	var htmlSpecialCharRegex = /^(\S)+;/;
 	if (!this.cache.standaloneTags) {
@@ -488,20 +487,20 @@ Echo.Utils.htmlTextTruncate = function(text, limit, postfix, forceClosingTags) {
 	}
 
 	for (i = 0; i < text.length; i++) {
-		symbol = text.charAt(i);
+		var symbol = text.charAt(i);
 		if (symbol === "<") {
-			tail = text.indexOf(">", i);
+			var tail = text.indexOf(">", i);
 			if (tail < 0) return text;
-			source = text.substring(i + 1, tail);
-			tag = "";
-			isTagClosing = false;
+			var source = text.substring(i + 1, tail);
+			var tag = "";
+			var isTagClosing = false;
 			if (source.charAt(0) === "/") {
 				isTagClosing = true;
 				source = source.substring(1);
 			}
 			tag = source.match(wordRegex)[0];
 			if (isTagClosing) {
-				current = tags.pop();
+				var current = tags.pop();
 				if (!current || current !== tag) return text;
 			} else if (!this.cache.standaloneTags[tag]) {
 				tags.push(tag);
