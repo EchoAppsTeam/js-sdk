@@ -341,10 +341,7 @@ module.exports = function(grunt) {
 				"<%= dirs.src %>/third-party/bootstrap/plugins/*.js"
 			],
 			"tests": [
-				"tests/config.js",
-				"tests/helpers/*.js",
-				"tests/fixtures/**/*.js",
-				"tests/unit/*.js"
+				"tests/**/*.js"
 			]
 		},
 		"wrap": {
