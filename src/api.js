@@ -218,8 +218,8 @@ Echo.API.Transports.WebSockets.prototype._prepareTransportObject = function() {
 
 	this._clearTimers();
 
-	var Socket = window.WebSocket || window.MozWebSocket;
-	var socket = new Socket(this._prepareURL(), this.config.get("settings.protocols"));
+	var SocketClass = window.WebSocket || window.MozWebSocket;
+	var socket = new SocketClass(this._prepareURL(), this.config.get("settings.protocols"));
 	socket.onopen = function() {
 		// send ping immediately to make sure the server is responding
 		self._ping(function() {
