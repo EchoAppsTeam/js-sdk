@@ -7,7 +7,7 @@
 	"latedef": true,
 	"newcap": true,
 	"noarg": true,
-	"nonew": true,
+	"nonew": false,
 	"smarttabs": true,
 	"strict": true,
 	"sub": true,

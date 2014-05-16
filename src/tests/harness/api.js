@@ -83,9 +83,7 @@ Echo.Tests.renderersTest = function(component, params, config) {
 		};
 		params.target = params.target || $("#qunit-fixture");
 		var Component = Echo.Utils.getComponent(component);
-		/* jshint nonew: false */
 		new Component(params);
-		/* jshint nonew: true */
 	}, config);
 };
 
@@ -141,9 +139,7 @@ Echo.Tests.pluginRenderersTest = function(plugin, params, config) {
 		};
 		params.target = params.target || $("#qunit-fixture");
 		var Component = Echo.Utils.getComponent(component);
-		/* jshint nonew: false */
 		new Component(params);
-		/* jshint nonew: true */
 	}, config);
 };
 

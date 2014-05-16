@@ -213,9 +213,7 @@ plugin.methods._showSubmit = function() {
 		"name": "Reply",
 		"inReplyTo": item.get("data")
 	});
-	/* jshint nonew: false */
 	new Echo.StreamServer.Controls.Submit(config);
-	/* jshint nonew: true */
 	return target;
 };
 

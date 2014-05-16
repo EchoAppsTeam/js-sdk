@@ -75,9 +75,7 @@ plugin.methods._assembleButton = function() {
 				config["parent"] = plugin.component.config.getAsHash();
 				config["targetQuery"] = plugin.config.get("query", "");
 				config.plugins.push({"name": "Edit"});
-				/* jshint nonew: false */
 				new Echo.StreamServer.Controls.Submit(config);
-				/* jshint nonew: true */
 				item.config.get("target").get(0).scrollIntoView(true);
 			}
 		};

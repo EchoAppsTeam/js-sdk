@@ -1676,9 +1676,7 @@ stream.methods._initItem = function(entry, isLive, callback) {
 	config.data = this._normalizeEntry(entry);
 
 	var init = function() {
-		/* jshint nonew: false */
 		new Echo.StreamServer.Controls.Stream.Item(config);
-		/* jshint nonew: true */
 	};
 	this.config.get("asyncItemsRendering") ? setTimeout(init, 0) : init();
 };

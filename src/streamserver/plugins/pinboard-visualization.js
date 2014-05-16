@@ -543,9 +543,7 @@ plugin.renderers.media = function(element) {
 			"elements": mediaItems,
 			"item": item
 		});
-		/* jshint nonew: false */
 		new Echo.StreamServer.Controls.Stream.Item.MediaGallery(plugin.config.assemble(config));
-		/* jshint nonew: true */
 	} else {
 		element.hide();
 	}

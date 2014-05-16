@@ -196,10 +196,8 @@ suite.getComponentManifest = function(name) {
 };
 
 suite.initApp = function(config) {
-	/* jshint nonew: false */
 	var App = suite.getAppClass();
 	new App($.extend(true, {}, config));
-	/* jshint nonew: true */
 };
 
 suite.createApp = function(name) {

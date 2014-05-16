@@ -169,12 +169,10 @@ plugin.renderers.auth = function(element) {
 		}
 		return acc;
 	});
-	/* jshint nonew: false */
 	new Echo.IdentityServer.Controls.Auth(plugin.config.assemble({
 		"target": element,
 		"plugins": [janrainConnectorPlugin]
 	}));
-	/* jshint nonew: true */
 	return element;
 };
 

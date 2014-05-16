@@ -778,7 +778,6 @@ suite.prototype.cases.nestedReadyCallbacks = function(callback) {
 		QUnit.ok(!byOuterControl, "Check if the callback is called due to the inner control initialization");
 	};
 	var createInstance = function(parent) {
-		/* jshint nonew: false */
 		new Echo.Tests.TestControl({
 			"target": $("<div>"),
 			"appkey": "echo.jssdk.tests.aboutecho.com",
@@ -786,7 +785,6 @@ suite.prototype.cases.nestedReadyCallbacks = function(callback) {
 			"context": parent && parent.config.get("context") || undefined,
 			"ready": parent ? innerReady : outerReady
 		});
-		/* jshint nonew: true */
 	};
 	var manifest = Echo.Control.manifest("Echo.Tests.TestControl");
 	manifest.init = function() {
@@ -1512,13 +1510,11 @@ suite.getTestControlClass = function(name) {
 };
 
 suite.initTestControl = function(config, name) {
-	/* jshint nonew: false */
 	var Definition = suite.getTestControlClass(name);
 	new Definition($.extend({
 		"target": $("<div></div>"),
 		"appkey": "echo.jssdk.tests.aboutecho.com"
 	}, config));
-	/* jshint nonew: true */
 };
 
 suite.createTestControl = function(name, config) {

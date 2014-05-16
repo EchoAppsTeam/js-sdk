@@ -681,7 +681,6 @@ submit.methods._showError = function(data) {
 		: this.labels.get("postingFailed", {"error": response.errorMessage || response.errorCode});
 	var popup = this._assembleErrorPopup(message);
 
-	/* jshint nonew: false */
 	new Echo.GUI.Modal({
 		"data": {
 			"body": popup.content
@@ -691,7 +690,6 @@ submit.methods._showError = function(data) {
 		"fade": true,
 		"show": true
 	});
-	/* jshint nonew: true */
 };
 
 submit.methods._assembleErrorPopup = function(message) {
