@@ -5,7 +5,7 @@ var $ = jQuery;
 
 /**
  * @class Echo.StreamServer.Controls.Stream.Item.Plugins.Edit
- * Adds extra “Edit” button to each item in the Echo Stream control
+ * Adds extra "Edit" button to each item in the Echo Stream control
  * which allows to edit the content and some metadata of the item.
  * This button will appear either for the users with
  * administrative privileges or for editing of personal comments.
@@ -19,7 +19,7 @@ var $ = jQuery;
  * 	});
  *
  * More information regarding the plugins installation can be found
- * in the [“How to initialize Echo components”](#!/guide/how_to_initialize_components-section-initializing-plugins) guide.
+ * in the ["How to initialize Echo components"](#!/guide/how_to_initialize_components-section-initializing-plugins) guide.
  *
  * @extends Echo.Plugin
  *

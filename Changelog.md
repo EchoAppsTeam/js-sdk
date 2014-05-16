@@ -40,8 +40,8 @@ This release contains a fix for Echo Loader library which is responsible for dep
 
 * In order to **improve security**, we performed some updates to enable **HTTPS protocol for the endpoints which manipulate the Backplane channel ID**, specifically:
 
-  * requests to “users/whoami” to get the user data;
-  * all submit operations via Echo Submission Proxy (including “Likes”, “Flags” operations as well as posting new items via Submit form);
+  * requests to "users/whoami" to get the user data;
+  * all submit operations via Echo Submission Proxy (including "Likes", "Flags" operations as well as posting new items via Submit form);
   * user logout request;
   * Backplane channel requests.
 
@@ -49,7 +49,7 @@ This release contains a fix for Echo Loader library which is responsible for dep
 
 * We discovered the situation where an **App with no Backplane configuration affected the user state** (switched it to anonymous state) and as a result the state was not updated even though other Apps had the Backplane information available. We made the logic more tolerant to that situation and we re-initialize the user in case the Backplane information became available on the page.
 
-* We made the **"transport" configuration parameter value consistent across the whole API-related machinery**. Now it’s called "websockets" in all places. We renamed the corresponding Echo API transport class to WebSockets as well. Please make sure that the “websockets” (not “websocket”) value is used in your configs.
+* We made the **"transport" configuration parameter value consistent across the whole API-related machinery**. Now it’s called "websockets" in all places. We renamed the corresponding Echo API transport class to WebSockets as well. Please make sure that the "websockets" (not "websocket") value is used in your configs.
 
 * The **missing docs for the ["onUpdate"](http://echoappsteam.github.io/js-sdk/docs/#!/api/Echo.StreamServer.Controls.Counter-echo_event-onUpdate) and ["onError"](http://echoappsteam.github.io/js-sdk/docs/#!/api/Echo.StreamServer.Controls.Counter-echo_event-onError)** events of the Echo Counter App **were added**.
 
@@ -59,7 +59,7 @@ This release contains a fix for Echo Loader library which is responsible for dep
 
 * Because of the issue with cross-domain AJAX requests to get Canvas configs from the third-party vendor storage (in case the Canvas is requested from multiple domains), **we switched the way we extract the Canvas data to JSONP-like one** to ensure the consistent behavior across all [supported browsers](http://echoappsteam.github.io/js-sdk/docs/#!/guide/technical_specification-section-browser-support). This is an internal machinery update, so there are *no* performance or any other implications for the publishers and end users. We will switch back to the AJAX (CORS) method as soon as it's fully supported.
 
-* **WebSockets re-subscribing logic in case of subscription termination signal** sent from the server side was updated. Previously we sent the “since” parameter along with the search query to re-initialize the view in StreamServer, but the view was not registered, because of the “since” parameter (which indicates that this is a live updates request). As a result, no new live updates reached the client side. The problem is now resolved. We have updated the code to prevent the “since” parameter from being sent while re-initializing the view.
+* **WebSockets re-subscribing logic in case of subscription termination signal** sent from the server side was updated. Previously we sent the "since" parameter along with the search query to re-initialize the view in StreamServer, but the view was not registered, because of the "since" parameter (which indicates that this is a live updates request). As a result, no new live updates reached the client side. The problem is now resolved. We have updated the code to prevent the "since" parameter from being sent while re-initializing the view.
 
 ##v3.0.13 - September 30, 2013
 
@@ -208,7 +208,7 @@ The main reason why the function was added into the code is to **avoid JS except
 
 ## v3.0.7 - Apr 11, 2013
 
-* Sometimes when the item was updated, the **item timestamp field was missing** in the UI. The problem was fixed and as a part of the fix we removed the “age” field (which was no longer used) from the Echo.StreamServer.Controls.Stream.Item class instance. Since the field existed for internal usage only, it should not affect the code written on top of the SDK. Anyway if you used the “age” field references in your code, make sure that the corresponding code is rewritten accordingly.
+* Sometimes when the item was updated, the **item timestamp field was missing** in the UI. The problem was fixed and as a part of the fix we removed the "age" field (which was no longer used) from the Echo.StreamServer.Controls.Stream.Item class instance. Since the field existed for internal usage only, it should not affect the code written on top of the SDK. Anyway if you used the "age" field references in your code, make sure that the corresponding code is rewritten accordingly.
 
 * The Echo.Canvas abstraction was added to work with the application deployments. The abstraction is used primarily in the **Echo.Loader.initApplication** function at this moment to init applications, but it will also be widely used later for other app deployment scenarios. The corresponding code of the Echo.Loader class was refactored to work with the Echo.Canvas abstraction. Note: we do not recommend the Echo.Canvas abstraction usage directly for now, please use the Echo.Loader.initApplication function instead. More information about the Echo.Loader.initApplication function can be found [here](http://echoappsteam.github.io/js-sdk/docs/#!/api/Echo.Loader-static-method-initApplication).
 
@@ -216,27 +216,27 @@ The main reason why the function was added into the code is to **avoid JS except
 
 * The **"PinboardVisualization" plugin** was handling the YouTube video URLs in the item content incorrectly, which prevented videos from appearing in the item UI. Now the URLs processing was updated and the videos should appear in the item UI properly.
 
-* There was a mismatch between the “show user list” option names used in the **"CommunityFlag" plugin** code, the plugin default config object and docs. The [config and docs](http://echoappsteam.github.io/js-sdk/docs/#!/api/Echo.StreamServer.Controls.Stream.Item.Plugins.CommunityFlag-cfg-showUserList) are now synced.
+* There was a mismatch between the "show user list" option names used in the **"CommunityFlag" plugin** code, the plugin default config object and docs. The [config and docs](http://echoappsteam.github.io/js-sdk/docs/#!/api/Echo.StreamServer.Controls.Stream.Item.Plugins.CommunityFlag-cfg-showUserList) are now synced.
 
 * Incorrect detection of the current user id in the **"Like" plugin** caused invalid label in the Stream item UI for the likes submitted by the current user. The user id detection is now fixed.
 
 * The "itemURIPattern" configuration parameter was ignored by the **Submit control** during the item submission. Now the Submit control is passing the "itemURIPattern" parameter value into the API machinery which takes care of sending the data to the server side. More information about the "itemURIPattern" can be found [here](http://echoappsteam.github.io/js-sdk/docs/#!/api/Echo.StreamServer.Controls.Submit-cfg-itemURIPattern).
 
-* We introduced the new parameter called "useSecureAPI" to all classes based on the Echo.Control or Echo.App class. This parameter is designed to specify the API request scheme (HTTP or HTTPS). More information about the “useSecureAPI” parameter can be found [here](http://echoappsteam.github.io/js-sdk/docs/#!/api/Echo.Control-cfg-useSecureAPI).
+* We introduced the new parameter called "useSecureAPI" to all classes based on the Echo.Control or Echo.App class. This parameter is designed to specify the API request scheme (HTTP or HTTPS). More information about the "useSecureAPI" parameter can be found [here](http://echoappsteam.github.io/js-sdk/docs/#!/api/Echo.Control-cfg-useSecureAPI).
 
-* The **“tags” and “markers” parameter values defined in the Submit control config were ignored** while building the UI for administrators/moderators. The issue was fixed and now the Submit control takes the config values into account.
+* The **"tags" and "markers" parameter values defined in the Submit control config were ignored** while building the UI for administrators/moderators. The issue was fixed and now the Submit control takes the config values into account.
 
 * When the **Echo.API.Request** class was used directly (without any wrappers like Echo.StreamServer.API.Request, etc), the module was acting incorrectly in case of errors, since the part of the logic existed in the wrappers only. The necessary logic was moved into the base class now to handle the error responses better.
 
-* Under a certain condition the **“onShow” callback in the Echo.GUI.Modal class instance was called twice**. The Echo.GUI.Modal logic was updated to suppress the excessive callback function execution.
+* Under a certain condition the **"onShow" callback in the Echo.GUI.Modal class instance was called twice**. The Echo.GUI.Modal logic was updated to suppress the excessive callback function execution.
 
 * Sometimes the **Echo.Loader.download** function callback was executed before the resources downloading was complete (in case the next scripts chunk downloading had started before the previous chunk was loaded). The issue is originally coming from the [YepNope](http://yepnopejs.com/) loader we use for loading the resources (the corresponding ticket in their [bugtracker](https://github.com/SlexAxton/yepnope.js/issues/113)). We added the logic to avoid the described situation.
 
 * The **HTTP protocol was used by the Echo.Loader class** to download Echo environment scripts on HTTPS pages which caused security warnings in a browser. Now the Echo.Loader detects the page protocol and requests the dependencies using either HTTP or HTTPS.
 
-* The **“TwitterIntents” plugin was renamed to “TweetDisplay”**. The “TwitterIntents” plugin is still available, but it was marked as deprecated and will be removed during the next (v3.0.8) SDK release. If you use this plugin, **please update the plugin name** in your installations. The tweets appearance was also updated to comply with the latest Twitter display requirements.
+* The **"TwitterIntents" plugin was renamed to "TweetDisplay"**. The "TwitterIntents" plugin is still available, but it was marked as deprecated and will be removed during the next (v3.0.8) SDK release. If you use this plugin, **please update the plugin name** in your installations. The tweets appearance was also updated to comply with the latest Twitter display requirements.
 
-* The **“select” event has been added into the Echo.GUI.Tabs** class. The event is triggered when the user clicks on the non-disabled, but inactive (not selected) tab. More info about the “select” event can be found [here](http://echoappsteam.github.io/js-sdk/docs/#!/api/Echo.GUI.Tabs-cfg-select).
+* The **"select" event has been added into the Echo.GUI.Tabs** class. The event is triggered when the user clicks on the non-disabled, but inactive (not selected) tab. More info about the "select" event can be found [here](http://echoappsteam.github.io/js-sdk/docs/#!/api/Echo.GUI.Tabs-cfg-select).
 
 ## v3.0.6 - Feb 20, 2013
 
@@ -262,7 +262,7 @@ The main reason why the function was added into the code is to **avoid JS except
 
 * the **input fields of the Submit form** instantiated inside the Reply plugin **were misaligned** when used in conjunction with the PinboardVisualization plugin. We performed some CSS updates to fix the problem.
 
-* the **Stream control UI links** such as item controls or the “Re” tag links **changed their styles** when the “gui.pack.css” was included into the page source. Extra CSS rules were added to prevent this.
+* the **Stream control UI links** such as item controls or the "Re" tag links **changed their styles** when the "gui.pack.css" was included into the page source. Extra CSS rules were added to prevent this.
 
 * the **logic of the static manifest declarations merging** (in case of inheritance) was updated to check the situation when the function is defined in child manifest and undefined in parent manifest, which caused the problems while calling the parent function.
 
@@ -274,24 +274,24 @@ The main reason why the function was added into the code is to **avoid JS except
 
   [http://echoappsteam.github.io/js-sdk/docs/#!/api/Echo.GUI](http://echoappsteam.github.io/js-sdk/docs/#!/api/Echo.GUI)
 
-* All the Twitter Bootstrap JS files with the Echo.GUI components are now packed into the “gui.pack.js” file. All the CSS rules (Bootstrap and Echo.GUI components) are packed into the “gui.pack.css”. Please make sure to include these files into dependencies if your plugins or apps use Bootstrap components.
+* All the Twitter Bootstrap JS files with the Echo.GUI components are now packed into the "gui.pack.js" file. All the CSS rules (Bootstrap and Echo.GUI components) are packed into the "gui.pack.css". Please make sure to include these files into dependencies if your plugins or apps use Bootstrap components.
 
 * **jQuery was upgraded from 1.8.2 to 1.9.0 version.** This jQuery upgrade is not fully backwards-compatible by itself. You can find the details about the jQuery 1.9 release with the list of the things which were changed or deprecated here:
 
   [http://jquery.com/upgrade-guide/1.9/](http://jquery.com/upgrade-guide/1.9/)
 
-* The **“PinboardVisualization” plugin was moved** out of the main StreamServer JS package (streamserver.pack.js) in order to reduce the size of the package. Now the following plugin script should be included directly into the page source to load the “PinboardVisualization” Stream plugin:
+* The **"PinboardVisualization" plugin was moved** out of the main StreamServer JS package (streamserver.pack.js) in order to reduce the size of the package. Now the following plugin script should be included directly into the page source to load the "PinboardVisualization" Stream plugin:
   http://cdn.echoenabled.com/sdk/v3/streamserver/plugins/pinboard-visualization.js
 
-  More information about the “PinboardVisualization” plugin can be found in our docs center:
+  More information about the "PinboardVisualization" plugin can be found in our docs center:
 
   [http://echoappsteam.github.io/js-sdk/docs/#!/api/Echo.StreamServer.Controls.Stream.Plugins.PinboardVisulization](http://echoappsteam.github.io/js-sdk/docs/#!/api/Echo.StreamServer.Controls.Stream.Plugins.PinboardVisulization)
 
-* The **events produced by the "Edit" plugin** contained incomplete event names, the "Plugins.Edit" part was missing. The event names generation was fixed and now the proper events are being fired by the "Edit" plugin. If you use subscriptions to the “Edit” plugin events, please update the corresponding code to subscribe using the new event names. More information about the "Edit" plugin itself and the events produced can be found in our docs center:
+* The **events produced by the "Edit" plugin** contained incomplete event names, the "Plugins.Edit" part was missing. The event names generation was fixed and now the proper events are being fired by the "Edit" plugin. If you use subscriptions to the "Edit" plugin events, please update the corresponding code to subscribe using the new event names. More information about the "Edit" plugin itself and the events produced can be found in our docs center:
 
   [http://echoappsteam.github.io/js-sdk/docs/#!/api/Echo.StreamServer.Controls.Submit.Plugins.Edit](http://echoappsteam.github.io/js-sdk/docs/#!/api/Echo.StreamServer.Controls.Submit.Plugins.Edit)
 
-* The **“appkey” validation was moved** from the base Echo.Control to the specific controls which require “appkey” as a mandatory parameter. Now if your app or control doesn’t require an “appkey” (doesn’t interact with StreamServer or IdentityServer directly), the “appkey” can be omitted in the configuration. For you convenience if you need to check the “appkey”, we added the “checkAppKey” function into the Echo.Control class, so your control or application will have access to this function using the “this” property of the class instance. More information about the “checkAppKey” function can be found in our docs center:
+* The **"appkey" validation was moved** from the base Echo.Control to the specific controls which require "appkey" as a mandatory parameter. Now if your app or control doesn’t require an "appkey" (doesn’t interact with StreamServer or IdentityServer directly), the "appkey" can be omitted in the configuration. For you convenience if you need to check the "appkey", we added the "checkAppKey" function into the Echo.Control class, so your control or application will have access to this function using the "this" property of the class instance. More information about the "checkAppKey" function can be found in our docs center:
 
   [http://echoappsteam.github.io/js-sdk/docs/#!/api/Echo.Control-method-checkAppKey](http://echoappsteam.github.io/js-sdk/docs/#!/api/Echo.Control-method-checkAppKey)
 
@@ -306,7 +306,7 @@ The main reason why the function was added into the code is to **avoid JS except
 
 * **Isotope library** ([http://isotope.metafizzy.co](http://isotope.metafizzy.co)) which is used to power the PinboardVisualization mechanics **was upgraded** from 1.5.21 to 1.5.25 version.
 
-* The **dependencies definition was simplified**. We’ve added an ability to specify the plugin/app/control name instead of the "loaded" function as a part of the dependency object. The “loaded” function was also preserved. You can see the examples here:
+* The **dependencies definition was simplified**. We’ve added an ability to specify the plugin/app/control name instead of the "loaded" function as a part of the dependency object. The "loaded" function was also preserved. You can see the examples here:
 
   [http://echoappsteam.github.io/js-sdk/docs/#!/guide/how_to_develop_app-section-dependencies](http://echoappsteam.github.io/js-sdk/docs/#!/guide/how_to_develop_app-section-dependencies)
 
