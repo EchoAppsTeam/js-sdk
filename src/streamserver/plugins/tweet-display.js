@@ -37,7 +37,7 @@ var $ = jQuery;
  * renamed with Comment on non-tweet items to avoid possible confusion.
  *
  * More information regarding the plugins installation can be found
- * in the [“How to initialize Echo components”](#!/guide/how_to_initialize_components-section-initializing-plugins) guide.
+ * in the ["How to initialize Echo components"](#!/guide/how_to_initialize_components-section-initializing-plugins) guide.
  *
  * @extends Echo.Plugin
  *

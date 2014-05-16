@@ -478,7 +478,6 @@ Echo.Control.prototype.getRelativeTime = function(datetime) {
 	if (!ts) return;
 	var d = new Date(ts * 1000);
 	var now = (new Date()).getTime();
-	var when;
 	var diff = Math.floor((now - d.getTime()) / 1000);
 	var dayDiff = Math.floor(diff / 86400);
 	var getAgo = function(ago, period) {
@@ -490,33 +489,38 @@ Echo.Control.prototype.getRelativeTime = function(datetime) {
 	// less than 10 seconds or if the given date is "from the future" but
 	// within the 60 seconds range
 	if (isNaN(dayDiff) || diff < -60 || dayDiff >= 365) {
-		when = d.toLocaleDateString() + ', ' + d.toLocaleTimeString();
-	} else if (diff < 10) {
-		when = this.labels.get("justNow");
-	} else if (diff < 60) {
-		when = getAgo(diff, 'second');
-	} else if (diff < 60 * 60) {
-		diff = Math.floor(diff / 60);
-		when = getAgo(diff, 'minute');
-	} else if (diff < 60 * 60 * 24) {
-		diff = Math.floor(diff / (60 * 60));
-		when = getAgo(diff, 'hour');
-	} else if (diff < 60 * 60 * 48) {
-		when = this.labels.get("yesterday");
-	} else if (dayDiff < 7) {
-		when = getAgo(dayDiff, 'day');
-	} else if (dayDiff < 14) {
-		when = this.labels.get("lastWeek");
-	} else if (dayDiff < 30) {
-		diff =  Math.floor(dayDiff / 7);
-		when = getAgo(diff, 'week');
-	} else if (dayDiff < 60) {
-		when = this.labels.get("lastMonth");
-	} else if (dayDiff < 365) {
-		diff =  Math.floor(dayDiff / 31);
-		when = getAgo(diff, 'month');
+		return d.toLocaleDateString() + ", " + d.toLocaleTimeString();
 	}
-	return when;
+	if (diff < 10) {
+		return this.labels.get("justNow");
+	}
+	if (diff < 60) {
+		return getAgo(diff, "second");
+	}
+	if (diff < 60 * 60) {
+		return getAgo(Math.floor(diff / 60), "minute");
+	}
+	if (diff < 60 * 60 * 24) {
+		return getAgo(Math.floor(diff / (60 * 60)), "hour");
+	}
+	if (diff < 60 * 60 * 48) {
+		return this.labels.get("yesterday");
+	}
+	if (dayDiff < 7) {
+		return getAgo(dayDiff, "day");
+	}
+	if (dayDiff < 14) {
+		return this.labels.get("lastWeek");
+	}
+	if (dayDiff < 30) {
+		return getAgo(Math.floor(dayDiff / 7), "week");
+	}
+	if (dayDiff < 60) {
+		return this.labels.get("lastMonth");
+	}
+	if (dayDiff < 365) {
+		return getAgo(Math.floor(dayDiff / 31), "month");
+	}
 };
 
 /**
@@ -564,8 +568,8 @@ Echo.Control.prototype.placeImage = function(args) {
 		"onerror": args.onerror,
 		"onload": function () {
 			if (document.compatMode !== "CSS1Compat") {
-				$(this).addClass(this.width < this.height 
-						? "echo-image-stretched-vertically" 
+				$(this).addClass(this.width < this.height
+						? "echo-image-stretched-vertically"
 						: "echo-image-stretched-horizontally");
 			}
 			$.isFunction(args.onload) && args.onload.apply(this, arguments);
@@ -681,13 +685,13 @@ Echo.Control.prototype._initializers.events = function() {
 			// publish events with parents prefixes if appropriate flag provided
 			if (params.inherited) {
 				parent = control.constructor.parent;
-				names = function get(parent, acc) {
+				names = (function get(parent, acc) {
 					if (parent && parent.name) {
 						acc.unshift(parent.name);
 						get(parent.constructor.parent, acc);
 					}
 					return acc;
-				}(parent, []);
+				})(parent, []);
 				$.map(names, function(name) {
 					Echo.Events.publish(
 						$.extend({}, params, {
@@ -989,13 +993,13 @@ Echo.Control.prototype._getSubstitutionInstructions = function() {
 			var value, parent;
 			if (key) {
 				parent = control.constructor.parent;
-				value = function get(parent, acc) {
+				value = (function get(parent, acc) {
 					if (parent && parent.cssPrefix) {
 						acc.unshift(parent.cssPrefix + key);
 						get(parent.constructor.parent, acc);
 					}
 					return acc;
-				}(parent, []).join(" ");
+				})(parent, []).join(" ");
 			} else {
 				value = control.cssClass;
 			}
@@ -1443,7 +1447,7 @@ manifest.css = '.echo-secondaryBackgroundColor { background-color: #F4F4F4; }' +
 		'.echo-relative { position: relative; }' +
 		'.echo-clear { clear: both; }' +
 		'.echo-image-container.echo-image-position-fill { text-align: center; overflow: hidden; }' +
-		'.echo-image-container.echo-image-position-fill img { max-width: 100%; max-height: 100%; width: auto; height: auto; vertical-align: top; }' + 
+		'.echo-image-container.echo-image-position-fill img { max-width: 100%; max-height: 100%; width: auto; height: auto; vertical-align: top; }' +
 		'.echo-image-container.echo-image-position-fill img.echo-image-stretched-horizontally { width: 100%; height: auto; }' +
 		'.echo-image-container.echo-image-position-fill img.echo-image-stretched-vertically { width: auto; height: 100%; }' +
 

@@ -1,4 +1,5 @@
 (function($) {
+"use strict";
 
 var published = [];
 var order;
@@ -191,6 +192,7 @@ Echo.Tests.test("public methods", function() {
 
 Echo.Tests.test("advanced publishing", function() {
 	order = 0;
+	/* jshint unused: false */
 	var s1 = subscribe("A.test", "a1/b1/c1", ["propagation.siblings"]);
 	var s2 = subscribe("A.test", "a1", ["bubble"]);
 	var s3 = subscribe("A.test", "a2", ["propagation.children"]);

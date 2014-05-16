@@ -7,17 +7,25 @@
 	"latedef": true,
 	"newcap": true,
 	"noarg": true,
-	"nonew": true,
+	"nonew": false,
 	"smarttabs": true,
 	"strict": true,
 	"sub": true,
 	"trailing": true,
 	"undef": true,
-	"unused": true,
+	"unused": "vars",
 	"browser": true,
 	"scripturl": true,
 	"jquery": true,
 	"devel": true,
 	"laxbreak": true,
-	"node": true
+	"node": true,
+	"-W065": true, // suppress "missing radix" warning
+	"globals": {
+		"Echo": false,
+		"Backplane": false,
+		"janrain": false,
+		"QUnit": false,
+		"sinon": false
+	}
 }

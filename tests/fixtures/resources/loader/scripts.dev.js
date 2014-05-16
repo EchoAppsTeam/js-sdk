@@ -1,8 +1,6 @@
 (function(jQuery) {
 "use strict";
 
-var $ = jQuery;
-
 var control = Echo.Control.manifest("Echo.Tests.Controls.TestControl");
 
 if (Echo.Control.isDefined(control)) return;

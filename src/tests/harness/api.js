@@ -262,7 +262,7 @@ function _testSetup() {
 
 	// clear qunit-fixture
 	$("#qunit-fixture").empty();
-};
+}
 
 function _testTeardown() {
 	var meta = QUnit.config.current.moduleTestEnvironment.meta;
@@ -271,7 +271,7 @@ function _testTeardown() {
 	$.each(meta.functions, function(i, name) {
 		Echo.Tests.Stats.markFunctionTested(meta.className + "." + name);
 	});
-};
+}
 
 function _normalizeTestConfig(config) {
 	return $.extend(true, {
@@ -283,6 +283,7 @@ function _normalizeTestConfig(config) {
 }
 
 function _checkSingleRenderer(name, element, rendererFn, suffix) {
+	/* jshint validthis: true */
 	suffix = suffix || "";
 	if (!element) {
 		QUnit.ok(true, "Note: the test for the " + " \"" + name + "\"" + " renderer was not executed, because the template doesn't contain the respective element. This renderer works for another type of template." + suffix);
@@ -294,6 +295,7 @@ function _checkSingleRenderer(name, element, rendererFn, suffix) {
 }
 
 function _checkRenderers(config) {
+	/* jshint validthis: true */
 	var self = this;
 	var instance = config.instance;
 	var renderers = config.renderers;
@@ -338,7 +340,7 @@ function _testElementsConsistencyAfterRendering(name, oldElement, renderedElemen
 		oldText,
 		prefix + "check that text representation of the element is still the same after second rendering" + suffix
 	);
-};
+}
 // TODO: remove this line when all tests use new format
 Echo.Tests._testElementsConsistencyAfterRendering = _testElementsConsistencyAfterRendering;
 

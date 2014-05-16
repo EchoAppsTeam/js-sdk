@@ -1,4 +1,5 @@
 (function($) {
+"use strict";
 
 var plugin = "Echo.StreamServer.Controls.Stream.Item.Plugins.ItemAccumulatorDisplay";
 

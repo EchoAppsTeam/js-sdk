@@ -1,4 +1,5 @@
 (function($) {
+"use strict";
 
 Echo.Tests.module("Echo.API", {
 	"meta": {
@@ -63,6 +64,7 @@ if (Echo.API.Transports.WebSockets.available()) {
 		for(var i = 0; i < 4; i++) {
 			deferred.push($.Deferred());
 			closeDef.push($.Deferred());
+			/* jshint loopfunc: true */
 			(function(i) {
 				requests.push(
 					new Echo.API.Request({
@@ -85,6 +87,7 @@ if (Echo.API.Transports.WebSockets.available()) {
 					QUnit.ok(requests[0].transport.connecting(), "Check that WS status is \"connecting\"");
 				}
 			})(i);
+			/* jshint loopfunc: false */
 		}
 		var req = requests[0];
 		$.when.apply($, deferred).done(function() {

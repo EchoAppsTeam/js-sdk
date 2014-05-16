@@ -8,16 +8,16 @@ var $ = jQuery;
  * Echo FacePile control displays users (actors) returned in any activity stream and displays a live updating collection of avatars and names.
  * It is either a static list formed by a predefined data set or live updated list constructed using the Echo Query Language.
  *
- * 	new Echo.StreamServer.Controls.FacePile({
- * 		"target": document.getElementById("echo-facepile"),
- * 		"appkey": "echo.jssdk.demo.aboutecho.com",
- * 		"query": "childrenof:http://example.com/* itemsPerPage:2 children:0",
- * 		"suffixText": " commented on aboutecho.com",
- * 		"item": {"avatar": true, "text": true}
- * 	});
+ *		new Echo.StreamServer.Controls.FacePile({
+ *			"target": document.getElementById("echo-facepile"),
+ *			"appkey": "echo.jssdk.demo.aboutecho.com",
+ *			"query": "childrenof:http://example.com/* itemsPerPage:2 children:0",
+ *			"suffixText": " commented on aboutecho.com",
+ *			"item": {"avatar": true, "text": true}
+ *		});
  *
  * More information regarding the possible ways of the Control initialization
- * can be found in the [“How to initialize Echo components”](#!/guide/how_to_initialize_components-section-initializing-an-app) guide.
+ * can be found in the ["How to initialize Echo components"](#!/guide/how_to_initialize_components-section-initializing-an-app) guide.
  *
  * @extends Echo.Control
  *
@@ -130,11 +130,11 @@ pile.config = {
 	 * <a href="http://echoplatform.com/streamserver/docs/rest-api/items-api/search/" target="_blank">"search" API</a>
 	 * method specification.
 	 *
-	 * 	new Echo.StreamServer.Controls.FacePile({
-	 * 		"target": document.getElementById("echo-facepile"),
-	 * 		"appkey": "echo.jssdk.demo.aboutecho.com",
-	 * 		"query" : "childrenof:http://example.com/test/*"
-	 * 	});
+	 *		new Echo.StreamServer.Controls.FacePile({
+	 *			"target": document.getElementById("echo-facepile"),
+	 *			"appkey": "echo.jssdk.demo.aboutecho.com",
+	 *			"query" : "childrenof:http://example.com/test/*"
+	 *		});
 	 */
 	"query": "",
 
@@ -353,7 +353,7 @@ pile.methods._fromExternalData = function() {
 
 pile.methods._request = function() {
 	var self = this;
- 	var request = this.get("request");
+	var request = this.get("request");
 	if (!request) {
 		request = Echo.StreamServer.API.request({
 			"endpoint": "search",
@@ -563,7 +563,7 @@ pile.methods._intersperse = function(object, separator) {
 	});
 };
 
-pile.css = 
+pile.css =
 	'.{class:container} { line-height: 20px; vertical-align: middle; }' +
 	'.{class:more} { white-space: nowrap; }' +
 	'.{class:more}.echo-linkColor a, .{class:more}.echo-linkColor a:hover { color: #476CB8; text-decoration: underline; }' +
@@ -575,8 +575,6 @@ Echo.Control.create(pile);
 
 (function(jQuery) {
 "use strict";
-
-var $ = jQuery;
 
 /**
  * @class Echo.StreamServer.Controls.FacePile.Item
@@ -684,9 +682,8 @@ item.templates.main =
  * @echo_renderer
  */
 item.renderers.avatar = function(element) {
-	var self = this;
 	if (this.config.get("avatar")) {
-		this.placeImage({ 
+		this.placeImage({
 			"container": element,
 			"image": this.get("data.avatar"),
 			"defaultImage": this.config.get("defaultAvatar")

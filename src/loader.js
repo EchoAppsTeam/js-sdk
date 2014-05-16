@@ -56,7 +56,7 @@ Echo.Loader = {
  */
 Echo.Loader.getURL = function(url, devVersion) {
 	if (typeof devVersion === "undefined") devVersion = true;
-	return /^https?:\/\/|^\/\//.test(url)
+	return (/^https?:\/\/|^\/\//).test(url)
 		? url
 		: Echo.Loader.config.cdnBaseURL + "sdk/v" + Echo.Loader.version +
 			(devVersion && Echo.Loader.isDebug() ? "/dev" : "") +
@@ -479,7 +479,7 @@ Echo.Loader._areResourcesReady = function(resources) {
 
 function getEventName(name) {
 	return window.addEventListener ? name : "on" + name;
-};
+}
 
 function onViewportChange(action, handler) {
 	var addEvent = window.addEventListener || window.attachEvent;
@@ -491,6 +491,6 @@ function onViewportChange(action, handler) {
 		removeEvent(getEventName("scroll"), handler);
 		removeEvent(getEventName("resize"), handler);
 	}
-};
+}
 
 })();

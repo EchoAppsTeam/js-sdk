@@ -72,14 +72,14 @@ function controlSecureEndpoints() {
 		Echo.API.Request.prototype._isSecureRequest.restore();
 		Backplane.request.restore();
 	});
-};
+}
 
 // TODO: get rid of this function when all tests use new format
 function runLegacyTests() {
-	$.each(Echo.Tests.Unit, function(name, suiteClass) {
-		$.extend(suiteClass.prototype, new Echo.Tests.Suite());
-		suiteClass.prototype.tests = suiteClass.prototype.tests || {};
-		var suite = new suiteClass();
+	$.each(Echo.Tests.Unit, function(name, Suite) {
+		$.extend(Suite.prototype, new Echo.Tests.Suite());
+		Suite.prototype.tests = Suite.prototype.tests || {};
+		var suite = new Suite();
 		var normalizedName = suite.info.suiteName || suite.normalizeName(name, true);
 		// specially mark modules which use the old format of tests
 		normalizedName = "[*] " + normalizedName;
@@ -94,7 +94,7 @@ function runLegacyTests() {
 		});
 		suite.run();
 	});
-};
+}
 
 (function() {
 	var ua = navigator.userAgent.toLowerCase();

@@ -218,7 +218,8 @@ Echo.API.Transports.WebSockets.prototype._prepareTransportObject = function() {
 
 	this._clearTimers();
 
-	var socket = new (window.WebSocket || window.MozWebSocket)(this._prepareURL(), this.config.get("settings.protocols"));
+	var SocketClass = window.WebSocket || window.MozWebSocket;
+	var socket = new SocketClass(this._prepareURL(), this.config.get("settings.protocols"));
 	socket.onopen = function() {
 		// send ping immediately to make sure the server is responding
 		self._ping(function() {
@@ -256,7 +257,6 @@ Echo.API.Transports.WebSockets.prototype._onCloseHandler = function() {
 };
 
 Echo.API.Transports.WebSockets.prototype._clear = function() {
-	var context = this.config.get("uri").replace(/\//g, "-");
 	delete Echo.API.Transports.WebSockets.socketByURI[this.config.get("uri")];
 };
 
@@ -399,6 +399,7 @@ Echo.API.Transports.XDomainRequest = utils.inherit(Echo.API.Transports.AJAX, fun
 });
 
 Echo.API.Transports.XDomainRequest.prototype._getTransportObject = function() {
+	/* global XDomainRequest:false, ActiveXObject:false */
 	var obj = Echo.API.Transports.XDomainRequest.parent._getTransportObject.call(this);
 	var domain = utils.parseURL(document.location.href).domain;
 	var targetDomain = utils.parseURL(this.config.get("uri")).domain;
@@ -776,7 +777,7 @@ Echo.API.Request.prototype._getTransport = function() {
 	var userDefinedTransport = this.config.get("transport");
 	var transport = Echo.API.Transports[userDefinedTransport] && Echo.API.Transports[userDefinedTransport].available()
 		? userDefinedTransport
-		: function() {
+		: (function() {
 			var transport;
 			$.each(["WebSockets", "AJAX", "XDomainRequest", "JSONP"], function(i, name) {
 				var available = Echo.API.Transports[name].available({
@@ -789,7 +790,7 @@ Echo.API.Request.prototype._getTransport = function() {
 				}
 			});
 			return transport;
-		}();
+		})();
 	return new Echo.API.Transports[transport](this._getTransportConfig());
 };
 

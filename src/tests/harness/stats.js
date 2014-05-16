@@ -12,11 +12,31 @@ Echo.Tests.Stats.markFunctionTested = function(fn) {
 	_coverage.functions.raw.tested[fn] = true;
 };
 
-QUnit.begin(initStats);
+QUnit.begin(function() {
+	getFunctionNames(Echo.Tests.Stats.root.object, Echo.Tests.Stats.root.namespace);
+	startEventsSpy();
+});
 
-QUnit.done(showStats);
+QUnit.done(function(results) {
+	exportStats(results);
+	stopEventsSpy();
+	calculateFunctionsCoverage();
+	calculateEventsCoverage();
+	showCoverage();
+});
 
-QUnit.log(testLogSpy);
+QUnit.log(function(result) {
+	if (!result.result) {
+		// TODO: either remove or make saucelabs accept it
+		_detailErrors.push({
+			"module": result.module,
+			"name": result.name,
+			"message": result.message,
+			"source": result.source,
+			"testNumber": QUnit.config.current.testNumber
+		});
+	}
+});
 
 // private stuff
 
@@ -67,33 +87,7 @@ _coverage.events = {
 	}
 };
 
-function initStats() {
-	getFunctionNames(Echo.Tests.Stats.root.object, Echo.Tests.Stats.root.namespace);
-	startEventsSpy();
-}
-
-function showStats(results) {
-	exportStats(results);
-	stopEventsSpy();
-	calculateFunctionsCoverage();
-	calculateEventsCoverage();
-	showCoverage();
-}
-
 var _eventsPublish, _eventsSubscribe, _detailErrors = [];
-
-function testLogSpy(result) {
-	if (!result.result) {
-		// TODO: either remove or make saucelabs accept it
-		_detailErrors.push({
-			"module": result.module,
-			"name": result.name,
-			"message": result.message,
-			"source": result.source,
-			"testNumber": this.config.current.testNumber
-		});
-	}
-}
 
 function exportStats(results) {
 	window.global_test_results = results;
@@ -143,7 +137,7 @@ function startEventsSpy() {
 			}
 		}
 		return _eventsPublish(params);
-	}
+	};
 }
 
 function stopEventsSpy() {
@@ -240,7 +234,7 @@ function getEventsCount(type, expectedValue, isEquiv) {
 	var check = function(expected) {
 		if (typeof expected === "string") {
 			if (isEquiv) {
-				isOk = QUnit.equiv(processed[type], processed[expected])
+				isOk = QUnit.equiv(processed[type], processed[expected]);
 			} else {
 				isOk = processed[type].length === processed[expected].length;
 			}
@@ -281,7 +275,7 @@ function showCoverage() {
 			}).join("") +
 			'</div>' +
 			(!Echo.Tests.Events
-				? '' 
+				? ''
 				: '<div class="echo-tests-coverage-events">' +
 					'<h3>Events analysis</h3> ' +
 					'<p>Total contract defined: <b>' + events.processed.count + '</b></p> ' +
@@ -306,7 +300,7 @@ function showCoverage() {
 
 var _isListVisible, _lastListType;
 function showCoverageList(type, prefix) {
-	var html = "", data = [];
+	var html = "";
 	var el = $(".echo-tests-stats-info");
 	var list = _coverage[prefix].processed[type];
 	list && list.sort();
@@ -341,7 +335,7 @@ function showCoverageList(type, prefix) {
 				html += getDiff("subscribed", "published", "Subscribed but not published");
 			} else {
 				var getTextCount = function(count) {
-					return count === 1 ? "once" : count + " times"
+					return count === 1 ? "once" : count + " times";
 				};
 				$.each(list, function(i, topic) {
 					if (type === "subscribed") {
@@ -357,7 +351,7 @@ function showCoverageList(type, prefix) {
 						}
 
 						if( type === "notTested" || type === "failed") {
-							html +=	' [<a class="echo-clickable" data-topic="' + topic + '">view data</a>] <div class="echo-tests-event-data">' + '</div>';
+							html +=	' [<a class="echo-clickable" data-topic="' + topic + '">view data</a>] <div class="echo-tests-event-data"></div>';
 						}
 						html +=	'</li>';
 					}
@@ -366,7 +360,7 @@ function showCoverageList(type, prefix) {
 				if (!html.length) {
 					html = "<ul><li>Empty list</li></ul>";
 				} else {
-					html = "<ul>"+html+"</ul>";
+					html = "<ul>" + html + "</ul>";
 				}
 			}
 
@@ -374,9 +368,11 @@ function showCoverageList(type, prefix) {
 				.find(".echo-clickable").click(function() {
 					var dataTag = $(this).parent().find(".echo-tests-event-data");
 					if (dataTag.html() === "") {
-						var data = $.map(events.raw.published[$(this).data("topic")].data, function(val) {
+						var topic = $(this).data("topic");
+						var data = $.map(events.raw.published[topic].data, function(val) {
 							return '<pre>' + QUnit.jsDump.parse(prepareEventData(val)) + '</pre>';
 						});
+						data.unshift("<pre><u>Expected</u>: " + QUnit.jsDump.parse(Echo.Tests.Events.contracts[topic]) + "</pre>");
 						dataTag.html(data.join(""));
 					}
 
@@ -437,7 +433,7 @@ function prepareEventData(obj, level) {
 	if (($.type(obj) === "object" || $.type(obj) === "array")) {
 		if (obj.tagName || obj.jquery) {
 			obj = "[object DOM]";
-		} else if (level <= 2) {
+		} else if (level <= 3) {
 			$.each(obj, function(key) {
 				obj[key] = prepareEventData(obj[key], level + 1);
 			});
@@ -460,7 +456,7 @@ Echo.Utils.addCSS(
 	'.echo-tests-event-data { color: black; display: none; }' +
 	'.echo-tests-event-data pre { border: 1px dashed #999999; padding: 10px; background: #B0D0D0; }' +
 	'.echo-tests-coverage-functions, .echo-tests-coverage-events { float: left; width: 400px; }' +
-	'.echo-clear { clear: both; }'
-, "echo-tests");
+	'.echo-clear { clear: both; }',
+"echo-tests");
 
 })(Echo.jQuery);

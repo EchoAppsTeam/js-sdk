@@ -12,23 +12,22 @@ Echo.StreamServer.API = {};
 /**
  * @class Echo.StreamServer.API.Request
  * Class implements the interaction with the
- * <a href="http://echoplatform.com/streamserver/docs/rest-api/items-api/" target="_blank">Echo StreamServer API</a>
+ * <a href="http://echoplatform.com/streamserver/docs/rest-api/items-api/" target="_blank">Echo StreamServer API</a>.
  *
- *     var request = Echo.StreamServer.API.request({
- *         "endpoint": "search",
- *         "data": {
- *             "q": "childrenof: http://example.com/js-sdk",
- *             "appkey": "echo.jssdk.demo.aboutecho.com"
- *         },
- *         "onData": function(data, extra) {
- *             // handle successful request here...
- *         },
- *         "onError": function(data, extra) {
- *             // handle failed request here...
- *         }
- *     });
- *
- *     request.send();
+ *		var request = Echo.StreamServer.API.request({
+ *			"endpoint": "search",
+ *			"data": {
+ *				"q": "childrenof: http://example.com/js-sdk",
+ *				"appkey": "echo.jssdk.demo.aboutecho.com"
+ *			},
+ *			"onData": function(data, extra) {
+ *				// handle successful request here...
+ *			},
+ *			"onError": function(data, extra) {
+ *				// handle failed request here...
+ *			}
+ *		});
+ *		request.send();
  *
  * @extends Echo.API.Request
  *
@@ -199,7 +198,7 @@ Echo.StreamServer.API.Request.prototype._search = function(force) {
 			self.liveUpdates.start(force);
 		}
 		self.requestType = "secondary";
-	}
+	};
 	if (!this.config.get("skipInitialRequest")
 		|| this.config.get("skipInitialRequest") && this.requestType !== "initial") {
 		this.request().progress(start);
@@ -270,7 +269,7 @@ Echo.StreamServer.API.Request.prototype._prepareURL = function() {
 };
 
 Echo.StreamServer.API.Request.prototype._initLiveUpdates = function(data) {
-	var ws, self = this;
+	var ws;
 	var polling = Echo.StreamServer.API.Polling.init(
 		$.extend(true, this._getLiveUpdatesConfig("polling"), {
 			"request": {
@@ -329,13 +328,13 @@ Echo.StreamServer.API.Request.prototype._getLiveUpdatesConfig = function(name) {
 	};
 
 	var mapped = Echo.Utils.foldl({}, map[name], function(from, acc, to) {
-		var value = function fetch(key) {
+		var value = (function fetch(key) {
 			var val = self.config.get(key);
 			if (typeof val === "undefined" && key) {
 				return fetch(key.split(".").slice(1).join("."));
 			}
 			return val;
-		}(from);
+		})(from);
 		Echo.Utils.set(acc, to, value);
 	});
 	return mapped;
@@ -351,7 +350,7 @@ Echo.StreamServer.API.Request.prototype._liveUpdatesWatcher = function(polling, 
 			}
 			self.liveUpdates = inst;
 			self.liveUpdates.start();
-		}
+		};
 	};
 	var fallbackTimeout, waitingForConnectionTimeout;
 	ws.on("close", function() {
@@ -552,6 +551,7 @@ Echo.StreamServer.API.request = function(config) {
 //
 
 (function(jQuery) {
+"use strict";
  
 var $ = jQuery;
 
@@ -624,7 +624,7 @@ Echo.StreamServer.API.Polling.prototype.start = function(force) {
 };
 
 Echo.StreamServer.API.Polling.prototype.on = function(event, fn) {
-	var event = "on" + Echo.Utils.capitalize(event);
+	event = "on" + Echo.Utils.capitalize(event);
 	var handler = this.requestObject.transport.config.get(event, $.noop);
 	this.requestObject.transport.config.set(event, function() {
 		handler.apply(null, arguments);
@@ -643,7 +643,7 @@ Echo.StreamServer.API.Polling.prototype._changeTimeout = function(data) {
 	if (typeof data === "string") {
 		data = {"liveUpdatesTimeout": data};
 	}
-	data.liveUpdatesTimeout = parseInt(data.liveUpdatesTimeout);
+	data.liveUpdatesTimeout = +data.liveUpdatesTimeout;
 	var applyServerDefinedTimeout = function(timeout) {
 		if (!timeout && self.originalTimeout !== self.config.get("timeout")) {
 			self.config.set("timeout", self.originalTimeout);
@@ -660,7 +660,7 @@ Echo.StreamServer.API.Polling.prototype._changeTimeout = function(data) {
 		return;
 	}
 	var currentTimeout = this.config.get("timeout");
-	var since = parseInt(this.config.get("request.data.since"));
+	var since = this.config.get("request.data.since");
 	var currentTime = Math.floor((new Date()).getTime() / 1000);
 	// calculate the delay before starting next request:
 	//   - have new data but still behind and need to catch up - use minimum timeout
@@ -846,38 +846,33 @@ Echo.StreamServer.API.WebSockets.prototype._updateConnection = function(callback
 
 Echo.StreamServer.API.WebSockets.prototype._reconnect = function() {
 	var self = this;
-	var closeHandler = function() {
+	this.closeReason = "reconnect";
+	this.requestObject.abort();
+	this._close(function() {
 		self.requestObject = self.getRequestObject();
 		if (self.connected()) {
 			self.requestObject.config.get("onOpen")();
 		}
-	};
-	this.closeReason = "reconnect";
-	this.requestObject.abort();
-	if (this.requestObject.transport.closing()) {
-		var id = this.on("close", function() {
-			closeHandler();
-			Echo.Events.unsubscribe({"handlerId": id});
-		});
-	} else {
-		closeHandler();
-	}
+	});
 };
 
 Echo.StreamServer.API.WebSockets.prototype._resubscribe = function() {
 	var self = this;
-	var closeHandler = function() {
+	this._close(function() {
 		if (self.connected()) {
 			self.requestObject.config.get("onOpen")();
 		}
-	};
+	});
+};
+
+Echo.StreamServer.API.WebSockets.prototype._close = function(handler) {
 	if (this.requestObject.transport.closing()) {
 		var id = this.on("close", function() {
-			closeHandler();
+			handler();
 			Echo.Events.unsubscribe({"handlerId": id});
 		});
 	} else {
-		closeHandler();
+		handler();
 	}
 };
 

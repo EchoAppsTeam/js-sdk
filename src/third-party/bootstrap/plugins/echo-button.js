@@ -1,4 +1,5 @@
 (function(jQuery) {
+"use strict";
 
 var $ = jQuery;
 
@@ -38,7 +39,7 @@ if (!Echo.GUI || Echo.GUI.Button) return;
  * @package gui.pack.js
  *
  * @constructor
- * Creates a button inside the container defined in the “target" config parameter.
+ * Creates a button inside the container defined in the "target" config parameter.
  *
  * @param {Object} config
  * Button configuration data.

@@ -65,8 +65,8 @@ Echo.Tests.Suite.prototype.run = function() {
 							check(this);
 						}
 					}, test.instance.config || {});
-					var component = Echo.Utils.getComponent(test.instance.name);
-					var instance = new component(config);
+					var Component = Echo.Utils.getComponent(test.instance.name);
+					var instance = new Component(config);
 					if (test.instance.config && test.instance.config.ready) {
 						check(instance);
 					}

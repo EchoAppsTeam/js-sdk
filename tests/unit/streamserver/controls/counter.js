@@ -1,4 +1,5 @@
 (function($) {
+"use strict";
 
 var suite = Echo.Tests.Unit.Counter = function() {};
 

@@ -328,7 +328,21 @@ module.exports = function(grunt) {
 			"options": {
 				"jshintrc": ".jshintrc"
 			},
-			"grunt": ["Gruntfile.js", "tools/grunt/**/*.js"]
+			"grunt": [
+				"Gruntfile.js",
+				"tools/grunt/**/*.js"
+			],
+			"sources": [
+				"<%= dirs.src %>/**/*.js",
+				"!<%= dirs.src %>/third-party/**/*.js",
+				"!<%= dirs.src %>/tests/sinon/*.js",
+				"!<%= dirs.src %>/tests/qunit/*.js",
+				"!<%= dirs.src %>/backplane.js",
+				"<%= dirs.src %>/third-party/bootstrap/plugins/*.js"
+			],
+			"tests": [
+				"tests/**/*.js"
+			]
 		},
 		"wrap": {
 			"echo-jquery": {

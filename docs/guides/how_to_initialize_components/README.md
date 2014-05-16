@@ -6,9 +6,9 @@ Every application is represented by a single JS class. In order to make it work,
 
 ### Initializing a component as a standalone application
 
-If you need to initialize a component as a standalone app on a page, you should use unified apps init function called Echo.Loader.initApplication. The function is defined in the “loader.js” file, so you have to include it into the page source first (<span style="color: red;">only once per page!</span>). So the final code might look like:
+If you need to initialize a component as a standalone app on a page, you should use unified apps init function called Echo.Loader.initApplication. The function is defined in the "loader.js" file, so you have to include it into the page source first (<span style="color: red;">only once per page!</span>). So the final code might look like:
 
-	<script src=”http://cdn.echoenabled.com/sdk/v3/loader.js”></script>
+	<script src="http://cdn.echoenabled.com/sdk/v3/loader.js"></script>
 	<script>
 		Echo.Loader.initApplication({
 			"script": "http://cdn.echoenabled.com/sdk/v3/streamserver.pack.js",
@@ -90,7 +90,7 @@ If you want to init an app in some other cases, it’s possible to call componen
 
 ## Initializing plugins
 
-Almost every app built using Echo JS SDK can be extended via [Plugins](#!/guide/how_to_develop_plugin). In order to init a plugin for a given app, you should place the object with the “name” field into the “plugins” array, for example as shown below:
+Almost every app built using Echo JS SDK can be extended via [Plugins](#!/guide/how_to_develop_plugin). In order to init a plugin for a given app, you should place the object with the "name" field into the "plugins" array, for example as shown below:
 
 	new Echo.StreamServer.Controls.Stream({
 		"target": document.getElementById("stream"),
@@ -111,7 +111,7 @@ If your plugin has configurable options, you should put them into the same objec
 		}]
 	});
 
-If your plugin’s code is not loaded on a page yet, Echo JS SDK engine can take care of it for you, just add the “url” parameter with the plugin script URL. In this case the script will be downloaded and executed before the plugin initialization. For example:
+If your plugin’s code is not loaded on a page yet, Echo JS SDK engine can take care of it for you, just add the "url" parameter with the plugin script URL. In this case the script will be downloaded and executed before the plugin initialization. For example:
 
 	new Echo.StreamServer.Controls.Stream({
 		"target": document.getElementById("stream"),

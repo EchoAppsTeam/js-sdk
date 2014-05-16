@@ -1,7 +1,7 @@
 (function(jQuery) {
-var $ = jQuery;
-
 "use strict";
+
+var $ = jQuery;
 
 Echo.Tests.module("Echo.Loader", {
 	"meta": {
@@ -173,10 +173,12 @@ Echo.Tests.asyncTest("resource downloading", function() {
 		count = count || existingScriptsCount;
 		var resources = [];
 		for (var i = 1; i <= count; i++) {
+			/* jshint loopfunc: true */
 			resources.push({
 				"url": base + (count > existingScriptsCount ? "non-existing" : i) + ".js",
 				"loaded": function() { return !!Echo.Tests.Fixtures.loader["object" + i]; }
 			});
+			/* jshint loopfunc: false */
 		}
 		Echo.Loader.download(resources, function() {
 			var success = true;
@@ -425,7 +427,7 @@ Echo.Tests.asyncTest("getting canvas elements", function() {
 	var defaultInit = Echo.Tests.isolate(function(callback) {
 		$(this.document.body)
 			.append('<div class="echo-canvas" data-canvas-id="js-sdk-tests/test-canvas-001"></div>')
-			.append('<div class="echo-canvas" data-canvas-id="js-sdk-tests/test-canvas-001"></div>')
+			.append('<div class="echo-canvas" data-canvas-id="js-sdk-tests/test-canvas-001"></div>');
 
 		Echo.Loader._lookupCanvases({
 			"target": this.document.body
@@ -495,7 +497,7 @@ Echo.Tests.asyncTest("canvases initialization", function() {
 	var _eventsCountCheck = function(events) {
 		var success = true;
 		$.each(events, function(id, event) {
-			if (event[0] != event[1]) {
+			if (event[0] !== event[1]) {
 				success = false;
 				return false; // break
 			}

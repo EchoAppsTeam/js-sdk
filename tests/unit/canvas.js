@@ -1,4 +1,5 @@
 (function($) {
+"use strict";
 
 Echo.Tests.module("Echo.Canvas", {
 	"meta": {
@@ -131,7 +132,7 @@ Echo.Tests.test("canvas contract", function() {
 	window.CanvasAdapter = function(config) {
 		QUnit.equal(config.id, 256, "Check if canvas adapter was initialized with valid custom param in config");
 		QUnit.ok(config.target instanceof Echo.jQuery, "Check if canvas adapter was initialized with valid target");
-		QUnit.equal(config.canvasId, "js-sdk-test", "Check if canvas adapter was initialized with valid canvasId")
+		QUnit.equal(config.canvasId, "js-sdk-test", "Check if canvas adapter was initialized with valid canvasId");
 	};
 
 	var canvas = new Echo.Canvas({
@@ -169,7 +170,7 @@ Echo.Tests.test("canvas destroy", function() {
 		}
 	};
 
-	$.each(TestCanvases, function(component) {
+	$.each(window.TestCanvases, function(component) {
 		var result;
 		var canvas = new Echo.Canvas({
 			"target": $("#qunit-fixture"),

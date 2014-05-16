@@ -1,4 +1,5 @@
 (function($) {
+"use strict";
 
 var suite = Echo.Tests.Unit.App = function() {};
 
@@ -21,7 +22,6 @@ suite.prototype.tests.PublicInterfaceTests = {
 		"async": true
 	},
 	"check": function() {
-		var self = this;
 		var manifest = {
 			"name": suite.getAppClassName(),
 			"vars": {},

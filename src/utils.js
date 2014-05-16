@@ -474,7 +474,7 @@ Echo.Utils.objectToJSON = function(obj) {
 Echo.Utils.htmlTextTruncate = function(text, limit, postfix, forceClosingTags) {
 	if (!limit || text.length < limit) return text;
 
-	var tags = [], count = 0, finalPos = 0;
+	var i, tags = [], count = 0, finalPos = 0;
 	var wordRegex = /(\w)+/;
 	var htmlSpecialCharRegex = /^(\S)+;/;
 	if (!this.cache.standaloneTags) {
@@ -486,7 +486,7 @@ Echo.Utils.htmlTextTruncate = function(text, limit, postfix, forceClosingTags) {
 			);
 	}
 
-	for (var i = 0; i < text.length; i++) {
+	for (i = 0; i < text.length; i++) {
 		var symbol = text.charAt(i);
 		if (symbol === "<") {
 			var tail = text.indexOf(">", i);
@@ -527,7 +527,7 @@ Echo.Utils.htmlTextTruncate = function(text, limit, postfix, forceClosingTags) {
 				text = text.substring(0, finalPos) + (postfix || "");
 			}
 		}
-		for (var i = tags.length - 1; i >= 0; i--) {
+		for (i = tags.length - 1; i >= 0; i--) {
 			text += "</" + tags[i] + ">";
 		}
 	}
@@ -639,7 +639,8 @@ Echo.Utils.getVisibleColor = function(element) {
 		if (color !== "" && color !== "transparent" && !/rgba\((0,\s*){3}0\)/.test(color) || $.nodeName(element.get(0), "body")) {
 			break;
 		}
-	} while (element = element.parent());
+		element = element.parent();
+	} while (element);
 	return color || "transparent";
 };
 

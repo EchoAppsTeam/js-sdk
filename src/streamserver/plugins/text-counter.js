@@ -1,8 +1,6 @@
 (function(jQuery) {
 "use strict";
 
-var $ = jQuery;
-
 /**
  * @class Echo.StreamServer.Controls.Submit.Plugins.TextCounter
  * Adds the character counter under the text field in the Echo Submit control.
@@ -17,7 +15,7 @@ var $ = jQuery;
  * 	});
  *
  * More information regarding the plugins installation can be found
- * in the [“How to initialize Echo components”](#!/guide/how_to_initialize_components-section-initializing-plugins) guide.
+ * in the ["How to initialize Echo components"](#!/guide/how_to_initialize_components-section-initializing-plugins) guide.
  *
  * @extends Echo.Plugin
  *

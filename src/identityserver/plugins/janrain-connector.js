@@ -7,14 +7,14 @@ var $ = jQuery;
  * @class Echo.IdentityServer.Controls.Auth.Plugins.JanrainConnector
  * Janrain Social Sign-in Widget integration with Echo Auth Control.
  *
- * 	new Echo.IdentityServer.Controls.Auth({
- * 		"target": document.getElementById("auth"),
- * 		"appkey": "echo.jssdk.demo.aboutecho.com",
- * 		"plugins": [{
- * 			"name": "JanrainConnector",
- * 			"appId": "echo"
- * 		}]
- * 	});
+ *		new Echo.IdentityServer.Controls.Auth({
+ *			"target": document.getElementById("auth"),
+ *			"appkey": "echo.jssdk.demo.aboutecho.com",
+ *			"plugins": [{
+ *				"name": "JanrainConnector",
+ *				"appId": "echo"
+ *			}]
+ *		});
  *
  * More information regarding the plugins installation can be found
  * in the ["How to initialize Echo components"](#!/guide/how_to_initialize_components-section-initializing-plugins) guide.
@@ -87,14 +87,14 @@ plugin.config = {
 	 * @cfg {Object} [signinWidgetConfig]
 	 * Container for the options specific to Janrain Social Sign-in Widget.
 	 * Full list of available options can be found in the
-	 * <a href="http://developers.janrain.com/documentation/widgets/social-sign-in-widget/social-sign-in-widget-api/settings/" target="_blank">documentation</a>
+	 * <a href="http://developers.janrain.com/documentation/widgets/social-sign-in-widget/social-sign-in-widget-api/settings/" target="_blank">documentation</a>.
 	 *
-	 * Example:
-	 * 	{
-	 * 		"providersPerPage": 4,
-	 * 		"format": "two column"
-	 * 		// ...
-	 * 	}
+	 *		Example:
+	 *		{
+	 *			"providersPerPage": 4,
+	 *			"format": "two column"
+	 *			// ...
+	 *		}
 	 */
 	"signinWidgetConfig": {}
 };
