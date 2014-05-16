@@ -1082,7 +1082,7 @@ stream.methods._appendRootItems = function(items, container) {
 stream.methods._constructChildrenSearchQuery = function(item) {
 	// depth for item children request
 	var depth = this.config.get("children.maxDepth") - item.get("depth") - 1;
-	var additionalItems = parseInt(this.config.get("children.additionalItemsPerPage"), 10);
+	var additionalItems = +this.config.get("children.additionalItemsPerPage");
 	var pageAfter = item.getNextPageAfter();
 	var filter = this.config.get("children.filter");
 	var filterQuery = !filter || filter === "()" ? "" : filter + " ";
@@ -1090,7 +1090,7 @@ stream.methods._constructChildrenSearchQuery = function(item) {
 		"childrenof": item.get("data.object.id"),
 		"children": depth,
 		"childrenItemsPerPage": depth
-			? parseInt(this.config.get("children.itemsPerPage"), 10)
+			? +this.config.get("children.itemsPerPage")
 			: 0,
 		"itemsPerPage": additionalItems,
 		"sortOrder": this.config.get("children.sortOrder"),
@@ -1793,7 +1793,7 @@ stream.methods._normalizeEntry = function(entry) {
 	entry.object.content_type = entry.object.content_type || "text";
 	entry.object.accumulators = entry.object.accumulators || {};
 	$.each(["repliesCount", "flagsCount", "likesCount"], function(i, name) {
-		entry.object.accumulators[name] = parseInt(entry.object.accumulators[name] || "0", 10);
+		entry.object.accumulators[name] = parseInt(entry.object.accumulators[name] || "0");
 	});
 	entry.object.context = entry.object.context || [];
 	entry.object.flags = entry.object.flags || [];
@@ -2791,8 +2791,8 @@ item.methods.block = function(label) {
 			"template": '<div class="{class:blocker-message}">{data:label}</div>',
 			"data": {"label": label}
 		})).css({
-			"left": ((parseInt(width, 10) - 200) / 2) + "px",
-			"top": ((parseInt(height, 10) - 20) / 2) + "px"
+			"left": ((parseInt(width) - 200) / 2) + "px",
+			"top": ((parseInt(height) - 20) / 2) + "px"
 		})
 	};
 	content.addClass("echo-relative")

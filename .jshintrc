@@ -20,6 +20,7 @@
 	"devel": true,
 	"laxbreak": true,
 	"node": true,
+	"-W065": true, // suppress "missing radix" warning
 	"globals": {
 		"Echo": false,
 		"Backplane": false,

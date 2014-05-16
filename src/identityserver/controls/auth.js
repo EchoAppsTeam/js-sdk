@@ -336,8 +336,8 @@ auth.methods._assembleIdentityControl = function(type, element) {
 					"title": data.title
 				},
 				"href": self._appendSessionID(data.url),
-				"width": parseInt(data.width, 10),
-				"height": parseInt(data.height, 10),
+				"width": parseInt(data.width),
+				"height": parseInt(data.height),
 				"padding": "0 0 5px 0",
 				"footer": false,
 				"fade": true,

@@ -401,7 +401,7 @@ plugin.labels = {
 plugin.component.renderers.content = function(element) {
 	var plugin = this, item = this.component;
 	return item.parentRenderer('content', arguments).css({
-		"width": parseInt(plugin.config.get("columnWidth"), 10)
+		"width": parseInt(plugin.config.get("columnWidth"))
 	});
 };
 
