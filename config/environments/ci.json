@@ -1,5 +1,5 @@
 {
-	"version": 3,
+	"version": 4,
 	"baseURLs": {
 		"cdn": "//cdn.echoenabled.com",
 		"sdk": "//cdn.echoenabled.com/sdk/v{%=packageVersion%}",
@@ -7,7 +7,8 @@
 		"tests": "//echoappsteam.github.io/js-sdk/tests",
 		"canvases": {
 			"prod": "//dqspik3j3bxvu.cloudfront.net",
-			"dev": "//s3.amazonaws.com/echo-canvases"
+			"dev": "//s3.amazonaws.com/echo-canvases",
+			"fastly": "//echo-canvases-prod.global.ssl.fastly.net"
 		},
 		"api": {
 			"backplane": "//api.echoenabled.com",
