@@ -1138,6 +1138,69 @@ Echo.Utils.random = function(min, max) {
 	return min + Math.floor(Math.random() * (max - min + 1));
 };
 
+/**
+ * @static
+ * Function which tries to execute another function and
+ * if it failed retries the attempt with the passed options.
+ *
+ *		var fn = function() {
+ *			setTimeout(function() {
+ *				i++;
+ *				def.reject();
+ *			}, 100);
+ *			return def.promise();
+ *		};
+ *		Echo.Utils.retry(fn).fail(function() {
+ *			QUnit.strictEqual(i, 1, "retry only one times");
+ *			callback();
+ *		});
+ *
+ * @param {Function} inputFn
+ * Function should return [promise](http://api.jquery.com/promise/) which
+ * describes the state of the executed function.
+ *
+ * @param {Object} [options]
+ * contains retrying machinery options
+ *
+ * @param {Number} [options.times]
+ * Describes amount of retries which function will be executed
+ *
+ * @param {Number} [options.timeout]
+ * Timeout in seconds in which next retry will be executed
+ *
+ * @param {Object} [ctx]
+ * Context in which the function should be executed.
+ *
+ * @param {Mixed} [args]
+ * The argument type might vary depending on the use-case:
+ *
+ *  + undefined - in case the given function doesn't expect any arguments
+ *  + array - if the function to be called accepts any number of arguments
+ */
+Echo.Utils.retry = function retry(inputFn, options, ctx, args) {
+	var input = inputFn.apply(ctx, args);
+	options = options || {"times": 1};
+	var times = options.times;
+	var timeout = options.timeout;
+	return input.pipe(null, function() {
+		var output = $.Deferred();
+		var next = function() {
+			retry(inputFn, {"times": times - 1, "timeout": timeout})
+				.pipe(output.resolve, output.reject);
+		};
+		if (times > 1) {
+			if (typeof timeout !== "undefined") {
+				setTimeout(next, timeout * 1000);
+			} else {
+				next();
+			}
+		} else {
+			output.reject(arguments);
+		}
+		return output;
+	});
+};
+
 // JS SDK can't guarantee proper UI elements rendering in quirks mode
 // because the UI Framework (Twitter Bootstrap) doesn't support this mode.
 // Adding the message about that to the browser console to let the user know.

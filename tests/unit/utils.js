@@ -25,6 +25,7 @@ Echo.Tests.module("Echo.Utils", {
 			"objectToJSON",
 			"parallelCall",
 			"parseURL",
+			"retry",
 			"remove",
 			"random",
 			"safelyExecute",
@@ -555,6 +556,85 @@ Echo.Tests.test("random()", function() {
 	QUnit.ok(isNaN(num2), "Check that if function called with illegal number of parameters, then it returns NaN (one parameter)");
 	QUnit.ok(isNaN(num3), "Check that if function called with illegal number of parameters, then it returns NaN (no parameters)");
 	QUnit.ok(num4 <= 5 && num4 >= 1, "Check that if min greater than max, then function steel returns expected value");
+});
+
+Echo.Tests.asyncTest("retry()", function() {
+	var defaultOptions = function(callback) {
+		var i = 0, def = $.Deferred();
+		var fn = function() {
+			setTimeout(function() {
+				i++;
+				def.reject();
+			}, 100);
+			return def.promise();
+		};
+		Echo.Utils.retry(fn).fail(function() {
+			QUnit.strictEqual(i, 1, "retry only one times");
+			callback();
+		});
+	};
+	var passingContext = function(callback) {
+		var obj = {"a": 0};
+		var def = $.Deferred();
+		Echo.Utils.retry(function() {
+			var self = this;
+			setTimeout(function() {
+				self.a++;
+				def.resolve();
+			}, 100);
+			return def.promise();
+		}, null, obj).done(function() {
+			QUnit.strictEqual(obj.a, 1, "passing context to the input function");
+			callback();
+		});
+	};
+	var passingParamaters = function(callback) {
+		var def = $.Deferred();
+		Echo.Utils.retry(function(i, j) {
+			setTimeout(function() {
+				i++; j++;
+				def.reject(i, j);
+			}, 100);
+			return def.promise();
+		}, null, null, [0, 0]).fail(function(args) {
+			QUnit.deepEqual([1, 1], [args[0], args[1]], "passing arguments to the input function");
+			callback();
+		});
+	};
+	var provideOptions = function(callback) {
+		var i = 0;
+		var now = (new Date()).getTime();
+		Echo.Utils.retry(function() {
+			var def = $.Deferred();
+			if (i < 2) {
+				setTimeout(function() {
+					i++;
+					def.reject();
+				}, 100);
+			} else {
+				setTimeout(function() {
+					i++;
+					def.resolve();
+				}, 100);
+			}
+			return def.promise();
+		}, {"times": 3, "timeout": 0.1})
+		.done(function() {
+			QUnit.strictEqual(i, 3, "passing new options");
+			QUnit.ok((new Date()).getTime() - now >= 200, "\"timeout\" parameter changed");
+			callback();
+		});
+	};
+
+	QUnit.expect(5);
+	Echo.Utils.sequentialCall([
+		defaultOptions,
+		passingContext,
+		passingParamaters,
+		provideOptions
+	], function() {
+		QUnit.start();
+	});
 });
 
 Echo.Tests.asyncTest("loadImage()", function() {
