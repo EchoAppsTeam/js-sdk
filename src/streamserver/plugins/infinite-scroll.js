@@ -33,10 +33,12 @@ plugin.init = function() {
 	var plugin = this;
 	var handler = function(event) {
 		var element = plugin.component.view.get("more");
-		if (element && !plugin.get("requestInProgress") &&
-			$.inviewport(element, {"threshold": 0})) {
+		if (element && !element.data("clicked") &&
+				!plugin.get("requestInProgress") &&
+				$.inviewport(element, {"threshold": 0})
+		) {
 				plugin.set("requestInProgress", true);
-				element.click();
+				element.data("clicked", true).click();
 		}
 	};
 	plugin.set("scrollHandler", handler);
@@ -47,6 +49,11 @@ plugin.events = {
 	"Echo.StreamServer.Controls.Stream.onDataReceive": function(topic, args) {
 		this.set("requestInProgress", false);
 	}
+};
+
+plugin.component.renderers.more = function(element) {
+	this.parentRenderer("more", arguments);
+	return element.data("clicked", false);
 };
 
 plugin.methods.destroy = function() {
