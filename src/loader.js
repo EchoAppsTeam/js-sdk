@@ -23,8 +23,14 @@ Echo.Loader = {
 	"config": {
 		"cdnBaseURL": protocol + "{%=baseURLs.cdn%}/",
 		"storageURL": {
-			"prod": protocol + "{%=baseURLs.canvases.prod%}/",
-			"dev": protocol + "{%=baseURLs.canvases.dev%}/"
+			"aws": {
+				"prod": protocol + "{%=baseURLs.canvases.prod%}/",
+				"dev": protocol + "{%=baseURLs.canvases.dev%}/"
+			},
+			"fastly": {
+				"prod": protocol + "{%=baseURLs.canvases.fastly%}/",
+				"dev": protocol + "{%=baseURLs.canvases.fastly%}/"
+			}
 		},
 		"errorTimeout": 5000 // 5 sec
 	},

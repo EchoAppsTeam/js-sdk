@@ -97,7 +97,7 @@ canvas.init = function() {
 	target.data("echo-canvas-initialized", true);
 
 	// extending Canvas config with the parameters defined in the target
-	var overrides = this._getOverrides(target, ["id", "useSecureAPI", "mode"]);
+	var overrides = this._getOverrides(target, ["id", "useSecureAPI", "mode", "provider"]);
 	if (!$.isEmptyObject(overrides)) {
 		this.config.extend(overrides);
 	}
@@ -186,6 +186,8 @@ canvas.config = {
 	 * More information about HTML attributes of the target DOM element can be found [here](#!/guide/how_to_deploy_an_app_using_a_canvas)
 	 */
 	"mode": "prod",
+
+	"provider": "aws", // "aws" | "fastly"
 
 	/**
 	 * @cfg {Boolean} refreshOnUserInvalidate=false
@@ -410,10 +412,12 @@ canvas.methods._fetchConfig = function(callback) {
 		return;
 	}
 	var mode = this.config.get("mode");
+	var provider = this.config.get("provider");
+	var isProviderFastly = provider === "fastly";
 	var getConfig = function() {
 		return Echo.Loader.canvasesConfigById[self._getIds().unique];
 	};
-	var parts = Echo.Utils.parseURL(Echo.Loader.config.storageURL[mode]);
+	var parts = Echo.Utils.parseURL(Echo.Loader.config.storageURL[provider][mode]);
 	var URL = this.substitute({
 		"template": "{data:scheme}://{data:domain}{data:path}{data:endpoint}",
 		"data": $.extend(parts, {
@@ -423,7 +427,7 @@ canvas.methods._fetchConfig = function(callback) {
 			"endpoint": this._getIds().main,
 			"scheme": this.config.get("useSecureAPI") ? "https" : parts.scheme || "http"
 		})
-	});
+	}) + (isProviderFastly ? ".json" : "");
 
 	// We rely on asynchronous behavior of the $.ajax method call
 	// to implement store/fetch mechanics. But it can occasionally
@@ -433,11 +437,11 @@ canvas.methods._fetchConfig = function(callback) {
 		$.ajax({
 			"url": URL,
 			"crossDomain": true,
-			"dataType": "script",
 			"cache": mode !== "dev",
+			"dataType": isProviderFastly ? "json" : "script",
 			"timeout": Echo.Loader.config.errorTimeout,
 			"success": function() {
-				var config = getConfig();
+				var config = isProviderFastly ? arguments[0] : getConfig();
 				if (!config || !config.apps || !config.apps.length) {
 					var message = self.labels.get("error_no_" + (config ? "apps" : "config"));
 					self._error({

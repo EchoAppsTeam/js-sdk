@@ -95,9 +95,10 @@ Echo.Tests.Utils.initServer = function() {
 			var req = ajax.call(this, {"beforeSend": function() { return false; }});
 			// asynchronously respond to request
 			setTimeout(function() {
-				storeCanvasConfig(matches[1], Echo.Tests.Fixtures.canvases[matches[1]]);
-				if (Echo.Tests.Fixtures.canvases[matches[1]]) {
-					options.success.call(self);
+				var config = Echo.Tests.Fixtures.canvases[matches[1]];
+				storeCanvasConfig(matches[1], config);
+				if (config) {
+					options.success.call(self, config);
 				} else {
 					options.error.call(self);
 				}
@@ -165,7 +166,7 @@ var _URLMocks = {
 	// group of URLs http://s3.amazonaws.com/echo-canvases/<canvas-id>
 	"canvases": {
 		// TODO: (?) mock URLs depending on mode (now it mocks _only_ dev mode)
-		"url": new RegExp(Echo.Loader.config.storageURL.dev + "(.*?)(?:\\?|$)"),
+		"url": new RegExp(Echo.Loader.config.storageURL.aws.dev + "(.*?)(?:\\?|$)"),
 		"response": function(request, canvasId) {
 			var status = 200, text = "";
 			if (/nonexistent/.test(canvasId)) {
@@ -175,7 +176,19 @@ var _URLMocks = {
 			}
 			request.respond(
 				status,
-				{"Content-Type": "application/x-javascript; charset=\"utf-8\""},
+				{"Content-Type": "application/javascript; charset=\"utf-8\""},
+				text
+			);
+		}
+	},
+	"canvases-fastly": {
+		// TODO: (?) mock URLs depending on mode (now it mocks _only_ dev mode)
+		"url": new RegExp(Echo.Loader.config.storageURL.fastly.dev + "(.*?)(?:\\?|$)"),
+		"response": function(request, canvasId) {
+			var text = JSON.stringify(Echo.Tests.Fixtures["canvases-fastly"][canvasId]);
+			request.respond(
+				200,
+				{"Content-Type": "application/json; charset=\"utf-8\""},
 				text
 			);
 		}
