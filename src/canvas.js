@@ -97,7 +97,7 @@ canvas.init = function() {
 	target.data("echo-canvas-initialized", true);
 
 	// extending Canvas config with the parameters defined in the target
-	var overrides = this._getOverrides(target, ["id", "useSecureAPI", "mode", "provider"]);
+	var overrides = this._getOverrides(target, ["id", "useSecureAPI", "mode", "provider", "fetchRetries"]);
 	if (!$.isEmptyObject(overrides)) {
 		this.config.extend(overrides);
 	}
@@ -186,6 +186,16 @@ canvas.config = {
 	 * More information about HTML attributes of the target DOM element can be found [here](#!/guide/how_to_deploy_an_app_using_a_canvas)
 	 */
 	"mode": "prod",
+
+	/**
+	 * @cfg {Number} [fetchRetries]
+	 * The number of retries attempts to fetching canvas config.
+	 *
+	 * The value of this parameter can be overridden by specifying the "data-canvas-fetchRetries"
+	 * target DOM element attribute.
+	 * More information about HTML attributes of the target DOM element can be found [here](#!/guide/how_to_deploy_an_app_using_a_canvas)
+	 */
+	"fetchRetries": 1,
 
 	"provider": "aws", // "aws" | "fastly"
 
@@ -433,8 +443,8 @@ canvas.methods._fetchConfig = function(callback) {
 	// to implement store/fetch mechanics. But it can occasionally
 	// be synchronous while fetching cached response. In order to
 	// avoid this issue, we always make $.ajax call asynchronously.
-	setTimeout(function() {
-		$.ajax({
+	Echo.Utils.retry(function() {
+		return $.ajax({
 			"url": URL,
 			"crossDomain": true,
 			"cache": mode !== "dev",
@@ -453,16 +463,16 @@ canvas.methods._fetchConfig = function(callback) {
 				}
 				self.set("data", config); // store Canvas data into the instance
 				callback.call(self);
-			},
-			"error": function() {
-				self._error({
-					"args": arguments,
-					"code": "unable_to_retrieve_app_config",
-					"renderError": true
-				});
 			}
 		});
-	}, 0);
+	}, {"timeout": 0, "times": self.config.get("fetchRetries")})
+	.fail(function() {
+		self._error({
+			"args": arguments,
+			"code": "unable_to_retrieve_app_config",
+			"renderError": true
+		});
+	});
 };
 
 Echo.Control.create(canvas);
