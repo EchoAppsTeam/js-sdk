@@ -131,7 +131,8 @@ module.exports = function(grunt) {
 				"third-party/jquery/jquery.js",
 				"third-party/jquery/echo.jquery.noconflict.js",
 				"third-party/jquery/jquery.ihint.js",
-				"third-party/jquery/jquery.viewport.js"
+				"third-party/jquery/jquery.viewport.js",
+				"third-party/jquery/jquery.placeholder.js"
 			],
 			"dest": "third-party/jquery.pack.js"
 		},
@@ -362,7 +363,8 @@ module.exports = function(grunt) {
 					"src": [
 						"third-party/jquery/jquery.ihint.js",
 						"third-party/jquery/jquery.isotope.min.js",
-						"third-party/jquery/jquery.viewport.mini.js"
+						"third-party/jquery/jquery.viewport.mini.js",
+						"third-party/jquery/jquery.placeholder.js"
 					]
 				}]
 			},
