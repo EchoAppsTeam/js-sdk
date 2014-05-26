@@ -73,7 +73,6 @@ Echo.Tests.Utils.initServer = function() {
 			// XXX: these checks shouldn't be here because they all should be mocked
 			// not every canvas is mocked, some are real
 			if (name === "canvases" && !Echo.Tests.Fixtures.canvases[matches[1]] && !/nonexistent/.test(matches[1])) return;
-			if (name === "canvases-fastly" && !Echo.Tests.Fixtures["canvases-fastly"][matches[1]]) return;
 			// not every count request is mocked, some are real
 			if (name === "api/count" && !Echo.Tests.Fixtures.api.count[decodeURIComponent(matches[1])]) return;
 			// not every search request is mocked, some are real
@@ -91,12 +90,12 @@ Echo.Tests.Utils.initServer = function() {
 	var ajax = $.ajax;
 	sinon.stub($, "ajax", function(options) {
 		var self = this;
-		var matches = options.url && options.url.match(_URLMocks.canvases.url) || options.url.match(_URLMocks["canvases-fastly"].url);
-		if (matches && (Echo.Tests.Fixtures.canvases[matches[1]] || Echo.Tests.Fixtures["canvases-fastly"][matches[1]] || /nonexistent/.test(matches[1]))) {
+		var matches = options.url && options.url.match(_URLMocks.canvases.url);
+		if (matches && (Echo.Tests.Fixtures.canvases[matches[1]] || /nonexistent/.test(matches[1]))) {
 			var req = ajax.call(this, {"beforeSend": function() { return false; }});
 			// asynchronously respond to request
 			setTimeout(function() {
-				var config = Echo.Tests.Fixtures.canvases[matches[1]] || Echo.Tests.Fixtures["canvases-fastly"][matches[1]];
+				var config = Echo.Tests.Fixtures.canvases[matches[1]];
 				storeCanvasConfig(matches[1], config);
 				if (config) {
 					options.success.call(self, config);
@@ -186,7 +185,7 @@ var _URLMocks = {
 		// TODO: (?) mock URLs depending on mode (now it mocks _only_ dev mode)
 		"url": new RegExp(Echo.Loader.config.storageURL.fastly.dev + "(.*?)(?:\\?|$)"),
 		"response": function(request, canvasId) {
-			var text = JSON.stringify(Echo.Tests.Fixtures.canvases[canvasId]);
+			var text = JSON.stringify(Echo.Tests.Fixtures["canvases-fastly"][canvasId]);
 			request.respond(
 				200,
 				{"Content-Type": "application/json; charset=\"utf-8\""},
