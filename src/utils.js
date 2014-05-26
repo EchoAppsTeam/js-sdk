@@ -1176,6 +1176,10 @@ Echo.Utils.random = function(min, max) {
  *
  *  + undefined - in case the given function doesn't expect any arguments
  *  + array - if the function to be called accepts any number of arguments
+ *
+ * @return {Object}
+ * Return [jQuery deferred object](http://api.jquery.com/category/deferred-object/)
+ * which describes the final state of the function after retries.
  */
 Echo.Utils.retry = function retry(inputFn, options, ctx, args) {
 	var input = inputFn.apply(ctx, args);
