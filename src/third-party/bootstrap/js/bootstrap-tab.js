@@ -47,8 +47,6 @@
         selector = selector && selector.replace(/.*(?=#[^\s]*$)/, '') //strip for ie7
       }
 
-      if ( $this.parent('li').hasClass('active') ) return
-
       previous = $ul.find('.active:last a')[0]
 
       e = $.Event('show', {
@@ -136,7 +134,7 @@
  /* TAB DATA-API
   * ============ */
 
-  $(document).on('click.tab.data-api', '[data-toggle="tab"], [data-toggle="pill"]', function (e) {
+  $(document).on('click.tab.data-api', '.echo-sdk-ui [data-toggle="tab"], .echo-sdk-ui [data-toggle="pill"]', function (e) {
     e.preventDefault()
     $(this).tab('show')
   })
