@@ -129,6 +129,7 @@ if (Echo.API.Transports.WebSockets.available()) {
 			QUnit.ok($.isEmptyObject(Echo.API.Transports.WebSockets.socketByURI[req.transport.config.get("uri")].subscribers), "Check that all subscription removed in case of all requests abortion");
 			$.when.apply($, closeDef).done(function() {
 				QUnit.strictEqual(closed, 4, "Check that all subscribed connections are closed (\"onClose\" event fired)");
+				QUnit.ok($.isEmptyObject(Echo.API.Transports.WebSockets.socketByURI), "Check that WS static instance container is cleared");
 				QUnit.strictEqual(
 					$.grep(requests, function(req) {
 						return req.transport.closed();

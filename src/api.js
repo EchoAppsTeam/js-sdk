@@ -252,8 +252,8 @@ Echo.API.Transports.WebSockets.prototype._clearTimers = function() {
 };
 
 Echo.API.Transports.WebSockets.prototype._onCloseHandler = function() {
-	this._publish("onClose");
 	this._clear();
+	this._publish("onClose");
 };
 
 Echo.API.Transports.WebSockets.prototype._clear = function() {
