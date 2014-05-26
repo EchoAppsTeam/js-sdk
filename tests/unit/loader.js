@@ -521,6 +521,23 @@ Echo.Tests.asyncTest("canvases initialization", function() {
 		waitForCompletion("js-sdk-tests/test-canvas-001", "stream");
 		Echo.Loader.init({"target": this.document.body});
 	});
+	var simpleValidCanvasViaFastly = Echo.Tests.isolate(function(callback) {
+		$(this.document.body).append('<div class="echo-canvas" data-canvas-provider="fastly" data-canvas-id="js-sdk-tests/test-canvas-fastly-001"></div>');
+		var expecting = 2;
+		var waitForCompletion = function(canvasID, appID) {
+			Echo.Loader.override(canvasID, appID, {"ready": function() {
+				QUnit.ok(true, "[simple valid canvas] Checking if " + appID + " control is initialized correctly after a page canvases lookup (provider = fastly)");
+				this.destroy();
+				expecting--;
+				if (!expecting) {
+					callback();
+				}
+			}});
+		};
+		waitForCompletion("js-sdk-tests/test-canvas-fastly-001", "submit");
+		waitForCompletion("js-sdk-tests/test-canvas-fastly-001", "stream");
+		Echo.Loader.init({"target": this.document.body});
+	});
 	var validAndInvalidCanvases = Echo.Tests.isolate(function(callback) {
 		Echo.Loader.canvases = [];
 		Echo.Loader.canvasesConfigById = {};
@@ -798,6 +815,7 @@ Echo.Tests.asyncTest("canvases initialization", function() {
 	});
 	var tests = [
 		simpleValidCanvas,
+		simpleValidCanvasViaFastly,
 		validAndInvalidCanvases,
 		doubleInitializationPrevention,
 		differentInitializationSchemas,
@@ -806,7 +824,7 @@ Echo.Tests.asyncTest("canvases initialization", function() {
 		appConfigOverrides,
 		clearCanvasConfigOnDestroy
 	];
-	QUnit.expect(19);
+	QUnit.expect(21);
 	Echo.Utils.sequentialCall(tests, function() {
 		QUnit.start();
 	});
