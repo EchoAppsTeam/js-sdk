@@ -104,7 +104,6 @@ submit.init = function() {
 
 submit.destroy = function() {
 	var self = this;
-	this.view.get("postButton").off("click");
 	$.each(this.posting.subscriptions, function(id) {
 		self.events.unsubscribe({"handlerId": id});
 	});
