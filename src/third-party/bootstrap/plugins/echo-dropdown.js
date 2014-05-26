@@ -125,6 +125,7 @@ Echo.GUI.Dropdown.prototype._assembleContainer = function() {
 			'</a>' +
 		'</li>';
 	var dropdown = $(template);
+	$(".dropdown-toggle", dropdown).dropdown();
 	if (this.config.get("icon")) {
 		$(".dropdown-toggle", dropdown)
 			.css("background", "no-repeat url(" + this.config.get("icon") + ") 3px 0px")

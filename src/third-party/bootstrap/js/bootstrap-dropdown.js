@@ -108,8 +108,8 @@
   }
 
   function clearMenus() {
-    $('.dropdown-backdrop').remove()
-    $(toggle).each(function () {
+    $('.echo-sdk-ui .dropdown-backdrop').remove()
+    $('.echo-sdk-ui ' + toggle).each(function () {
       getParent($(this)).removeClass('open')
     })
   }
@@ -163,7 +163,7 @@
   $(document)
     .on('click.dropdown.data-api', clearMenus)
     .on('click.dropdown.data-api', '.dropdown form', function (e) { e.stopPropagation() })
-    .on('click.dropdown.data-api'  , toggle, Dropdown.prototype.toggle)
+    .on('click.dropdown.data-api'  , '.echo-sdk-ui ' + toggle, Dropdown.prototype.toggle)
     .on('keydown.dropdown.data-api', toggle + ', [role=menu]' , Dropdown.prototype.keydown)
 
 }(window.jQuery);
