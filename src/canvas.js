@@ -97,7 +97,7 @@ canvas.init = function() {
 	target.data("echo-canvas-initialized", true);
 
 	// extending Canvas config with the parameters defined in the target
-	var overrides = this._getOverrides(target, ["id", "useSecureAPI", "mode", "provider", "fetchRetries"]);
+	var overrides = this._getOverrides(target, ["id", "useSecureAPI", "mode", "provider", "maxConfigFetchingRetries"]);
 	if (!$.isEmptyObject(overrides)) {
 		this.config.extend(overrides);
 	}
@@ -188,14 +188,14 @@ canvas.config = {
 	"mode": "prod",
 
 	/**
-	 * @cfg {Number} [fetchRetries]
-	 * The number of retries attempts to fetching canvas config.
+	 * @cfg {Number} [maxConfigFetchingRetries]
+	 * The number of retries attempts to fetch canvas config.
 	 *
-	 * The value of this parameter can be overridden by specifying the "data-canvas-fetchRetries"
+	 * The value of this parameter can be overridden by specifying the "data-canvas-maxConfigFetchingRetries"
 	 * target DOM element attribute.
 	 * More information about HTML attributes of the target DOM element can be found [here](#!/guide/how_to_deploy_an_app_using_a_canvas)
 	 */
-	"fetchRetries": 1,
+	"maxConfigFetchingRetries": 3,
 
 	"provider": "aws", // "aws" | "fastly"
 
@@ -465,7 +465,7 @@ canvas.methods._fetchConfig = function(callback) {
 				callback.call(self);
 			}
 		});
-	}, {"timeout": 0, "times": self.config.get("fetchRetries")})
+	}, {"ratio": 1, "times": self.config.get("maxConfigFetchingRetries")})
 	.fail(function() {
 		self._error({
 			"args": arguments,

@@ -1140,9 +1140,11 @@ Echo.Utils.random = function(min, max) {
 
 /**
  * @static
- * Function which tries to execute another function and
- * if it failed retries the attempt with the passed options.
+ * Function which executes another function passed as an argument
+ * and allows to execute the same function multiple times
+ * in case a previous attempt failed.
  *
+ *		var def = $.Deferred();
  *		var fn = function() {
  *			setTimeout(function() {
  *				i++;
@@ -1151,58 +1153,59 @@ Echo.Utils.random = function(min, max) {
  *			return def.promise();
  *		};
  *		Echo.Utils.retry(fn).fail(function() {
- *			QUnit.strictEqual(i, 1, "retry only one times");
- *			callback();
+ *			console.log("retries failed");
  *		});
  *
  * @param {Function} inputFn
- * Function should return [promise](http://api.jquery.com/promise/) which
+ * Function which should be executed.
+ * This function should return [promise object](http://api.jquery.com/promise/) which
  * describes the state of the executed function.
  *
  * @param {Object} [options]
- * contains retrying machinery options
+ * Contains retrying machinery options.
  *
  * @param {Number} [options.times]
- * Describes amount of retries which function will be executed
+ * Describes maximum retries attempts.
  *
- * @param {Number} [options.timeout]
- * Timeout in seconds in which next retry will be executed
+ * @param {Number} [options.ratio]
+ * Positive number which will be used in the [exponential backoff](http://en.wikipedia.org/wiki/Exponential_backoff#An_example_of_an_exponential_back-off_algorithm)
+ * algorithm.
  *
  * @param {Object} [ctx]
  * Context in which the function should be executed.
  *
- * @param {Mixed} [args]
- * The argument type might vary depending on the use-case:
- *
- *  + undefined - in case the given function doesn't expect any arguments
- *  + array - if the function to be called accepts any number of arguments
+ * @param {Array} [args]
+ * Arguments to be passed to a given "inputFn" function at execution time.
  *
  * @return {Object}
- * Return [jQuery deferred object](http://api.jquery.com/category/deferred-object/)
+ * Return [promise object](http://api.jquery.com/promise/)
  * which describes the final state of the function after retries.
  */
-Echo.Utils.retry = function retry(inputFn, options, ctx, args) {
-	var input = inputFn.apply(ctx, args);
-	options = options || {"times": 1};
-	var times = options.times;
-	var timeout = options.timeout;
-	return input.pipe(null, function() {
-		var output = $.Deferred();
-		var next = function() {
-			retry(inputFn, {"times": times - 1, "timeout": timeout})
-				.pipe(output.resolve, output.reject);
-		};
-		if (times > 1) {
-			if (typeof timeout !== "undefined") {
-				setTimeout(next, timeout * 1000);
+Echo.Utils.retry = function(inputFn, options, ctx, args) {
+	options = options || {};
+	var times = options.times || 1;
+	var ratio = options.ratio;
+	return (function retry(attempts) {
+		return inputFn.apply(ctx, args).then(null, function() {
+			var delay, output = $.Deferred();
+			var next = function() {
+				retry(attempts + 1)
+					.then(output.resolve, output.reject);
+			};
+			if (times > attempts) {
+				if (typeof ratio !== "undefined") {
+					// simple exponential backoff algorithm
+					delay = ratio * Echo.Utils.random(0, Math.pow(2, attempts));
+					setTimeout(next, delay * 1000);
+				} else {
+					next();
+				}
 			} else {
-				next();
+				output.reject(arguments);
 			}
-		} else {
-			output.reject(arguments);
-		}
-		return output;
-	});
+			return output;
+		});
+	})(0);
 };
 
 // JS SDK can't guarantee proper UI elements rendering in quirks mode

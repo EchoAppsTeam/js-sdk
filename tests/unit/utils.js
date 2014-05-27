@@ -601,36 +601,51 @@ Echo.Tests.asyncTest("retry()", function() {
 			callback();
 		});
 	};
+	var provideOnlyTimesOption = function(callback) {
+		Echo.Utils.retry(function() {
+			var def = $.Deferred();
+			def.reject();
+			return def.promise();
+		}, {"times": 2}).fail(function() {
+			QUnit.ok(true, "provide only \"times\" option");
+			callback();
+		});
+	};
+	var provideOnlyRatioOption = function(callback) {
+		Echo.Utils.retry(function() {
+			var def = $.Deferred();
+			def.reject();
+			return def.promise();
+		}, {"ratio": 0.1}).fail(function() {
+			QUnit.ok(true, "provide only \"ratio\" option");
+			callback();
+		});
+	};
 	var provideOptions = function(callback) {
 		var i = 0;
-		var now = (new Date()).getTime();
 		Echo.Utils.retry(function() {
 			var def = $.Deferred();
 			if (i < 2) {
-				setTimeout(function() {
-					i++;
-					def.reject();
-				}, 100);
+				def.reject();
 			} else {
-				setTimeout(function() {
-					i++;
-					def.resolve();
-				}, 100);
+				def.resolve();
 			}
+			i++;
 			return def.promise();
-		}, {"times": 3, "timeout": 0.1})
+		}, {"times": 3, "ratio": 0.1})
 		.done(function() {
 			QUnit.strictEqual(i, 3, "passing new options");
-			QUnit.ok((new Date()).getTime() - now >= 200, "\"timeout\" parameter changed");
 			callback();
 		});
 	};
 
-	QUnit.expect(5);
+	QUnit.expect(6);
 	Echo.Utils.sequentialCall([
 		defaultOptions,
 		passingContext,
 		passingParamaters,
+		provideOnlyTimesOption,
+		provideOnlyRatioOption,
 		provideOptions
 	], function() {
 		QUnit.start();
