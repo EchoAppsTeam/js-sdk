@@ -603,9 +603,7 @@ Echo.Tests.asyncTest("retry()", function() {
 	};
 	var provideOnlyTimesOption = function(callback) {
 		Echo.Utils.retry(function() {
-			var def = $.Deferred();
-			def.reject();
-			return def.promise();
+			return $.Deferred().reject().promise();
 		}, {"times": 2}).fail(function() {
 			QUnit.ok(true, "provide only \"times\" option");
 			callback();
@@ -613,9 +611,7 @@ Echo.Tests.asyncTest("retry()", function() {
 	};
 	var provideOnlyRatioOption = function(callback) {
 		Echo.Utils.retry(function() {
-			var def = $.Deferred();
-			def.reject();
-			return def.promise();
+			return $.Deferred().reject().promise();
 		}, {"ratio": 0.1}).fail(function() {
 			QUnit.ok(true, "provide only \"ratio\" option");
 			callback();
