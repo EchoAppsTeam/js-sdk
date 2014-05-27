@@ -32,7 +32,8 @@ Echo.Loader = {
 				"dev": protocol + "{%=baseURLs.canvases.fastly%}/"
 			}
 		},
-		"errorTimeout": 5000 // 5 sec
+		"errorTimeout": 5000, // 5 sec
+		"viewportChangeTimeout": 50 // 50 ms
 	},
 	/** @ignore */
 	"canvases": [],  // Canvases list initialized on the page
@@ -408,19 +409,25 @@ Echo.Loader._lookupCanvases = function(config, callback) {
 };
 
 Echo.Loader._initCanvas = function(target, initMode, config) {
-	// this function might be called either immediately (with no arguments)
-	// or after "scroll"/"resize" events (with "event" argument);
-	// function workflow varies depending on the given argument
-	(function init(event) {
-		if (initMode !== "when-visible" || Echo.Loader._isInViewport(target)) {
-			event && onViewportChange("unsubscribe", init);
-			Echo.Loader.initEnvironment(function() {
-				Echo.Loader.canvases.push(new Echo.Canvas(Echo.Loader._prepareCanvasData(config)));
-			});
-		} else if (!event) {
-			onViewportChange("subscribe", init);
-		}
-	})();
+	var initCanvas = function() {
+		Echo.Loader.canvases.push(new Echo.Canvas(Echo.Loader._prepareCanvasData(config)));
+	};
+
+	if (initMode !== "when-visible" || Echo.Loader._isInViewport(target)) {
+		Echo.Loader.initEnvironment(initCanvas);
+	} else {
+		var timeout;
+		var handler = function() {
+			timeout && clearTimeout(timeout);
+			timeout = setTimeout(function() {
+				if (Echo.Loader._isInViewport(target)) {
+					onViewportChange("unsubscribe", handler);
+					Echo.Loader.initEnvironment(initCanvas);
+				}
+			}, Echo.Loader.config.viewportChangeTimeout);
+		};
+		onViewportChange("subscribe", handler);
+	}
 };
 
 // we are changing Comments app script
@@ -454,8 +461,8 @@ Echo.Loader._storeCanvasConfig = function(id, config) {
 
 Echo.Loader._isInViewport = function(canvas) {
 	var viewportHeight = document.documentElement.clientHeight || document.body.clientHeight;
-	var scrollTop = document.documentElement.scrollTop || document.body.scrollTop;
-	return scrollTop + viewportHeight >= canvas.offsetTop;
+	var box = canvas.getBoundingClientRect();
+	return box.top <= viewportHeight;
 };
 
 // implementation of the "map" function for the cases when jQuery is not loaded yet
@@ -490,6 +497,7 @@ function getEventName(name) {
 function onViewportChange(action, handler) {
 	var addEvent = window.addEventListener || window.attachEvent;
 	var removeEvent = window.removeEventListener || window.detachEvent;
+
 	if (action === "subscribe") {
 		addEvent(getEventName("scroll"), handler);
 		addEvent(getEventName("resize"), handler);
