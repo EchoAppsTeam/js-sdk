@@ -1052,6 +1052,58 @@ Echo.Utils.invoke = function(mixed, context) {
 
 /**
  * @static
+ * Returns a function, that, as long as it continues to be invoked, will not
+ * be triggered. The function will be called after it stops being called for
+ * N milliseconds.
+ * Basically it's a copy from underscore v1.6.0.
+ *
+ * @param {Function} func
+ * Function to be debounced.
+ *
+ * @param {Number} wait
+ * Number of milliseconds to delay the execution for.
+ *
+ * @param {Boolean} [immediate]
+ * If passed, the function is triggered on the leading edge,
+ * instead of the trailing.
+ */
+Echo.Utils.debounce = function(func, wait, immediate) {
+	var timeout, args, context, timestamp, result;
+	var now = Date.now || function() {
+		return (new Date()).getTime();
+	};
+	var later = function() {
+		var last = now() - timestamp;
+		if (last < wait && last > 0) {
+			timeout = setTimeout(later, wait - last);
+		} else {
+			timeout = null;
+			if (!immediate) {
+				result = func.apply(context, args);
+				if (!timeout) {
+					context = args = null;
+				}
+			}
+		}
+	};
+	return function() {
+		context = this;
+		args = arguments;
+		timestamp = now();
+		var callNow = immediate && !timeout;
+		if (!timeout) {
+			timeout = setTimeout(later, wait);
+		}
+		if (callNow) {
+			result = func.apply(context, args);
+			context = args = null;
+		}
+		return result;
+	};
+};
+
+/**
+ * @static
  * Function which executes another function in the try/catch block.
  * If the given function completed its execution without throwing an exception,
  * then the "safelyExecute" returns result of that function execution.
