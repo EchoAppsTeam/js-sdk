@@ -45,7 +45,7 @@
 			{
 				"name": "reply-plugin",
 				"title": "Reply",
-				"description": "The plugin adds extra "Reply" button to each item in the Stream app. Integrates Submit app and provides the ability to reply to the posted items.",
+				"description": "The plugin adds extra \"Reply\" button to each item in the Stream app. Integrates Submit app and provides the ability to reply to the posted items.",
 				"url": "reply-plugin.html",
 				"icon": "../docs/resources/images/default-guide.png"
 			},
