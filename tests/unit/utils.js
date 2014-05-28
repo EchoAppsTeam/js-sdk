@@ -7,6 +7,7 @@ Echo.Tests.module("Echo.Utils", {
 		"functions": [
 			"addCSS",
 			"capitalize",
+			"debounce",
 			"foldl",
 			"getComponent",
 			"get",
@@ -490,6 +491,35 @@ Echo.Tests.test("capitalize()", function() {
 	QUnit.strictEqual(Echo.Utils.capitalize("SOMEWORD"), "SOMEWORD", "Checking capitalize method if argument is uppercased word");
 	QUnit.strictEqual(Echo.Utils.capitalize("some text with whitespaces capitalized"), "Some Text With Whitespaces Capitalized", "Checking capitalize method if argument is regular text with whitespaces");
 	QUnit.strictEqual(Echo.Utils.capitalize("some|long|word|with|no|whitespace|delimiter"), "Some|Long|Word|With|No|Whitespace|Delimiter", "Checking capitalize method if argument string is delimted with no whiespaces word boundary");
+});
+
+Echo.Tests.asyncTest("debounce()", function() {
+	var test = function(immediate, prefix, samples) {
+		return function(callback) {
+			var delay = 20;
+			var spy = sinon.spy();
+			var debounced = Echo.Utils.debounce(spy, delay, immediate);
+			debounced(1);
+			debounced(2);
+			setTimeout(function() {
+				debounced(3);
+				debounced(4);
+			}, delay * 2);
+			setTimeout(function() {
+				QUnit.strictEqual(spy.callCount, 2, "[" + prefix + "] executed exactly twice");
+				QUnit.strictEqual(spy.firstCall.args[0], samples[0], "[" + prefix + "] first call parameter has expected value");
+				QUnit.strictEqual(spy.secondCall.args[0], samples[1], "[" + prefix + "] second call parameter has expected value");
+				callback();
+			}, delay * 4);
+		};
+	};
+	QUnit.expect(6);
+	Echo.Utils.sequentialCall([
+		test(false, "regular", [2, 4]),
+		test(true, "immediate", [1, 3])
+	], function() {
+		QUnit.start();
+	});
 });
 
 Echo.Tests.test("invoke()", function() {
