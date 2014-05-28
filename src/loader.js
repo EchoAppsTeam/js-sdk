@@ -32,7 +32,7 @@ Echo.Loader = {
 				"dev": protocol + "{%=baseURLs.canvases.fastly%}/"
 			}
 		},
-		"errorTimeout": 5000, // 5 sec
+		"errorTimeout": 10000, // 10 sec
 		"viewportChangeTimeout": 50 // 50 ms
 	},
 	/** @ignore */
