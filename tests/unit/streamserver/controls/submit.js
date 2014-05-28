@@ -255,6 +255,7 @@ suite.prototype.cases.user = function(callback) {
 };
 
 suite.prototype.cases.onInit = function(callback) {
+	suite.submit.view.get("text").val("UserContent");
 	suite.submit.events.subscribe({
 		"topic": "Echo.StreamServer.Controls.Submit.onPostInit",
 		"once": true,
@@ -288,6 +289,7 @@ suite.prototype.cases.onInit = function(callback) {
 };
 
 suite.prototype.cases.onComplete = function(callback) {
+	suite.submit.view.get("text").val("UserContent");
 	suite.submit.events.subscribe({
 		"topic": "Echo.StreamServer.Controls.Submit.onPostInit",
 		"once": true,
@@ -312,6 +314,7 @@ suite.prototype.cases.onComplete = function(callback) {
 };
 
 suite.prototype.cases.onError = function(callback) {
+	suite.submit.view.get("text").val("UserContent");
 	suite.submit.events.subscribe({
 		"topic": "Echo.StreamServer.Controls.Submit.onPostInit",
 		"once": true,
