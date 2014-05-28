@@ -88,22 +88,31 @@ Echo.Tests.Utils.initServer = function() {
 	});
 
 	var ajax = $.ajax;
+	$.ajaxTransport("mock", function(options, userOptions, jqXHR) {
+		var matches = options.url && options.url.match(_URLMocks.canvases.url);
+		return {
+			"send": function(headers, complete) {
+				// asynchronously respond to request
+				setTimeout(function() {
+					var config = Echo.Tests.Fixtures.canvases[matches[1]];
+					storeCanvasConfig(matches[1], config);
+					if (config) {
+						complete(200, "Complete", {"mock": config});
+					} else {
+						complete(500, "Error", {"mock": config});
+					}
+				}, 10);
+			},
+			"abort": function() {
+				jqXHR.abort();
+			}
+		};
+	});
 	sinon.stub($, "ajax", function(options) {
-		var self = this;
 		var matches = options.url && options.url.match(_URLMocks.canvases.url);
 		if (matches && (Echo.Tests.Fixtures.canvases[matches[1]] || /nonexistent/.test(matches[1]))) {
-			var req = ajax.call(this, {"beforeSend": function() { return false; }});
-			// asynchronously respond to request
-			setTimeout(function() {
-				var config = Echo.Tests.Fixtures.canvases[matches[1]];
-				storeCanvasConfig(matches[1], config);
-				if (config) {
-					options.success.call(self, config);
-				} else {
-					options.error.call(self);
-				}
-			}, 10);
-			return req;
+			options.dataType = "mock";
+			return ajax.call(this, options);
 		}
 		return ajax.apply(this, arguments);
 	});
