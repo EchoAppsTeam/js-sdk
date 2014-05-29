@@ -68,12 +68,12 @@ Echo.Tests.Fixtures.api.search = {
 		"children": {"maxDepth": "2", "sortOrder": "reverseChronological", "itemsPerPage": "2"},
 		"entries": []
 	},
-	"scope:http://example.com/js-sdk/tests/facepile+sortOrder:chronological+itemsPerPage:+1+-user.id:http://js-kit.com/ECHO/user/fake_user": {
+	"childrenof:http://example.com/js-sdk/tests/facepile+sortOrder:chronological+itemsPerPage:+2+-user.id:http://js-kit.com/ECHO/user/fake_user": {
 		"hasMoreChildren": "false",
-		"itemsPerPage": "1",
+		"itemsPerPage": "2",
 		"nextPageAfter": "1397960999.0508101",
 		"nextSince": "1401350677.307007",
-		"children": {"maxDepth": "2", "sortOrder": "reverseChronological", "itemsPerPage": 1},
+		"children": {"maxDepth": "2", "sortOrder": "reverseChronological", "itemsPerPage": 2},
 		"entries": [entry, $.extend(true, {}, entry, {
 			"actor": {
 				"links": [
@@ -87,12 +87,12 @@ Echo.Tests.Fixtures.api.search = {
 			}
 		})]
 	},
-	"pageAfter:\"1397960999.0508101\"+scope:http://example.com/js-sdk/tests/facepile+sortOrder:chronological+itemsPerPage:+1+-user.id:http://js-kit.com/ECHO/user/fake_user": {
+	"pageAfter:\"1397960999.0508101\"+childrenof:http://example.com/js-sdk/tests/facepile+sortOrder:chronological+itemsPerPage:+2+-user.id:http://js-kit.com/ECHO/user/fake_user": {
 		"hasMoreChildren": "false",
-		"itemsPerPage": "1",
+		"itemsPerPage": "2",
 		"nextPageAfter": "1397960999.0508101",
 		"nextSince": "1401350677.307007",
-		"children": {"maxDepth": "2", "sortOrder": "reverseChronological", "itemsPerPage": 1},
+		"children": {"maxDepth": "2", "sortOrder": "reverseChronological", "itemsPerPage": 2},
 		"entries": [$.extend(true, {}, entry, {
 			"actor": {
 				"links": [

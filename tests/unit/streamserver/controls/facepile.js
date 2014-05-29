@@ -122,8 +122,8 @@ suite.prototype.tests.dynamicWorkflow = {
 			"suffixText" : " commented on facepile test page",
 			"target" : this.config.target,
 			"appkey" : this.config.appkey,
-			"query"  : "scope:" + this.config.dataBaseLocation + "tests/facepile sortOrder:chronological " +
-				 "itemsPerPage: 1 -user.id:http://js-kit.com/ECHO/user/fake_user",
+			"query"  : "childrenof:" + this.config.dataBaseLocation + "tests/facepile sortOrder:chronological " +
+				 "itemsPerPage: 2 -user.id:http://js-kit.com/ECHO/user/fake_user",
 			"item"   : {"avatar": true, "text": true},
 			"liveUpdates": {
 				"enabled": false,
