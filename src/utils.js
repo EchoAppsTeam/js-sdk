@@ -1235,6 +1235,7 @@ Echo.Utils.random = function(min, max) {
  */
 Echo.Utils.retry = function(inputFn, options, ctx, args) {
 	options = options || {};
+	args = args || [];
 	var times = options.times || 1;
 	var ratio = options.ratio;
 	return (function retry(attempts) {
