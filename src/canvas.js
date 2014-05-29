@@ -195,7 +195,7 @@ canvas.config = {
 	 * target DOM element attribute.
 	 * More information about HTML attributes of the target DOM element can be found [here](#!/guide/how_to_deploy_an_app_using_a_canvas)
 	 */
-	"maxConfigFetchingRetries": 3,
+	"maxConfigFetchingRetries": 2,
 
 	"provider": "aws", // "aws" | "fastly"
 
