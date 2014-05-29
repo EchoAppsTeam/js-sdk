@@ -1440,8 +1440,8 @@ manifest.css = '.echo-secondaryBackgroundColor { background-color: #F4F4F4; }' +
 		'.echo-trinaryBackgroundColor { background-color: #ECEFF5; }' +
 		'.echo-primaryColor { color: #3A3A3A; }' +
 		'.echo-secondaryColor { color: #C6C6C6; }' +
-		'.echo-primaryFont { font-family: Arial, sans-serif; font-size: 12px; font-weight: normal; line-height: 16px; }' +
-		'.echo-secondaryFont { font-family: Arial, sans-serif; font-size: 11px; }' +
+		'.echo-primaryFont { font-family: "Helvetica Neue", Helvetica, Arial, sans-serif; font-size: 12px; font-weight: normal; line-height: 16px; }' +
+		'.echo-secondaryFont { font-family: "Helvetica Neue", Helvetica, Arial, sans-serif; font-size: 11px; }' +
 		'.echo-linkColor, .echo-linkColor a { color: #476CB8; }' +
 		'.echo-clickable { cursor: pointer; }' +
 		'.echo-relative { position: relative; }' +
@@ -1452,7 +1452,7 @@ manifest.css = '.echo-secondaryBackgroundColor { background-color: #F4F4F4; }' +
 		'.echo-image-container.echo-image-position-fill img.echo-image-stretched-vertically { width: auto; height: 100%; }' +
 
 		// message classes
-		'.echo-control-message { padding: 15px 0px; text-align: center; }' +
+		'.echo-control-message { font-family: "Helvetica Neue", Helvetica, Arial, sans-serif; padding: 15px 0px; text-align: center; }' +
 		'.echo-control-message-icon { height: 16px; padding-left: 16px; background: no-repeat left center; }' +
 		'.echo-control-message .echo-control-message-icon { padding-left: 21px; height: auto; }' +
 		'.echo-control-message-info { background-image: url({config:cdnBaseURL.sdk-assets}/images/information.png); }' +

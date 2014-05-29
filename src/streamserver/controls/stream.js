@@ -3218,7 +3218,7 @@ item.css =
 	'.{class:container-root-thread} .{class:childrenMarker} { display: block; }' +
 	'.{class:avatar} { width: 48px; height: 48px; }' +
 	'.{class:children} .{class:avatar}, .{class:childrenByCurrentActorLive} .{class:avatar} { width: 24px; height: 24px; }' +
-	'.{class:authorName} { float: left; font-size: 15px; font-family: Arial, sans-serif; font-weight: bold; }' +
+	'.{class:authorName} { float: left; font-size: 15px; font-weight: bold; }' +
 	'.{class:re} { font-weight: bold; }' +
 	'.{class:re} a:link, .{class:re} a:visited, .{class:re} a:active { text-decoration: none; }' +
 	'.{class:re} a:hover { text-decoration: underline; }' +
