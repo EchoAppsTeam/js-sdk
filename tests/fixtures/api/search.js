@@ -1,5 +1,21 @@
-var entry = {
+(function($) {
+"use strict";
+
+ var entry = {
 	"id": "http://js-kit.com/activities/post/b126c90795f59b805db2cd73a62761c3",
+	"actor": {
+		"links": [
+			"https://twitter.com/someUser"
+		],
+		"objectTypes": [
+			"http://activitystrea.ms/schema/1.0/person"
+		],
+		"id": "http://twitter.com/someUser",
+		"title": "Test User",
+		"status": "Untouched",
+		"markers": [],
+		"roles": []
+	},
 	"object": {
 		"id": "http://example.com/ECHO/item/1366306330-580-88",
 		"objectTypes": [
@@ -51,5 +67,45 @@ Echo.Tests.Fixtures.api.search = {
 		"itemsPerPage": "5",
 		"children": {"maxDepth": "2", "sortOrder": "reverseChronological", "itemsPerPage": "2"},
 		"entries": []
+	},
+	"scope:http://example.com/js-sdk/tests/facepile+sortOrder:chronological+itemsPerPage:+1+-user.id:http://js-kit.com/ECHO/user/fake_user": {
+		"hasMoreChildren": "false",
+		"itemsPerPage": "1",
+		"nextPageAfter": "1397960999.0508101",
+		"nextSince": "1401350677.307007",
+		"children": {"maxDepth": "2", "sortOrder": "reverseChronological", "itemsPerPage": 1},
+		"entries": [entry, $.extend(true, {}, entry, {
+			"actor": {
+				"links": [
+					"https://twitter.com/someUser2"
+				],
+				"objectTypes": [
+					"http://activitystrea.ms/schema/1.0/person"
+				],
+				"id": "http://twitter.com/someUser2",
+				"title": "Test User 2"
+			}
+		})]
+	},
+	"pageAfter:\"1397960999.0508101\"+scope:http://example.com/js-sdk/tests/facepile+sortOrder:chronological+itemsPerPage:+1+-user.id:http://js-kit.com/ECHO/user/fake_user": {
+		"hasMoreChildren": "false",
+		"itemsPerPage": "1",
+		"nextPageAfter": "1397960999.0508101",
+		"nextSince": "1401350677.307007",
+		"children": {"maxDepth": "2", "sortOrder": "reverseChronological", "itemsPerPage": 1},
+		"entries": [$.extend(true, {}, entry, {
+			"actor": {
+				"links": [
+					"https://twitter.com/someuser3"
+				],
+				"objecttypes": [
+					"http://activitystrea.ms/schema/1.0/person"
+				],
+				"id": "http://twitter.com/someuser3",
+				"title": "test user 3"
+			}
+		})]
 	}
 };
+
+})(Echo.jQuery);
