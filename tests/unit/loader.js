@@ -829,7 +829,7 @@ Echo.Tests.asyncTest("canvases initialization", function() {
 		QUnit.start();
 	});
 }, {
-	"timeout": 20000
+	"timeout": 40000
 });
 
 /*
