@@ -338,6 +338,8 @@ suite.prototype.cases.websocketFallback = function(callback) {
 			"onOpen": function(data) {
 				QUnit.ok(req.liveUpdates instanceof Echo.StreamServer.API.Polling && !(req.liveUpdates instanceof Echo.StreamServer.API.WebSockets), "Checking WS connection fallback");
 				stub.restore();
+				//clearing up after method override
+				delete Echo.API.Transports.WebSockets.socketByURI["live.echoenabled.com/v1/ws"];
 				req.abort();
 				callback();
 			}
@@ -455,7 +457,7 @@ suite.prototype.tests.PublicInterfaceTests = {
 		}
 		// WebSocket specific tests
 		if (Echo.API.Transports.WebSockets.available()) {
-			sequentialTests = sequentialTests.concat(["websockets", "multipleWebsocketRequests", "websocketFallback", "webSocketSinceCase"]);
+			sequentialTests = sequentialTests.concat(["websockets", "multipleWebsocketRequests", "webSocketSinceCase", "websocketFallback"]);
 		}
 		this.sequentialAsyncTests(sequentialTests, "cases");
 	}
