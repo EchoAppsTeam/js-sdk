@@ -443,36 +443,38 @@ canvas.methods._fetchConfig = function(callback) {
 	// to implement store/fetch mechanics. But it can occasionally
 	// be synchronous while fetching cached response. In order to
 	// avoid this issue, we always make $.ajax call asynchronously.
-	Echo.Utils.retry(function() {
-		return $.ajax({
-			"url": URL,
-			"crossDomain": true,
-			"cache": mode !== "dev",
-			"dataType": isProviderFastly ? "json" : "script",
-			"timeout": Echo.Loader.config.errorTimeout,
-			"success": function() {
-				var config = isProviderFastly ? arguments[0] : getConfig();
-				if (!config || !config.apps || !config.apps.length) {
-					var message = self.labels.get("error_no_" + (config ? "apps" : "config"));
-					self._error({
-						"args": {"config": config, "target": target},
-						"code": "invalid_canvas_config",
-						"message": message
-					});
-					return;
+	setTimeout(function() {
+		Echo.Utils.retry(function() {
+			return $.ajax({
+				"url": URL,
+				"crossDomain": true,
+				"cache": mode !== "dev",
+				"dataType": isProviderFastly ? "json" : "script",
+				"timeout": Echo.Loader.config.errorTimeout,
+				"success": function() {
+					var config = isProviderFastly ? arguments[0] : getConfig();
+					if (!config || !config.apps || !config.apps.length) {
+						var message = self.labels.get("error_no_" + (config ? "apps" : "config"));
+						self._error({
+							"args": {"config": config, "target": target},
+							"code": "invalid_canvas_config",
+							"message": message
+						});
+						return;
+					}
+					self.set("data", config); // store Canvas data into the instance
+					callback.call(self);
 				}
-				self.set("data", config); // store Canvas data into the instance
-				callback.call(self);
-			}
+			});
+		}, {"ratio": 1, "times": self.config.get("maxConfigFetchingRetries")})
+		.fail(function() {
+			self._error({
+				"args": arguments,
+				"code": "unable_to_retrieve_app_config",
+				"renderError": true
+			});
 		});
-	}, {"ratio": 1, "times": self.config.get("maxConfigFetchingRetries")})
-	.fail(function() {
-		self._error({
-			"args": arguments,
-			"code": "unable_to_retrieve_app_config",
-			"renderError": true
-		});
-	});
+	}, 0);
 };
 
 Echo.Control.create(canvas);
