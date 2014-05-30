@@ -2697,7 +2697,7 @@ item.renderers._button = function(element, extra) {
 };
 
 item.renderers._buttonsDelimiter = function(element) {
-	return element.append('<span class="' + this.cssPrefix + 'button-delim"> \u00b7 </span>');
+	return element.append('<span class="' + this.cssPrefix + 'button-delim"> &middot; </span>');
 };
 
 item.renderers._viaText = function(element, extra) {
