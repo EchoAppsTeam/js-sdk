@@ -190,6 +190,7 @@ Echo.API.Transports.WebSockets.prototype._getTransportObject = function() {
 				self.config.get(topic)(data);
 				if (topic === "onClose") {
 					clearTimeout(self.timers.close);
+					self._clearTimers();
 				}
 			},
 			// when we receive data - send it to the appropriate
