@@ -354,7 +354,7 @@ Echo.GUI.Tabs.prototype.update = function(id, config) {
 Echo.GUI.Tabs.prototype.show = function(id) {
 	this.get(id).tab("show");
 	// sometimes panel is in detached DOM so we explicitly activate it
-	this._getPanel(id).addClass("active");
+	this._getPanel(id).addClass("active echo-active");
 };
 
 Echo.GUI.Tabs.prototype._getTabIndex = function(id) {

@@ -47,8 +47,10 @@
         selector = selector && selector.replace(/.*(?=#[^\s]*$)/, '') //strip for ie7
       }
 
-      previous = $ul.find('.active:last a')[0]
+      if ( $this.parent('li').hasClass('echo-active') ) return
 
+
+      previous = $ul.find('.echo-active:last a')[0]
       e = $.Event('show', {
         relatedTarget: previous
       })
@@ -69,18 +71,18 @@
     }
 
   , activate: function ( element, container, callback) {
-      var $active = container.find('> .active')
+      var $active = container.find('> .echo-active')
         , transition = callback
             && $.support.transition
             && $active.hasClass('fade')
 
       function next() {
         $active
-          .removeClass('active')
-          .find('> .dropdown-menu > .active')
-          .removeClass('active')
+          .removeClass('active echo-active')
+          .find('> .dropdown-menu > .echo-active')
+          .removeClass('active echo-active')
 
-        element.addClass('active')
+        element.addClass('active echo-active')
 
         if (transition) {
           element[0].offsetWidth // reflow for transition
@@ -90,7 +92,7 @@
         }
 
         if ( element.parent('.dropdown-menu') ) {
-          element.closest('li.dropdown').addClass('active')
+          element.closest('li.dropdown').addClass('active echo-active')
         }
 
         callback && callback()
