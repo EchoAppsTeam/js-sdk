@@ -24,15 +24,15 @@ var $ = jQuery;
 </span> * @class Echo.StreamServer.Controls.Submit.Plugins.JanrainAuth
  * Janrain Social Sign-in Widget integration with Echo Submit Control.
  *
- * 	new Echo.StreamServer.Controls.Submit({
- * 		&quot;target&quot;: document.getElementById(&quot;submit&quot;),
- * 		&quot;appkey&quot;: &quot;echo.jssdk.demo.aboutecho.com&quot;,
- * 		&quot;plugins&quot;: [{
- * 			&quot;name&quot;: &quot;JanrainAuth&quot;,
- * 			&quot;submitPermissions&quot;: &quot;forceLogin&quot;,
- * 			&quot;appId&quot;: &quot;echo&quot;
- * 		}]
- * 	});
+ *		new Echo.StreamServer.Controls.Submit({
+ *			&quot;target&quot;: document.getElementById(&quot;submit&quot;),
+ *			&quot;appkey&quot;: &quot;echo.jssdk.demo.aboutecho.com&quot;,
+ *			&quot;plugins&quot;: [{
+ *				&quot;name&quot;: &quot;JanrainAuth&quot;,
+ *				&quot;submitPermissions&quot;: &quot;forceLogin&quot;,
+ *				&quot;appId&quot;: &quot;echo&quot;
+ *			}]
+ *		});
  *
  * More information regarding the plugins installation can be found
  * in the [&quot;How to initialize Echo components&quot;](#!/guide/how_to_initialize_components-section-initializing-plugins) guide.
@@ -99,12 +99,12 @@ plugin.config = {
 	 * Full list of available options can be found in the
 	 * &lt;a href=&quot;http://developers.janrain.com/documentation/widgets/social-sign-in-widget/social-sign-in-widget-api/settings/&quot; target=&quot;_blank&quot;&gt;documentation&lt;/a&gt;
 	 *
-	 * Example:
-	 * 	{
-	 * 		&quot;providersPerPage&quot;: 4,
-	 * 		&quot;format&quot;: &quot;two column&quot;
-	 * 		// ...
-	 * 	}
+	 *		Example:
+	 *		{
+	 *			&quot;providersPerPage&quot;: 4,
+	 *			&quot;format&quot;: &quot;two column&quot;
+	 *			// ...
+	 *		}
 	 */
 	&quot;signinWidgetConfig&quot;: {},
 
@@ -201,7 +201,7 @@ plugin.methods._validator = function() {
 			return false;
 		}
 		return true;
-	}
+	};
 };
 
 plugin.methods._permissions = function() {

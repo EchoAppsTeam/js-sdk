@@ -1,4 +1,5 @@
 (function($) {
+"use strict";
 
 Echo.Tests.module("Echo.Configuration", {
 	"meta": {
@@ -33,7 +34,7 @@ function _clone(obj) {
 		}
 	});
 	return target;
-};
+}
 
 function _checkBasicOperations(args, note) {
 	var original = _clone(args[0]);
@@ -87,7 +88,7 @@ function _checkBasicOperations(args, note) {
 	QUnit.ok(condition, note + " Check if we dump the right value (checking some fields)");
 
 	config.set("key1", "value1");
-	var dump = config.getAsHash();
+	dump = config.getAsHash();
 	dump["key1"] = 15;
 	QUnit.strictEqual(config.get("key1"), "value1",
 		note + " Check if changing the value in the dump doesn't affect config values");
@@ -96,7 +97,7 @@ function _checkBasicOperations(args, note) {
 		note + " Check if the dump remains the same after config update");
 
 	config.extend({"key1": 100, "key7": "key7 value", "key2": {"key2-2": "key2-2 value"}});
-	var condition =
+	condition =
 		config.get("key1") === 100 &&
 		config.get("key7") === "key7 value" &&
 		config.get("key2.key2-2") === "key2-2 value";
@@ -111,7 +112,7 @@ function _checkBasicOperations(args, note) {
 		note + " Check the remove() method with objects defined as values");
 	QUnit.strictEqual(config.get("key2.key2-2.key2-2-1"), undefined,
 		note + " Check the remove() method with objects defined as values, checking if nested structure was cleared");
-};
+}
 
 function _checkOverrides(args, note) {
 	var original = _clone(args[0]);
@@ -157,7 +158,7 @@ function _checkOverrides(args, note) {
 		note + " Checking if the default configuration was overridden by the new value with different type (object overrides string)");
 	QUnit.strictEqual(config.get("key16"), "key16.value",
 		note + " Checking if the default configuration was overridden by the new value with different type (string overrides object)");
-};
+}
 
 function _checkIncomingData() {
 	// checking if the config update doesn't affect incoming data...
@@ -187,7 +188,7 @@ function _checkIncomingData() {
 		"Checking whether the incoming defaults data is not affected after config.set operation");
 	QUnit.deepEqual(incoming.override, snapshot.override,
 		"Checking whether the incoming overrides data is not affected after config.set operation");
-};
+}
 
 function _checkCacheClear() {
 	var config = new Echo.Configuration(_data.overrides, _data.original);
@@ -196,7 +197,7 @@ function _checkCacheClear() {
 		"Checking if internal cache was cleared");
 	QUnit.strictEqual(config.cache["key2.key2-2"], undefined,
 		"Checking if nested structure was cleared after the root key was removed");
-};
+}
 
 var _data = {
 	"original": { // default values

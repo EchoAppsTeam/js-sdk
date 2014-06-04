@@ -29,23 +29,22 @@ Echo.StreamServer.API = {};
 <span id='Echo-StreamServer-API-Request-method-constructor'><span id='Echo-StreamServer-API-Request'>/**
 </span></span> * @class Echo.StreamServer.API.Request
  * Class implements the interaction with the
- * &lt;a href=&quot;http://echoplatform.com/streamserver/docs/rest-api/items-api/&quot; target=&quot;_blank&quot;&gt;Echo StreamServer API&lt;/a&gt;
+ * &lt;a href=&quot;http://echoplatform.com/streamserver/docs/rest-api/items-api/&quot; target=&quot;_blank&quot;&gt;Echo StreamServer API&lt;/a&gt;.
  *
- *     var request = Echo.StreamServer.API.request({
- *         &quot;endpoint&quot;: &quot;search&quot;,
- *         &quot;data&quot;: {
- *             &quot;q&quot;: &quot;childrenof: http://example.com/js-sdk&quot;,
- *             &quot;appkey&quot;: &quot;echo.jssdk.demo.aboutecho.com&quot;
- *         },
- *         &quot;onData&quot;: function(data, extra) {
- *             // handle successful request here...
- *         },
- *         &quot;onError&quot;: function(data, extra) {
- *             // handle failed request here...
- *         }
- *     });
- *
- *     request.send();
+ *		var request = Echo.StreamServer.API.request({
+ *			&quot;endpoint&quot;: &quot;search&quot;,
+ *			&quot;data&quot;: {
+ *				&quot;q&quot;: &quot;childrenof: http://example.com/js-sdk&quot;,
+ *				&quot;appkey&quot;: &quot;echo.jssdk.demo.aboutecho.com&quot;
+ *			},
+ *			&quot;onData&quot;: function(data, extra) {
+ *				// handle successful request here...
+ *			},
+ *			&quot;onError&quot;: function(data, extra) {
+ *				// handle failed request here...
+ *			}
+ *		});
+ *		request.send();
  *
  * @extends Echo.API.Request
  *
@@ -216,7 +215,7 @@ Echo.StreamServer.API.Request.prototype._search = function(force) {
 			self.liveUpdates.start(force);
 		}
 		self.requestType = &quot;secondary&quot;;
-	}
+	};
 	if (!this.config.get(&quot;skipInitialRequest&quot;)
 		|| this.config.get(&quot;skipInitialRequest&quot;) &amp;&amp; this.requestType !== &quot;initial&quot;) {
 		this.request().progress(start);
@@ -287,7 +286,7 @@ Echo.StreamServer.API.Request.prototype._prepareURL = function() {
 };
 
 Echo.StreamServer.API.Request.prototype._initLiveUpdates = function(data) {
-	var ws, self = this;
+	var ws;
 	var polling = Echo.StreamServer.API.Polling.init(
 		$.extend(true, this._getLiveUpdatesConfig(&quot;polling&quot;), {
 			&quot;request&quot;: {
@@ -346,13 +345,13 @@ Echo.StreamServer.API.Request.prototype._getLiveUpdatesConfig = function(name) {
 	};
 
 	var mapped = Echo.Utils.foldl({}, map[name], function(from, acc, to) {
-		var value = function fetch(key) {
+		var value = (function fetch(key) {
 			var val = self.config.get(key);
 			if (typeof val === &quot;undefined&quot; &amp;&amp; key) {
 				return fetch(key.split(&quot;.&quot;).slice(1).join(&quot;.&quot;));
 			}
 			return val;
-		}(from);
+		})(from);
 		Echo.Utils.set(acc, to, value);
 	});
 	return mapped;
@@ -368,7 +367,7 @@ Echo.StreamServer.API.Request.prototype._liveUpdatesWatcher = function(polling, 
 			}
 			self.liveUpdates = inst;
 			self.liveUpdates.start();
-		}
+		};
 	};
 	var fallbackTimeout, waitingForConnectionTimeout;
 	ws.on(&quot;close&quot;, function() {
@@ -569,6 +568,7 @@ Echo.StreamServer.API.request = function(config) {
 //
 
 (function(jQuery) {
+&quot;use strict&quot;;
  
 var $ = jQuery;
 
@@ -641,7 +641,7 @@ Echo.StreamServer.API.Polling.prototype.start = function(force) {
 };
 
 Echo.StreamServer.API.Polling.prototype.on = function(event, fn) {
-	var event = &quot;on&quot; + Echo.Utils.capitalize(event);
+	event = &quot;on&quot; + Echo.Utils.capitalize(event);
 	var handler = this.requestObject.transport.config.get(event, $.noop);
 	this.requestObject.transport.config.set(event, function() {
 		handler.apply(null, arguments);
@@ -660,7 +660,7 @@ Echo.StreamServer.API.Polling.prototype._changeTimeout = function(data) {
 	if (typeof data === &quot;string&quot;) {
 		data = {&quot;liveUpdatesTimeout&quot;: data};
 	}
-	data.liveUpdatesTimeout = parseInt(data.liveUpdatesTimeout);
+	data.liveUpdatesTimeout = +data.liveUpdatesTimeout;
 	var applyServerDefinedTimeout = function(timeout) {
 		if (!timeout &amp;&amp; self.originalTimeout !== self.config.get(&quot;timeout&quot;)) {
 			self.config.set(&quot;timeout&quot;, self.originalTimeout);
@@ -677,7 +677,7 @@ Echo.StreamServer.API.Polling.prototype._changeTimeout = function(data) {
 		return;
 	}
 	var currentTimeout = this.config.get(&quot;timeout&quot;);
-	var since = parseInt(this.config.get(&quot;request.data.since&quot;));
+	var since = this.config.get(&quot;request.data.since&quot;);
 	var currentTime = Math.floor((new Date()).getTime() / 1000);
 	// calculate the delay before starting next request:
 	//   - have new data but still behind and need to catch up - use minimum timeout
@@ -863,38 +863,33 @@ Echo.StreamServer.API.WebSockets.prototype._updateConnection = function(callback
 
 Echo.StreamServer.API.WebSockets.prototype._reconnect = function() {
 	var self = this;
-	var closeHandler = function() {
+	this.closeReason = &quot;reconnect&quot;;
+	this.requestObject.abort();
+	this._close(function() {
 		self.requestObject = self.getRequestObject();
 		if (self.connected()) {
 			self.requestObject.config.get(&quot;onOpen&quot;)();
 		}
-	};
-	this.closeReason = &quot;reconnect&quot;;
-	this.requestObject.abort();
-	if (this.requestObject.transport.closing()) {
-		var id = this.on(&quot;close&quot;, function() {
-			closeHandler();
-			Echo.Events.unsubscribe({&quot;handlerId&quot;: id});
-		});
-	} else {
-		closeHandler();
-	}
+	});
 };
 
 Echo.StreamServer.API.WebSockets.prototype._resubscribe = function() {
 	var self = this;
-	var closeHandler = function() {
+	this._close(function() {
 		if (self.connected()) {
 			self.requestObject.config.get(&quot;onOpen&quot;)();
 		}
-	};
+	});
+};
+
+Echo.StreamServer.API.WebSockets.prototype._close = function(handler) {
 	if (this.requestObject.transport.closing()) {
 		var id = this.on(&quot;close&quot;, function() {
-			closeHandler();
+			handler();
 			Echo.Events.unsubscribe({&quot;handlerId&quot;: id});
 		});
 	} else {
-		closeHandler();
+		handler();
 	}
 };
 

@@ -491,7 +491,7 @@ Echo.Utils.objectToJSON = function(obj) {
 Echo.Utils.htmlTextTruncate = function(text, limit, postfix, forceClosingTags) {
 	if (!limit || text.length &lt; limit) return text;
 
-	var tags = [], count = 0, finalPos = 0;
+	var i, tags = [], count = 0, finalPos = 0;
 	var wordRegex = /(\w)+/;
 	var htmlSpecialCharRegex = /^(\S)+;/;
 	if (!this.cache.standaloneTags) {
@@ -503,7 +503,7 @@ Echo.Utils.htmlTextTruncate = function(text, limit, postfix, forceClosingTags) {
 			);
 	}
 
-	for (var i = 0; i &lt; text.length; i++) {
+	for (i = 0; i &lt; text.length; i++) {
 		var symbol = text.charAt(i);
 		if (symbol === &quot;&lt;&quot;) {
 			var tail = text.indexOf(&quot;&gt;&quot;, i);
@@ -544,7 +544,7 @@ Echo.Utils.htmlTextTruncate = function(text, limit, postfix, forceClosingTags) {
 				text = text.substring(0, finalPos) + (postfix || &quot;&quot;);
 			}
 		}
-		for (var i = tags.length - 1; i &gt;= 0; i--) {
+		for (i = tags.length - 1; i &gt;= 0; i--) {
 			text += &quot;&lt;/&quot; + tags[i] + &quot;&gt;&quot;;
 		}
 	}
@@ -656,7 +656,8 @@ Echo.Utils.getVisibleColor = function(element) {
 		if (color !== &quot;&quot; &amp;&amp; color !== &quot;transparent&quot; &amp;&amp; !/rgba\((0,\s*){3}0\)/.test(color) || $.nodeName(element.get(0), &quot;body&quot;)) {
 			break;
 		}
-	} while (element = element.parent());
+		element = element.parent();
+	} while (element);
 	return color || &quot;transparent&quot;;
 };
 
@@ -1066,6 +1067,58 @@ Echo.Utils.invoke = function(mixed, context) {
 		: mixed;
 };
 
+<span id='Echo-Utils-static-method-debounce'>/**
+</span> * @static
+ * Returns a function, that, as long as it continues to be invoked, will not
+ * be triggered. The function will be called after it stops being called for
+ * N milliseconds.
+ * Basically it&#39;s a copy from underscore v1.6.0.
+ *
+ * @param {Function} func
+ * Function to be debounced.
+ *
+ * @param {Number} wait
+ * Number of milliseconds to delay the execution for.
+ *
+ * @param {Boolean} [immediate]
+ * If passed, the function is triggered on the leading edge,
+ * instead of the trailing.
+ */
+Echo.Utils.debounce = function(func, wait, immediate) {
+	var timeout, args, context, timestamp, result;
+	var now = Date.now || function() {
+		return (new Date()).getTime();
+	};
+	var later = function() {
+		var last = now() - timestamp;
+		if (last &lt; wait &amp;&amp; last &gt; 0) {
+			timeout = setTimeout(later, wait - last);
+		} else {
+			timeout = null;
+			if (!immediate) {
+				result = func.apply(context, args);
+				if (!timeout) {
+					context = args = null;
+				}
+			}
+		}
+	};
+	return function() {
+		context = this;
+		args = arguments;
+		timestamp = now();
+		var callNow = immediate &amp;&amp; !timeout;
+		if (!timeout) {
+			timeout = setTimeout(later, wait);
+		}
+		if (callNow) {
+			result = func.apply(context, args);
+			context = args = null;
+		}
+		return result;
+	};
+};
+
 <span id='Echo-Utils-static-method-safelyExecute'>/**
 </span> * @static
  * Function which executes another function in the try/catch block.
@@ -1152,6 +1205,77 @@ Echo.Utils.safelyExecute = function(fn, args, context) {
  */
 Echo.Utils.random = function(min, max) {
 	return min + Math.floor(Math.random() * (max - min + 1));
+};
+
+<span id='Echo-Utils-static-method-retry'>/**
+</span> * @static
+ * Function which executes another function passed as an argument
+ * and allows to execute the same function multiple times
+ * in case a previous attempt failed.
+ *
+ *		var def = $.Deferred();
+ *		var fn = function() {
+ *			setTimeout(function() {
+ *				i++;
+ *				def.reject();
+ *			}, 100);
+ *			return def.promise();
+ *		};
+ *		Echo.Utils.retry(fn).fail(function() {
+ *			console.log(&quot;retries failed&quot;);
+ *		});
+ *
+ * @param {Function} inputFn
+ * Function which should be executed.
+ * This function should return [promise object](http://api.jquery.com/promise/) which
+ * describes the state of the executed function.
+ *
+ * @param {Object} [options]
+ * Contains retrying machinery options.
+ *
+ * @param {Number} [options.times]
+ * Describes maximum retries attempts.
+ *
+ * @param {Number} [options.ratio]
+ * Positive number which will be used in the [exponential backoff](http://en.wikipedia.org/wiki/Exponential_backoff#An_example_of_an_exponential_back-off_algorithm)
+ * algorithm.
+ *
+ * @param {Object} [ctx]
+ * Context in which the function should be executed.
+ *
+ * @param {Array} [args]
+ * Arguments to be passed to a given &quot;inputFn&quot; function at execution time.
+ *
+ * @return {Object}
+ * Return [promise object](http://api.jquery.com/promise/)
+ * which describes the final state of the function after retries.
+ */
+Echo.Utils.retry = function(inputFn, options, ctx, args) {
+	options = options || {};
+	args = args || [];
+	var times = options.times || 1;
+	var ratio = options.ratio;
+	return (function retry(attempts) {
+		return inputFn.apply(ctx, args).then(null, function() {
+			var delay, output = $.Deferred();
+			var next = function() {
+				retry(attempts + 1)
+					.then(output.resolve, output.reject);
+			};
+			if (times &gt; attempts) {
+				if (typeof ratio !== &quot;undefined&quot;) {
+					// simple exponential backoff algorithm
+					delay = ratio * Echo.Utils.random(0, Math.pow(2, attempts));
+					setTimeout(next, delay * 1000);
+				} else {
+					next();
+				}
+			} else {
+				output.reject(arguments);
+			}
+			return output;
+		});
+	})(0);
 };
 
 // JS SDK can&#39;t guarantee proper UI elements rendering in quirks mode

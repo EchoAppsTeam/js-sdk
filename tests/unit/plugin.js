@@ -1,7 +1,7 @@
 (function(jQuery) {
-var $ = jQuery;
-
 "use strict";
+
+var $ = jQuery;
 
 Echo.Tests.Dependencies = Echo.Tests.Dependencies || {};
 Echo.Tests.Dependencies.Plugin = {};
@@ -55,7 +55,6 @@ suite.prototype.tests.PublicInterfaceTests = {
 		"testTimeout": 20000 // 20 secs
 	},
 	"check": function() {
-		var self = this;
 		var manifest = {
 			"name": "MyTestPlugin",
 			"component": {
@@ -134,7 +133,6 @@ suite.prototype.tests.PublicInterfaceTests = {
 suite.prototype.cases = {};
 
 suite.prototype.cases.basicOperations = function(callback) {
-	var test = this;
 	var check = function() {
 		var control = this;
 		var plugin = control.getPlugin(suite.getTestPluginName());
@@ -148,7 +146,7 @@ suite.prototype.cases.basicOperations = function(callback) {
 			"Checking if we have \"labels\" interface available");
 
 		// checking if we have component reference
-		QUnit.ok(plugin.component && plugin.component.name == control.name,
+		QUnit.equal(plugin.component && plugin.component.name, control.name,
 			"Checking if we have valid \"component\" reference");
 
 		// checking if all functions defined in "methods" namespace are available
@@ -158,7 +156,6 @@ suite.prototype.cases.basicOperations = function(callback) {
 			"Checking if private methods are available and executable");
 
 		// checking "get" operation
-		var data = suite.data.config.data;
 		QUnit.equal(plugin.get("non-existing-key"), undefined,
 			"Trying to fetch the value using non-existing key via \"get\" function");
 		QUnit.equal(plugin.get("non-existing-key", "default"), "default",
@@ -229,7 +226,7 @@ suite.prototype.cases.basicOperations = function(callback) {
 			QUnit.ok(true, "Checking if no exceptions were thrown while executing the \"log\" function with valid and invalid params");
 		} catch(e) {
 			QUnit.ok(e, "Execution of the \"log\" function caused exception.");
-		};
+		}
 
 		// checking "invoke" method
 		var cases = [
@@ -237,8 +234,8 @@ suite.prototype.cases.basicOperations = function(callback) {
 			[function() { return this.cssClass; },
 				"echo-streamserver-controls-mytestcontrol-plugin-MyTestPlugin"],
 			[function() { return this.fakeKey; }, undefined],
-			[function() { return this.get("data.key1")}, "key1 value"],
-			[function() { return this.get("name")}, "MyTestPlugin"]
+			[function() { return this.get("data.key1"); }, "key1 value"],
+			[function() { return this.get("name"); }, "MyTestPlugin"]
 		];
 		$.each(cases, function(id, _case) {
 			QUnit.strictEqual(
@@ -312,7 +309,7 @@ suite.prototype.cases.enabledConfigParamCheck = function(callback) {
 	};
 	var checker = function(label, active, cb) {
 		return function(_callback) {
-			QUnit.ok(!!this.getPlugin("MyTestPlugin") == active, label);
+			QUnit.strictEqual(!!this.getPlugin("MyTestPlugin"), active, label);
 			this.destroy();
 			cb();
 		};
@@ -381,7 +378,7 @@ suite.prototype.cases.configInterfaceCheck = function(callback) {
 				"Checking if the value was wiped out of config");
 
 			var nested = this.config.assemble();
-			QUnit.ok(nested.plugins[0].name == "MyNestedPlugin",
+			QUnit.equal(nested.plugins[0].name, "MyNestedPlugin",
 				"Checking if the \"nestedPlugins\" were copied over to \"plugins\" section in the \"assemble\" function call result");
 			QUnit.ok(!!nested.parent,
 				"Checking if we have parent config in the \"assemble\" function call result");
@@ -444,14 +441,14 @@ suite.prototype.cases.pluginRenderingMechanism = function(callback) {
 			"Checking if initially empty element became non-empty after applying renderer");
 
 		// checking extendRenderer & parentRenderer functions
-		QUnit.ok(this.view.get("testComponentRenderer").children().length == 2,
+		QUnit.equal(this.view.get("testComponentRenderer").children().length, 2,
 			"Checking multiple extension of the same renderer, checking if \"parentRenderer\" function is called");
 
 		// checking extendTemplate function
 		var actions = ["insertAsLastChild", "insertBefore", "insertAfter", "insertAsFirstChild", "replace"];
 		$.map(actions, function(action) {
 			var element = self.view.get("ext_" + action);
-			QUnit.ok(element.html() == action,
+			QUnit.equal(element.html(), action,
 				"Checking \"" + action + "\" extendTemplate method");
 		});
 		QUnit.ok(!self.view.get("plugin_templateRemoveCheck"),
@@ -540,7 +537,7 @@ suite.prototype.cases.eventsMechanism = function(callback) {
 		// we expect that the "internal.Echo.Control.onDataInvalidate" is fired
 		plugin.requestDataRefresh();
 
-		QUnit.ok(count == 9,
+		QUnit.equal(count, 9,
 			"Checking if expected amount of events were executed and handled");
 
 		var e = plugin.events;

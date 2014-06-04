@@ -26,7 +26,7 @@ Application might need some module functionality during its initialization or wh
 
 ## Specifying dependencies for an App
 
-While developing an application (see the [“how to guide”](#!/guide/how_to_develop_app)) you may specify some modules the application is dependent on during its initialization. Here is the example how to do it:
+While developing an application (see the ["how to guide"](#!/guide/how_to_develop_app)) you may specify some modules the application is dependent on during its initialization. Here is the example how to do it:
 
 	Comments.dependencies = [{
 		"loaded": function() {
@@ -52,8 +52,8 @@ Imagine we develop the application dealing with user social activity. User shoul
 	SomeApp.renderers.shareButton = function(element) {
 		element.click(function() {
 			Echo.Loader.download([{
-				“url”: “url_to_share_janrain_script”,
-				“loaded”: function() {
+				"url": "url_to_share_janrain_script",
+				"loaded": function() {
 					return !!SomeJanrainModule;
 				}
 			}], function() {

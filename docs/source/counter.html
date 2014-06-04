@@ -26,14 +26,14 @@ var $ = jQuery;
  * &lt;a href=&quot;http://echoplatform.com/streamserver/docs/rest-api/other-api/count/&quot; target=&quot;_blank&quot;&gt;Echo Count API&lt;/a&gt;
  * and provides a simple live updating number.
  *
- * 	new Echo.StreamServer.Controls.Counter({
- * 		&quot;target&quot;: document.getElementById(&quot;echo-counter&quot;),
- * 		&quot;appkey&quot;: &quot;echo.jssdk.demo.aboutecho.com&quot;,
- * 		&quot;query&quot; : &quot;childrenof:http://example.com/test/*&quot;
- * 	});
+ *		new Echo.StreamServer.Controls.Counter({
+ *			&quot;target&quot;: document.getElementById(&quot;echo-counter&quot;),
+ *			&quot;appkey&quot;: &quot;echo.jssdk.demo.aboutecho.com&quot;,
+ *			&quot;query&quot; : &quot;childrenof:http://example.com/test/*&quot;
+ *		});
  *
  * More information regarding the possible ways of the Control initialization
- * can be found in the [“How to initialize Echo components”](#!/guide/how_to_initialize_components-section-initializing-an-app) guide.
+ * can be found in the [&quot;How to initialize Echo components&quot;](#!/guide/how_to_initialize_components-section-initializing-an-app) guide.
  *
  * @extends Echo.Control
  *
@@ -124,11 +124,11 @@ counter.config = {
 	 * &lt;a href=&quot;http://echoplatform.com/streamserver/docs/rest-api/items-api/search/&quot; target=&quot;_blank&quot;&gt;&quot;search&quot; API&lt;/a&gt;
 	 * method specification.
 	 *
-	 * 	new Echo.StreamServer.Controls.Counter({
-	 * 		&quot;target&quot;: document.getElementById(&quot;echo-counter&quot;),
-	 * 		&quot;appkey&quot;: &quot;echo.jssdk.demo.aboutecho.com&quot;,
-	 * 		&quot;query&quot; : &quot;childrenof:http://example.com/test/*&quot;
-	 * 	});
+	 *		new Echo.StreamServer.Controls.Counter({
+	 *			&quot;target&quot;: document.getElementById(&quot;echo-counter&quot;),
+	 *			&quot;appkey&quot;: &quot;echo.jssdk.demo.aboutecho.com&quot;,
+	 *			&quot;query&quot; : &quot;childrenof:http://example.com/test/*&quot;
+	 *		});
 	 */
 <span id='Echo-StreamServer-Controls-Counter-cfg-data'>	/**
 </span>	 * @cfg {Object} data
@@ -137,11 +137,11 @@ counter.config = {
 	 * More information about the data format can be found
 	 * &lt;a href=&quot;http://echoplatform.com/streamserver/docs/rest-api/other-api/count/#sect7&quot; target=&quot;_blank&quot;&gt;here&lt;/a&gt;.
 	 *
-	 * 	new Echo.Counter({
-	 * 		...
-	 * 		&quot;data&quot;: {&quot;count&quot;: 100},
-	 * 		...
-	 * 	});
+	 *		new Echo.StreamServer.Controls.Counter({
+	 *			...
+	 *			&quot;data&quot;: {&quot;count&quot;: 100},
+	 *			...
+	 *		});
 	 */
 	&quot;data&quot;: undefined,
 
@@ -194,7 +194,7 @@ counter.methods._getRequestObject = function(overrides) {
 };
 
 counter.methods._maybeUpdate = function(data) {
-	if ($.isEmptyObject(this.data) || this.data.count != data.count) {
+	if ($.isEmptyObject(this.data) || this.data.count !== data.count) {
 <span id='Echo-StreamServer-Controls-Counter-echo_event-onUpdate'>		/**
 </span>		 * @echo_event Echo.StreamServer.Controls.Counter.onUpdate
 		 * Triggered when new value is received.

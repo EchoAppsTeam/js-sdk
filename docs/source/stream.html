@@ -26,14 +26,14 @@ var $ = jQuery;
  * &lt;a href=&quot;http://echoplatform.com/streamserver/docs/rest-api/items-api/search/&quot; target=&quot;_blank&quot;&gt;Echo Search API&lt;/a&gt;
  * and displays live updating search results in a standard ‘news feed’ style format.
  *
- * 	var stream = new Echo.StreamServer.Controls.Stream({
- * 		&quot;target&quot;: document.getElementById(&quot;stream&quot;),
- * 		&quot;query&quot;: &quot;childrenof:http://example.com/js-sdk&quot;,
- * 		&quot;appkey&quot;: &quot;echo.jssdk.demo.aboutecho.com&quot;
- * 	});
+ *		var stream = new Echo.StreamServer.Controls.Stream({
+ *			&quot;target&quot;: document.getElementById(&quot;stream&quot;),
+ *			&quot;query&quot;: &quot;childrenof:http://example.com/js-sdk&quot;,
+ *			&quot;appkey&quot;: &quot;echo.jssdk.demo.aboutecho.com&quot;
+ *		});
  *
  * More information regarding the possible ways of the Control initialization
- * can be found in the [“How to initialize Echo components”](#!/guide/how_to_initialize_components-section-initializing-an-app) guide.
+ * can be found in the [&quot;How to initialize Echo components&quot;](#!/guide/how_to_initialize_components-section-initializing-an-app) guide.
  *
  * @extends Echo.Control
  *
@@ -160,11 +160,11 @@ stream.config = {
 	 * &lt;a href=&quot;http://echoplatform.com/streamserver/docs/rest-api/items-api/search/&quot; target=&quot;_blank&quot;&gt;&quot;search&quot; API&lt;/a&gt;
 	 * method specification.
 	 *
-	 * 	new Echo.StreamServer.Controls.Stream({
-	 * 		&quot;target&quot;: document.getElementById(&quot;echo-stream&quot;),
-	 * 		&quot;appkey&quot;: &quot;echo.jssdk.demo.aboutecho.com&quot;,
-	 * 		&quot;query&quot; : &quot;childrenof:http://example.com/test/*&quot;
-	 * 	});
+	 *		new Echo.StreamServer.Controls.Stream({
+	 *			&quot;target&quot;: document.getElementById(&quot;echo-stream&quot;),
+	 *			&quot;appkey&quot;: &quot;echo.jssdk.demo.aboutecho.com&quot;,
+	 *			&quot;query&quot; : &quot;childrenof:http://example.com/test/*&quot;
+	 *		});
 	 */
 	&quot;query&quot;: &quot;&quot;,
 
@@ -238,16 +238,16 @@ stream.config = {
 	 * &quot;More&quot; button) are sorted only for that page and not for the whole list
 	 * of items.
 	 *
-	 * 	// sorting items in the content lexicographical order
-	 * 	var stream = new Echo.StreamServer.Controls.Stream({
-	 * 		...
-	 * 		&quot;itemsComparator&quot;: function(listedItem, newItem, sort) {
-	 * 			return listedItem.get(&quot;data.object.content&quot;) &gt; newItem.get(&quot;data.object.content&quot;)
-	 * 				? 1;
-	 * 				: -1;
-	 * 		},
-	 * 		...
-	 * 	});
+	 *		// sorting items in the content lexicographical order
+	 *		var stream = new Echo.StreamServer.Controls.Stream({
+	 *			...
+	 *			&quot;itemsComparator&quot;: function(listedItem, newItem, sort) {
+	 *				return listedItem.get(&quot;data.object.content&quot;) &gt; newItem.get(&quot;data.object.content&quot;)
+	 *					? 1;
+	 *					: -1;
+	 *			},
+	 *			...
+	 *		});
 	 *
 	 * @cfg {Echo.StreamServer.Controls.Stream.Item} itemsComparator.listedItem
 	 * Item from the list which is compared with new item.
@@ -539,7 +539,7 @@ stream.templates.main =
 </span> * @echo_renderer
  */
 stream.renderers.body = function(element) {
-	var self = this, request = this.lastRequest;
+	var request = this.lastRequest;
 	if (!request) {
 		return element;
 	}
@@ -768,7 +768,6 @@ stream.methods._requestChildrenItems = function(unique) {
 			}));
 		},
 		&quot;onData&quot;: function(data) {
-			var items = {};
 			item.set(&quot;data.nextPageAfter&quot;, data.nextPageAfter);
 			item.set(&quot;data.hasMoreChildren&quot;, data.hasMoreChildren);
 			data.entries = self._actualizeChildrenList(item, data.entries);
@@ -1044,15 +1043,15 @@ stream.methods._extractTimeframeConfig = function(data) {
 	var getComparator = function(value) {
 		var match = value.match(/^(&lt;|&gt;)(.*)$/);
 		var operation = match[1];
-		var value = match[2].match(/^&#39;([0-9]+) seconds ago&#39;$/);
+		value = match[2].match(/^&#39;([0-9]+) seconds ago&#39;$/);
 		var getTS = value
 			? function() { return Math.floor((new Date()).getTime() / 1000) - value[1]; }
 			: function() { return match[2]; };
 		if (operation === &#39;&lt;&#39;) {
-			return function(ts) { return ts &lt; getTS(); }
+			return function(ts) { return ts &lt; getTS(); };
 		}
 		if (operation === &#39;&gt;&#39;) {
-			return function(ts) { return ts &gt; getTS(); }
+			return function(ts) { return ts &gt; getTS(); };
 		}
 	};
 	var timeframe = Echo.Utils.foldl([], [&quot;before&quot;, &quot;after&quot;], function(key, acc) {
@@ -1100,7 +1099,7 @@ stream.methods._appendRootItems = function(items, container) {
 stream.methods._constructChildrenSearchQuery = function(item) {
 	// depth for item children request
 	var depth = this.config.get(&quot;children.maxDepth&quot;) - item.get(&quot;depth&quot;) - 1;
-	var additionalItems = parseInt(this.config.get(&quot;children.additionalItemsPerPage&quot;));
+	var additionalItems = +this.config.get(&quot;children.additionalItemsPerPage&quot;);
 	var pageAfter = item.getNextPageAfter();
 	var filter = this.config.get(&quot;children.filter&quot;);
 	var filterQuery = !filter || filter === &quot;()&quot; ? &quot;&quot; : filter + &quot; &quot;;
@@ -1108,7 +1107,7 @@ stream.methods._constructChildrenSearchQuery = function(item) {
 		&quot;childrenof&quot;: item.get(&quot;data.object.id&quot;),
 		&quot;children&quot;: depth,
 		&quot;childrenItemsPerPage&quot;: depth
-			? parseInt(this.config.get(&quot;children.itemsPerPage&quot;))
+			? +this.config.get(&quot;children.itemsPerPage&quot;)
 			: 0,
 		&quot;itemsPerPage&quot;: additionalItems,
 		&quot;sortOrder&quot;: this.config.get(&quot;children.sortOrder&quot;),
@@ -1119,12 +1118,12 @@ stream.methods._constructChildrenSearchQuery = function(item) {
 		return acc += (typeof value !== &quot;undefined&quot;
 			? predicate + &quot;:&quot; + value + &quot; &quot;
 			: &quot;&quot;
-		); 
+		);
 	}) + filterQuery;
 };
 
 stream.methods._handleInitialResponse = function(data, visualizer) {
-	var self = this, items = {}, roots = [];
+	var self = this, roots = [];
 	this.config.get(&quot;target&quot;).show();
 	this.nextSince = data.nextSince || 0;
 	this.nextPageAfter = data.nextPageAfter;
@@ -1284,7 +1283,7 @@ stream.methods._spotUpdates.add = function(item, options) {
 	// if we are trying to add an item which already exists,
 	// we should change the operation to &quot;replace&quot;
 	var _item = this.items[item.get(&quot;data.unique&quot;)];
-	if (_item &amp;&amp; _item.view.rendered() &amp;&amp; options.priority != &quot;high&quot;) {
+	if (_item &amp;&amp; _item.view.rendered() &amp;&amp; options.priority !== &quot;high&quot;) {
 		this._applySpotUpdates(&quot;replace&quot;, item, {&quot;priority&quot;: &quot;highest&quot;});
 
 		return;
@@ -1320,7 +1319,7 @@ stream.methods._spotUpdates.replace = function(item, options) {
 		var container = $.extend([], items);
 		container.splice(oldIdx, 1);
 		var newIdx = this._getItemProjectedIndex(item, container, sort);
-		if (oldIdx != newIdx) {
+		if (oldIdx !== newIdx) {
 			this._applySpotUpdates(&quot;remove&quot;, item, {
 				&quot;keepChildren&quot;: true,
 				&quot;priority&quot;: &quot;high&quot;
@@ -1627,7 +1626,7 @@ stream.methods._placeChildItems = function(parent, children) {
 		: parent.view.get(&quot;children&quot;);
 	var action = targetItemIdx &gt;= 0
 		? &quot;insertAfter&quot;
-		: this.config.get(&quot;children.sortOrder&quot;) != &quot;chronological&quot; 
+		: this.config.get(&quot;children.sortOrder&quot;) !== &quot;chronological&quot;
 			? &quot;prependTo&quot;
 			: &quot;appendTo&quot;;
 	itemsWrapper[action]($(targetItemDom));
@@ -1641,7 +1640,7 @@ stream.methods._placeChildItems = function(parent, children) {
 			&quot;height&quot;: &quot;show&quot;,
 			&quot;marginTop&quot;: &quot;show&quot;,
 			&quot;marginBottom&quot;: &quot;show&quot;,
-			&quot;paddingTop&quot;: &quot;show&quot;, 
+			&quot;paddingTop&quot;: &quot;show&quot;,
 			&quot;paddingBottom&quot;: &quot;show&quot;
 		}, {
 			&quot;duration&quot;: this.config.get(&quot;children.itemsSlideTimeout&quot;),
@@ -1693,7 +1692,9 @@ stream.methods._initItem = function(entry, isLive, callback) {
 	config.parent = this.itemParentConfig;
 	config.data = this._normalizeEntry(entry);
 
-	var init = function() { new Echo.StreamServer.Controls.Stream.Item(config); };
+	var init = function() {
+		new Echo.StreamServer.Controls.Stream.Item(config);
+	};
 	this.config.get(&quot;asyncItemsRendering&quot;) ? setTimeout(init, 0) : init();
 };
 
@@ -1741,13 +1742,14 @@ stream.methods._addItemToList = function(items, item, sort) {
 
 stream.methods._applyStructureUpdates = function(action, item, options) {
 	var self = this;
+	var parent;
 	options = options || {};
 	switch (action) {
 		case &quot;add&quot;:
 			// adding item into the list
 			this.items[item.get(&quot;data.unique&quot;)] = item;
 			if (!item.isRoot()) {
-				var parent = this._getParentItem(item);
+				parent = this._getParentItem(item);
 
 				// avoiding problem with missing parent
 				if (!parent) {
@@ -1772,7 +1774,7 @@ stream.methods._applyStructureUpdates = function(action, item, options) {
 				? this.threads
 				: this.items[item.get(&quot;data.parentUnique&quot;)].get(&quot;children&quot;);
 			if (!item.isRoot() &amp;&amp; container.length === 1) {
-				var parent = this._getParentItem(item);
+				parent = this._getParentItem(item);
 				if (parent) parent.set(&quot;threading&quot;, false);
 			}
 			container.splice(this._getItemListIndex(item, container), 1);
@@ -2210,7 +2212,7 @@ item.methods.template = function() {
 		? this.templates.childrenTop
 		: this.templates.childrenBottom
 	) +
-	this.templates.mainFooter
+	this.templates.mainFooter;
 };
 
 <span id='Echo-StreamServer-Controls-Stream-Item-echo_renderer-authorName'>/**
@@ -2341,7 +2343,7 @@ item.renderers.wrapper = function(element) {
 </span> * @echo_renderer
  */
 item.renderers.avatar = function(element) {
-	this.placeImage({ 
+	this.placeImage({
 		&quot;container&quot;: element,
 		&quot;image&quot;: this.get(&quot;data.actor.avatar&quot;),
 		&quot;defaultImage&quot;: this.config.get(&quot;defaultAvatar&quot;)
@@ -2682,11 +2684,13 @@ item.renderers._extraField = function(element, extra) {
 item.renderers._button = function(element, extra) {
 	var template = extra.template ||
 		&#39;&lt;a class=&quot;{class:button} {class:button}-{data:name}&quot;&gt;{data:label}&lt;/a&gt;&#39;;
-	var data = {
-		&quot;label&quot;: extra.label || &quot;&quot;,
-		&quot;name&quot;: extra.name
-	};
-	var button = $(this.substitute({&quot;template&quot;: template, &quot;data&quot;: data}));
+	var button = $(this.substitute({
+		&quot;template&quot;: template,
+		&quot;data&quot;: {
+			&quot;label&quot;: extra.label || &quot;&quot;,
+			&quot;name&quot;: extra.name
+		}
+	}));
 	if (!extra.clickable) return element.append(button);
 
 	var clickables = $(&quot;.echo-clickable&quot;, button);
@@ -2710,7 +2714,7 @@ item.renderers._button = function(element, extra) {
 };
 
 item.renderers._buttonsDelimiter = function(element) {
-	return element.append(&#39;&lt;span class=&quot;&#39; + this.cssPrefix + &#39;button-delim&quot;&gt; \u00b7 &lt;/span&gt;&#39;);
+	return element.append(&#39;&lt;span class=&quot;&#39; + this.cssPrefix + &#39;button-delim&quot;&gt; &amp;middot; &lt;/span&gt;&#39;);
 };
 
 item.renderers._viaText = function(element, extra) {
@@ -2804,8 +2808,8 @@ item.methods.block = function(label) {
 			&quot;template&quot;: &#39;&lt;div class=&quot;{class:blocker-message}&quot;&gt;{data:label}&lt;/div&gt;&#39;,
 			&quot;data&quot;: {&quot;label&quot;: label}
 		})).css({
-			&quot;left&quot;: ((parseInt(width) - 200)/2) + &#39;px&#39;,
-			&quot;top&quot;: ((parseInt(height) - 20)/2) + &#39;px&#39;
+			&quot;left&quot;: ((parseInt(width) - 200) / 2) + &quot;px&quot;,
+			&quot;top&quot;: ((parseInt(height) - 20) / 2) + &quot;px&quot;
 		})
 	};
 	content.addClass(&quot;echo-relative&quot;)
@@ -2995,7 +2999,7 @@ item.methods._sortButtons = function() {
 	// if buttons order is not specified in application config, use default order
 	if (!requiredOrder) {
 		this.config.set(&quot;buttonsOrder&quot;, defaultOrder);
-	} else if (requiredOrder != defaultOrder) {
+	} else if (requiredOrder !== defaultOrder) {
 		var push = function(name, acc, pos) {
 			if (!self.get(&quot;buttons.&quot; + name)) return;
 			acc.push(name);
@@ -3008,7 +3012,7 @@ item.methods._sortButtons = function() {
 			if (/^(.*)\./.test(name)) {
 				push(name, acc);
 			} else {
-				var re = new RegExp(&quot;^&quot; + name + &quot;\.&quot;);
+				var re = new RegExp(&quot;^&quot; + name + &quot;\\.&quot;);
 				$.map(defaultOrder, function(n, i) {
 					if (n &amp;&amp; n.match(re)) {
 						push(n, acc, i);
@@ -3119,7 +3123,7 @@ item.methods._sortButtons = function() {
 
 	var _autoLinking = function(text, extra) {
 		extra.textBeforeAutoLinking = text;
-		var self = this, url;
+		var url;
 		if (extra.source &amp;&amp; extra.source !== &quot;jskit&quot; &amp;&amp; extra.source !== &quot;echo&quot;) {
 			url = this.depth
 				? this.get(&quot;data.target.id&quot;)
@@ -3143,7 +3147,6 @@ item.methods._sortButtons = function() {
 	};
 
 	var _replaceSmileys = function(text, extra) {
-		var self = this;
 		if (extra.contentTransformations.smileys) {
 			if (text !== extra.textBeforeAutoLinking) {
 				var data = _meta2tags.call(this, text, extra);
@@ -3232,7 +3235,7 @@ item.css =
 	&#39;.{class:container-root-thread} .{class:childrenMarker} { display: block; }&#39; +
 	&#39;.{class:avatar} { width: 48px; height: 48px; }&#39; +
 	&#39;.{class:children} .{class:avatar}, .{class:childrenByCurrentActorLive} .{class:avatar} { width: 24px; height: 24px; }&#39; +
-	&#39;.{class:authorName} { float: left; font-size: 15px; font-family: Arial, sans-serif; font-weight: bold; }&#39; +
+	&#39;.{class:authorName} { float: left; font-size: 15px; font-weight: bold; }&#39; +
 	&#39;.{class:re} { font-weight: bold; }&#39; +
 	&#39;.{class:re} a:link, .{class:re} a:visited, .{class:re} a:active { text-decoration: none; }&#39; +
 	&#39;.{class:re} a:hover { text-decoration: underline; }&#39; +

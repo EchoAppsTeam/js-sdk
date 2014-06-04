@@ -1,4 +1,5 @@
 (function($) {
+"use strict";
 
 Echo.Tests.module("Echo.GUI.Modal", {
 	"meta": {
@@ -80,7 +81,7 @@ Echo.Tests.asyncTest("common workflow", function() {
 	modal.config.set("width", 500);
 	modal.refresh();
 
-	var modalElement = modal.element;
+	modalElement = modal.element;
 	QUnit.ok(modalElement.hasClass("upd-echo-hide"), "Check set() method (CSS class)");
 	QUnit.equal($(".modal-header h3", modalElement).html(), "upd-title", "Check set() method (title HTML)");
 	QUnit.equal($(".modal-body", modalElement).html(), "upd_body", "Check set() method (body HTML)");

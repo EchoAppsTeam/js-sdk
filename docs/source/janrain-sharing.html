@@ -25,14 +25,14 @@ var $ = jQuery;
  * Plugin provides the ability to load Janrain sharing dialog after
  * the item has been posted using the Echo Submit control.
  *
- * 	new Echo.StreamServer.Controls.Submit({
- * 		&quot;target&quot;: document.getElementById(&quot;echo-submit&quot;),
- * 		&quot;appkey&quot;: &quot;echo.jssdk.demo.aboutecho.com&quot;,
- * 		&quot;plugins&quot;: [{
- * 			&quot;name&quot;: &quot;JanrainSharing&quot;,
- * 			&quot;appId&quot;: &quot;echo&quot;
- * 		}]
- * 	});
+ *		new Echo.StreamServer.Controls.Submit({
+ *			&quot;target&quot;: document.getElementById(&quot;echo-submit&quot;),
+ *			&quot;appkey&quot;: &quot;echo.jssdk.demo.aboutecho.com&quot;,
+ *			&quot;plugins&quot;: [{
+ *				&quot;name&quot;: &quot;JanrainSharing&quot;,
+ *				&quot;appId&quot;: &quot;echo&quot;
+ *			}]
+ *		});
  *
  * The plugin implementation employs the
  * &lt;a href=&quot;http://developers.janrain.com/documentation/widgets/social-sharing-widget/users-guide/hosting-multiple-widgets/&quot; target=&quot;_blank&quot;&gt;Janrain recommendation&lt;/a&gt;
@@ -85,14 +85,14 @@ plugin.config = {
 	 * Full list of available options can be found in the
 	 * &lt;a href=&quot;http://developers.janrain.com/documentation/widgets/social-sharing-widget/sharing-widget-js-api/settings/&quot; target=&quot;_blank&quot;&gt;Sharing widget documentation&lt;/a&gt;
 	 *
-	 * Example:
-	 * 	{
-	 * 		&quot;shortenUrl&quot;: true
-	 * 		&quot;title&quot;: &quot;Some page title&quot;,
-	 * 		&quot;description&quot;: &quot;Some page description&quot;,
-	 * 		&quot;image&quot;: &quot;http://example.com/image.png&quot;
-	 * 		// ...
-	 * 	}
+	 *		Example:
+	 *		{
+	 *			&quot;shortenUrl&quot;: true
+	 *			&quot;title&quot;: &quot;Some page title&quot;,
+	 *			&quot;description&quot;: &quot;Some page description&quot;,
+	 *			&quot;image&quot;: &quot;http://example.com/image.png&quot;
+	 *			// ...
+	 *		}
 	 */
 	&quot;sharingWidgetConfig&quot;: {},
 
@@ -289,6 +289,7 @@ plugin.methods._isLegacy = function() {
 	return this.config.get(&quot;xdReceiver&quot;);
 };
 
+/* global RPXNOW: false */
 plugin.methods._shareLegacy = function(args) {
 	var plugin = this;
 	Echo.Loader.download([{
@@ -391,21 +392,19 @@ Echo.Plugin.create(plugin);
 (function(jQuery) {
 &quot;use strict&quot;;
 
-var $ = jQuery;
-
 <span id='Echo-StreamServer-Controls-Stream-Item-Plugins-JanrainSharing'>/**
 </span> * @class Echo.StreamServer.Controls.Stream.Item.Plugins.JanrainSharing
  * Plugin provides the ability to load JanRain sharing dialog clicking
  * the &quot;Share&quot; button in the item.
  *
- * 	new Echo.StreamServer.Controls.Stream({
- * 		&quot;target&quot;: document.getElementById(&quot;echo-stream&quot;),
- * 		&quot;appkey&quot;: &quot;echo.jssdk.demo.aboutecho.com&quot;,
- * 		&quot;plugins&quot;: [{
- * 			&quot;name&quot;: &quot;JanrainSharing&quot;,
- * 			&quot;appId&quot;: &quot;echo&quot;
- * 		}]
- * 	});
+ *		new Echo.StreamServer.Controls.Stream({
+ *			&quot;target&quot;: document.getElementById(&quot;echo-stream&quot;),
+ *			&quot;appkey&quot;: &quot;echo.jssdk.demo.aboutecho.com&quot;,
+ *			&quot;plugins&quot;: [{
+ *				&quot;name&quot;: &quot;JanrainSharing&quot;,
+ *				&quot;appId&quot;: &quot;echo&quot;
+ *			}]
+ *		});
  *
  * The plugin implementation employs the
  * &lt;a href=&quot;http://developers.janrain.com/documentation/widgets/social-sharing-widget/users-guide/hosting-multiple-widgets/&quot; target=&quot;_blank&quot;&gt;Janrain recommendation&lt;/a&gt;
@@ -447,14 +446,14 @@ plugin.config = {
 	 * Full list of available options can be found in the
 	 * &lt;a href=&quot;http://developers.janrain.com/documentation/widgets/social-sharing-widget/sharing-widget-js-api/settings/&quot; target=&quot;_blank&quot;&gt;Sharing widget documentation&lt;/a&gt;
 	 *
-	 * Example:
-	 * 	{
-	 * 		&quot;shortenUrl&quot;: true,
-	 * 		&quot;title&quot;: &quot;Some page title&quot;,
-	 * 		&quot;description&quot;: &quot;Some page description&quot;,
-	 * 		&quot;image&quot;: &quot;http://example.com/image.png&quot;
-	 * 		// ...
-	 * 	}
+	 *		Example:
+	 *		{
+	 *			&quot;shortenUrl&quot;: true,
+	 *			&quot;title&quot;: &quot;Some page title&quot;,
+	 *			&quot;description&quot;: &quot;Some page description&quot;,
+	 *			&quot;image&quot;: &quot;http://example.com/image.png&quot;
+	 *			// ...
+	 *		}
 	 */
 	&quot;sharingWidgetConfig&quot;: {}
 };
@@ -501,7 +500,6 @@ plugin.methods._assembleButton = function() {
 		plugin._share(plugin._prepareData(item.get(&quot;data&quot;)));
 	};
 	return function() {
-		var item = this;
 		return {
 			&quot;name&quot;: &quot;Share&quot;,
 			&quot;label&quot;: plugin.labels.get(&quot;shareButton&quot;),

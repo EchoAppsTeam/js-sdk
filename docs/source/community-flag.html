@@ -39,7 +39,7 @@ var $ = jQuery;
  * 	});
  *
  * More information regarding the plugins installation can be found
- * in the [“How to initialize Echo components”](#!/guide/how_to_initialize_components-section-initializing-plugins) guide.
+ * in the [&quot;How to initialize Echo components&quot;](#!/guide/how_to_initialize_components-section-initializing-plugins) guide.
  *
  * @extends Echo.Plugin
  *
@@ -130,7 +130,7 @@ plugin.renderers.flaggedBy = function(element) {
 };
 
 plugin.methods._assembleButton = function(name) {
-	var plugin = this, item = this.component;
+	var plugin = this;
 	var callback = function() {
 		var item = this;
 		item.get(&quot;buttons.&quot; + plugin.name + &quot;.&quot; + name + &quot;.element&quot;)

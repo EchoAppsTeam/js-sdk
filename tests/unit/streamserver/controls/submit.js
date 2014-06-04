@@ -1,4 +1,5 @@
 (function($) {
+"use strict";
 
 var data = {
 	"instance": {
@@ -205,7 +206,6 @@ suite.prototype.cases.validator = function(callback) {
 	var button = submit.view.get("postButton");
 	button.off('click', suite.postHandler);
 	var content = submit.view.get("content");
-	var text = submit.view.get("text").val("Content");
 	suite.postHandler = function() {
 		QUnit.ok(content.hasClass('echo-streamserver-controls-submit-mandatory'),
 			"Checking custom validator");
@@ -255,10 +255,8 @@ suite.prototype.cases.user = function(callback) {
 };
 
 suite.prototype.cases.onInit = function(callback) {
-	var submit = suite.submit;
-	var button = submit.view.get("postButton");
-	var text = submit.view.get("text").val("UserContent");
-	submit.events.subscribe({
+	suite.submit.view.get("text").val("UserContent");
+	suite.submit.events.subscribe({
 		"topic": "Echo.StreamServer.Controls.Submit.onPostInit",
 		"once": true,
 		"handler": function(topic, params) {
@@ -282,19 +280,17 @@ suite.prototype.cases.onInit = function(callback) {
 			QUnit.deepEqual(activity, data, "Checking post data in onPostInit handler");
 		}
 	});
-	submit.events.subscribe({
+	suite.submit.events.subscribe({
 		"topic": "Echo.StreamServer.Controls.Submit.onPostComplete",
 		"once": true,
 		"handler": callback
 	});
-	submit.post();
+	suite.submit.post();
 };
 
 suite.prototype.cases.onComplete = function(callback) {
-	var submit = suite.submit;
-	var button = submit.view.get("postButton");
-	var text = submit.view.get("text").val("UserContent");
-	submit.events.subscribe({
+	suite.submit.view.get("text").val("UserContent");
+	suite.submit.events.subscribe({
 		"topic": "Echo.StreamServer.Controls.Submit.onPostInit",
 		"once": true,
 		"handler": function(topic, params) {
@@ -302,7 +298,7 @@ suite.prototype.cases.onComplete = function(callback) {
 			params.postData.content[0].object.content = "OverridingContent";
 		}
 	});
-	submit.events.subscribe({
+	suite.submit.events.subscribe({
 		"topic": "Echo.StreamServer.Controls.Submit.onPostComplete",
 		"once": true,
 		"handler": function(topic, params) {
@@ -314,13 +310,12 @@ suite.prototype.cases.onComplete = function(callback) {
 			callback();
 		}
 	});
-	submit.post();
+	suite.submit.post();
 };
 
 suite.prototype.cases.onError = function(callback) {
-	var submit = suite.submit;
-	var text = submit.view.get("text").val("UserContent");
-	submit.events.subscribe({
+	suite.submit.view.get("text").val("UserContent");
+	suite.submit.events.subscribe({
 		"topic": "Echo.StreamServer.Controls.Submit.onPostInit",
 		"once": true,
 		"handler": function(topic, params) {
@@ -329,10 +324,10 @@ suite.prototype.cases.onError = function(callback) {
 		}
 	});
 	// unsubscribe all onPostError handlers to hide error message
-	submit.events.unsubscribe({
+	suite.submit.events.unsubscribe({
 		"topic": "Echo.StreamServer.Controls.Submit.onPostError"
 	});
-	submit.events.subscribe({
+	suite.submit.events.subscribe({
 		"topic": "Echo.StreamServer.Controls.Submit.onPostError",
 		"once": true,
 		"handler": function(topic, params) {
@@ -348,7 +343,7 @@ suite.prototype.cases.onError = function(callback) {
 			callback();
 		}
 	});
-	submit.post();
+	suite.submit.post();
 };
 
 suite.prototype.cases.destroy = function(callback) {

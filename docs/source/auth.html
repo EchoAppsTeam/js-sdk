@@ -24,24 +24,24 @@ var $ = jQuery;
 </span></span> * @class Echo.IdentityServer.Controls.Auth
  * Echo Auth control displays the user login status and allows them to sign in using different social identities.
  *
- * 	var identityManager = {
- * 		&quot;title&quot;: &quot;Title of the auth area&quot;
- * 		&quot;width&quot;: 400,
- * 		&quot;height&quot;: 240,
- * 		&quot;url&quot;: &quot;http://example.com/auth&quot;
- * 	};
+ *		var identityManager = {
+ *			&quot;title&quot;: &quot;Title of the auth area&quot;
+ *			&quot;width&quot;: 400,
+ *			&quot;height&quot;: 240,
+ *			&quot;url&quot;: &quot;http://example.com/auth&quot;
+ *		};
  *
- * 	new Echo.IdentityServer.Controls.Auth({
- * 		&quot;target&quot;: document.getElementById(&quot;echo-auth&quot;),
- * 		&quot;appkey&quot;: &quot;echo.jssdk.demo.aboutecho.com&quot;,
- * 		&quot;identityManager&quot;: {
- * 			&quot;login&quot;: identityManager,
- * 			&quot;signup&quot;: identityManager
- * 		}
- * 	});
+ *		new Echo.IdentityServer.Controls.Auth({
+ *			&quot;target&quot;: document.getElementById(&quot;echo-auth&quot;),
+ *			&quot;appkey&quot;: &quot;echo.jssdk.demo.aboutecho.com&quot;,
+ *			&quot;identityManager&quot;: {
+ *				&quot;login&quot;: identityManager,
+ *				&quot;signup&quot;: identityManager
+ *			}
+ *		});
  *
  * More information regarding the possible ways of the Control initialization
- * can be found in the [“How to initialize Echo components”](#!/guide/how_to_initialize_components-section-initializing-an-app) guide.
+ * can be found in the [&quot;How to initialize Echo components&quot;](#!/guide/how_to_initialize_components-section-initializing-an-app) guide.
  *
  * @extends Echo.Control
  *
@@ -121,21 +121,21 @@ auth.config = {
 	 * constructs the corresponding Backplane message (for login, signup or user
 	 * data update) and sends this message to Backplane server.
 	 *
-	 * 	var identityManager = {
-	 * 		&quot;title&quot;: &quot;Title of the auth area&quot;
-	 * 		&quot;width&quot;: 400,
-	 * 		&quot;height&quot;: 240,
-	 * 		&quot;url&quot;: &quot;http://example.com/auth&quot;
-	 * 	};
+	 *		var identityManager = {
+	 *			&quot;title&quot;: &quot;Title of the auth area&quot;
+	 *			&quot;width&quot;: 400,
+	 *			&quot;height&quot;: 240,
+	 *			&quot;url&quot;: &quot;http://example.com/auth&quot;
+	 *		};
 	 *
-	 * 	new Echo.IdentityServer.Controls.Auth({
-	 * 		&quot;target&quot;: document.getElementById(&quot;echo-auth&quot;),
-	 * 		&quot;appkey&quot;: &quot;echo.jssdk.demo.aboutecho.com&quot;,
-	 * 		&quot;identityManager&quot;: {
-	 * 			&quot;login&quot;: identityManager,
-	 * 			&quot;signup&quot;: identityManager
-	 * 		}
-	 * 	});
+	 *		new Echo.IdentityServer.Controls.Auth({
+	 *			&quot;target&quot;: document.getElementById(&quot;echo-auth&quot;),
+	 *			&quot;appkey&quot;: &quot;echo.jssdk.demo.aboutecho.com&quot;,
+	 *			&quot;identityManager&quot;: {
+	 *				&quot;login&quot;: identityManager,
+	 *				&quot;signup&quot;: identityManager
+	 *			}
+	 *		});
 	 *
 	 * @cfg {Object} [identityManager.login]
 	 * Encapsulates data for login workflow.
@@ -267,7 +267,7 @@ auth.templates.logged =
 <span id='Echo-IdentityServer-Controls-Auth-echo_renderer-logout'>/**
 </span> * @echo_renderer
  */
-auth.renderers.logout = function(element) { 
+auth.renderers.logout = function(element) {
 	var self = this;
 	return element.click(function() {
 		element.empty().append(self.labels.get(&quot;loggingOut&quot;));
@@ -312,7 +312,7 @@ auth.renderers.or = function(element) {
 </span> * @echo_renderer
  */
 auth.renderers.avatar = function(element) {
-	this.placeImage({ 
+	this.placeImage({
 		&quot;container&quot;: element,
 		&quot;image&quot;: this.user.get(&quot;avatar&quot;),
 		&quot;defaultImage&quot;: this.config.get(&quot;defaultAvatar&quot;)

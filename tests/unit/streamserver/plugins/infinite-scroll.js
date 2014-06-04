@@ -1,4 +1,5 @@
 (function($) {
+"use strict";
 
 var plugin = "Echo.StreamServer.Controls.Stream.Plugins.InfiniteScroll";
 
@@ -33,7 +34,6 @@ Echo.Tests.asyncTest("common workflow", function() {
 				"top": $(window).scrollTop() + 100,
 				"visibility": "hidden"
 			});
-			var plugin = this.getPlugin("InfiniteScroll");
 			var spy = sinon.spy(element, "click");
 			this.events.subscribe({
 				"topic": "Echo.StreamServer.Controls.Stream.onDataReceive",

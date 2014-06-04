@@ -16,6 +16,7 @@
 </head>
 <body onload="prettyPrint(); highlight();">
   <pre class="prettyprint lang-js">(function(jQuery) {
+&quot;use strict&quot;;
 
 var $ = jQuery;
 
@@ -141,6 +142,7 @@ Echo.GUI.Dropdown.prototype._assembleContainer = function() {
 			&#39;&lt;/a&gt;&#39; +
 		&#39;&lt;/li&gt;&#39;;
 	var dropdown = $(template);
+	$(&quot;.dropdown-toggle&quot;, dropdown).dropdown();
 	if (this.config.get(&quot;icon&quot;)) {
 		$(&quot;.dropdown-toggle&quot;, dropdown)
 			.css(&quot;background&quot;, &quot;no-repeat url(&quot; + this.config.get(&quot;icon&quot;) + &quot;) 3px 0px&quot;)

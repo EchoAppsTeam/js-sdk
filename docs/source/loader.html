@@ -40,10 +40,17 @@ Echo.Loader = {
 </span>	&quot;config&quot;: {
 		&quot;cdnBaseURL&quot;: protocol + &quot;//cdn.echoenabled.com/&quot;,
 		&quot;storageURL&quot;: {
-			&quot;prod&quot;: protocol + &quot;//dqspik3j3bxvu.cloudfront.net/&quot;,
-			&quot;dev&quot;: protocol + &quot;//s3.amazonaws.com/echo-canvases/&quot;
+			&quot;aws&quot;: {
+				&quot;prod&quot;: protocol + &quot;//dqspik3j3bxvu.cloudfront.net/&quot;,
+				&quot;dev&quot;: protocol + &quot;//s3.amazonaws.com/echo-canvases/&quot;
+			},
+			&quot;fastly&quot;: {
+				&quot;prod&quot;: protocol + &quot;//echo-canvases-prod.global.ssl.fastly.net/&quot;,
+				&quot;dev&quot;: protocol + &quot;//echo-canvases-prod.global.ssl.fastly.net/&quot;
+			}
 		},
-		&quot;errorTimeout&quot;: 5000 // 5 sec
+		&quot;errorTimeout&quot;: 10000, // 10 sec
+		&quot;viewportChangeTimeout&quot;: 50 // 50 ms
 	},
 <span id='global-property-canvases'>	/** @ignore */
 </span>	&quot;canvases&quot;: [],  // Canvases list initialized on the page
@@ -73,7 +80,7 @@ Echo.Loader = {
  */
 Echo.Loader.getURL = function(url, devVersion) {
 	if (typeof devVersion === &quot;undefined&quot;) devVersion = true;
-	return /^https?:\/\/|^\/\//.test(url)
+	return (/^https?:\/\/|^\/\//).test(url)
 		? url
 		: Echo.Loader.config.cdnBaseURL + &quot;sdk/v&quot; + Echo.Loader.version +
 			(devVersion &amp;&amp; Echo.Loader.isDebug() ? &quot;/dev&quot; : &quot;&quot;) +
@@ -419,19 +426,25 @@ Echo.Loader._lookupCanvases = function(config, callback) {
 };
 
 Echo.Loader._initCanvas = function(target, initMode, config) {
-	// this function might be called either immediately (with no arguments)
-	// or after &quot;scroll&quot;/&quot;resize&quot; events (with &quot;event&quot; argument);
-	// function workflow varies depending on the given argument
-	(function init(event) {
-		if (initMode !== &quot;when-visible&quot; || Echo.Loader._isInViewport(target)) {
-			event &amp;&amp; onViewportChange(&quot;unsubscribe&quot;, init);
-			Echo.Loader.initEnvironment(function() {
-				Echo.Loader.canvases.push(new Echo.Canvas(Echo.Loader._prepareCanvasData(config)));
-			});
-		} else if (!event) {
-			onViewportChange(&quot;subscribe&quot;, init);
-		}
-	})();
+	var initCanvas = function() {
+		Echo.Loader.canvases.push(new Echo.Canvas(Echo.Loader._prepareCanvasData(config)));
+	};
+
+	if (initMode !== &quot;when-visible&quot; || Echo.Loader._isInViewport(target)) {
+		Echo.Loader.initEnvironment(initCanvas);
+	} else {
+		var timeout;
+		var handler = function() {
+			timeout &amp;&amp; clearTimeout(timeout);
+			timeout = setTimeout(function() {
+				if (Echo.Loader._isInViewport(target)) {
+					onViewportChange(&quot;unsubscribe&quot;, handler);
+					Echo.Loader.initEnvironment(initCanvas);
+				}
+			}, Echo.Loader.config.viewportChangeTimeout);
+		};
+		onViewportChange(&quot;subscribe&quot;, handler);
+	}
 };
 
 // we are changing Comments app script
@@ -465,8 +478,8 @@ Echo.Loader._storeCanvasConfig = function(id, config) {
 
 Echo.Loader._isInViewport = function(canvas) {
 	var viewportHeight = document.documentElement.clientHeight || document.body.clientHeight;
-	var scrollTop = document.documentElement.scrollTop || document.body.scrollTop;
-	return scrollTop + viewportHeight &gt;= canvas.offsetTop;
+	var box = canvas.getBoundingClientRect();
+	return box.top &lt;= viewportHeight;
 };
 
 // implementation of the &quot;map&quot; function for the cases when jQuery is not loaded yet
@@ -496,11 +509,12 @@ Echo.Loader._areResourcesReady = function(resources) {
 
 function getEventName(name) {
 	return window.addEventListener ? name : &quot;on&quot; + name;
-};
+}
 
 function onViewportChange(action, handler) {
 	var addEvent = window.addEventListener || window.attachEvent;
 	var removeEvent = window.removeEventListener || window.detachEvent;
+
 	if (action === &quot;subscribe&quot;) {
 		addEvent(getEventName(&quot;scroll&quot;), handler);
 		addEvent(getEventName(&quot;resize&quot;), handler);
@@ -508,7 +522,7 @@ function onViewportChange(action, handler) {
 		removeEvent(getEventName(&quot;scroll&quot;), handler);
 		removeEvent(getEventName(&quot;resize&quot;), handler);
 	}
-};
+}
 
 })();
 </pre>
