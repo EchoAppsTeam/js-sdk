@@ -1,5 +1,27 @@
 # Echo JS SDK CHANGELOG:
 
+##v3.0.20 - June 4, 2014
+
+* **Canvas config retrieval process was improved by adding [retry](http://echoappsteam.github.io/js-sdk/docs/#!/api/Echo.Utils-static-method-retry) logic**. Now if a request fails, we make 2 [more retries](http://echoappsteam.github.io/js-sdk/docs/#!/api/Echo.Canvas-cfg-maxConfigFetchingRetries) to fetch Canvas config again.
+
+* We’ve updated [**jQuery** (to v1.11.1)](http://blog.jquery.com/2014/05/01/jquery-1-11-1-and-2-1-1-released/) and [**QUnit** (to v1.14.0)](http://qunitjs.com/) 3rd party libraries we use in JS SDK to their respective latest versions.
+
+* Conflict with **multiple Bootstrap libraries included on a page** was resolved.
+
+* **[Echo.Utils.debounce](http://echoappsteam.github.io/js-sdk/docs/#!/api/Echo.Utils-static-method-debounce) function was introduced** to provide a unified way to suppress massive execution of the same function (for example when we subscribe to “onscroll” DOM event).
+
+* **Function which detects if a Canvas target is in a viewport** (if a Canvas is initialized when entering a viewport) was improved to reduce viewport visibility calculation operations.
+
+* **[Janrain auth](http://echoappsteam.github.io/js-sdk/docs/#!/api/Echo.StreamServer.Controls.Submit.Plugins.JanrainAuth) plugin was updated to preserve HTTPS protocol** during the login operation. Previously in some cases the protocol was switched from HTTPS to HTTP causing security warnings in a browser.
+
+* **[InfiniteScroll](http://echoappsteam.github.io/js-sdk/docs/#!/api/Echo.StreamServer.Controls.Stream.Plugins.InfiniteScroll) plugin logic was updated** to respect asynchronous method of Items rendering in a Stream.
+
+* Previously **WebSockets "onClose" event** was executed before a connection was closed and all internal fields were cleared. We’ve updated events execution order to make sure that the sequence is correct.
+
+* **WebSockets machinery was updated to handle connection closing logic**, when a connection is dropped outside of the SDK logic (for example in case a connection is dropped by the server side or by a browser).
+
+* **Submit "destroy" method** was fixed to avoid Post button corruption.
+
 ##v3.0.19 - April 16, 2014
 
 As a part of our ongoing efforts to make JS SDK better we decided to conduct **SDK components performance audit**. We completed a first iteration of the audit and the main highlight of this release is the set of changes performed as a result of the audit. We started with the memory consumption analysis and found a few issues which affect user experience:
