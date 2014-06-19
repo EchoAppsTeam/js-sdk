@@ -399,91 +399,92 @@ Echo.API.Transports.XDomainRequest = utils.inherit(Echo.API.Transports.AJAX, fun
 	return Echo.API.Transports.XDomainRequest.parent.constructor.apply(this, arguments);
 });
 
+/* global XDomainRequest:false, ActiveXObject:false */
+// jQuery.XDomainRequest.js
+// Author: Jason Moon - @JSONMOON
+// IE8+
+// link: https://github.com/MoonScript/jQuery-ajaxTransport-XDomainRequest
+if (!jQuery.support.cors && window.XDomainRequest) {
+	var jsonRegEx = /\/json/i;
+	var xmlRegEx = /\/xml/i;
+
+	// ajaxTransport exists in jQuery 1.5+
+	jQuery.ajaxTransport("text html xml json", function(options, userOptions, jqXHR) {
+		var xdr = null;
+		var userType = (userOptions.dataType || "").toLowerCase();
+		return {
+			"send": function(headers, complete) {
+				xdr = new XDomainRequest();
+				if (/^\d+$/.test(userOptions.timeout)) {
+					xdr.timeout = userOptions.timeout;
+				}
+				xdr.ontimeout = function() {
+					complete(500, "timeout");
+				};
+				xdr.onload = function() {
+					var allResponseHeaders = "Content-Length: " + xdr.responseText.length + "\r\nContent-Type: " + xdr.contentType;
+					var status = {
+						"code": 200,
+						"message": "success"
+					};
+					var responses = {
+						"text": xdr.responseText
+					};
+					try {
+						if ((userType === "json") || ((userType !== "text") && jsonRegEx.test(xdr.contentType))) {
+							try {
+								responses.json = $.parseJSON(xdr.responseText);
+							} catch(e) {
+								status.code = 500;
+								status.message = "parseerror";
+							}
+						} else if ((userType === "xml") || ((userType !== "text") && xmlRegEx.test(xdr.contentType))) {
+							var doc = new ActiveXObject("Microsoft.XMLDOM");
+							doc.async = false;
+							try {
+								doc.loadXML(xdr.responseText);
+							} catch(e) {
+								doc = undefined;
+							}
+							if (!doc || !doc.documentElement || doc.getElementsByTagName("parsererror").length) {
+								status.code = 500;
+								status.message = "parseerror";
+								throw "Invalid XML: " + xdr.responseText;
+							}
+							responses.xml = doc;
+						}
+					} catch(parseMessage) {
+						throw parseMessage;
+					} finally {
+						complete(status.code, status.message, responses, allResponseHeaders);
+					}
+				};
+				xdr.onerror = function() {
+					complete(500, "error", {
+						"text": xdr.responseText
+					});
+				};
+				var postData = typeof userOptions.data === "string"
+					? userOptions.data
+					: $.param(userOptions.data || "");
+				xdr.open(options.type, options.url);
+				xdr.send(postData);
+			},
+			"abort": function() {
+				if (xdr) {
+					xdr.abort();
+				}
+			}
+		};
+	});
+}
+
 Echo.API.Transports.XDomainRequest.prototype._getTransportObject = function() {
-	/* global XDomainRequest:false, ActiveXObject:false */
 	var obj = Echo.API.Transports.XDomainRequest.parent._getTransportObject.call(this);
 	var domain = utils.parseURL(document.location.href).domain;
 	var targetDomain = utils.parseURL(this.config.get("uri")).domain;
 	if (domain === targetDomain) {
 		return obj;
-	}
-	// jQuery.XDomainRequest.js
-	// Author: Jason Moon - @JSONMOON
-	// IE8+
-	// link: https://github.com/MoonScript/jQuery-ajaxTransport-XDomainRequest
-	if (!jQuery.support.cors && window.XDomainRequest) {
-		var jsonRegEx = /\/json/i;
-		var xmlRegEx = /\/xml/i;
-
-		// ajaxTransport exists in jQuery 1.5+
-		jQuery.ajaxTransport("text html xml json", function(options, userOptions, jqXHR) {
-			var xdr = null;
-			var userType = (userOptions.dataType || "").toLowerCase();
-			return {
-				"send": function(headers, complete) {
-					xdr = new XDomainRequest();
-					if (/^\d+$/.test(userOptions.timeout)) {
-						xdr.timeout = userOptions.timeout;
-					}
-					xdr.ontimeout = function() {
-						complete(500, "timeout");
-					};
-					xdr.onload = function() {
-						var allResponseHeaders = "Content-Length: " + xdr.responseText.length + "\r\nContent-Type: " + xdr.contentType;
-						var status = {
-							"code": 200,
-							"message": "success"
-						};
-						var responses = {
-							"text": xdr.responseText
-						};
-						try {
-							if ((userType === "json") || ((userType !== "text") && jsonRegEx.test(xdr.contentType))) {
-								try {
-									responses.json = $.parseJSON(xdr.responseText);
-								} catch(e) {
-									status.code = 500;
-									status.message = "parseerror";
-								}
-							} else if ((userType === "xml") || ((userType !== "text") && xmlRegEx.test(xdr.contentType))) {
-								var doc = new ActiveXObject("Microsoft.XMLDOM");
-								doc.async = false;
-								try {
-									doc.loadXML(xdr.responseText);
-								} catch(e) {
-									doc = undefined;
-								}
-								if (!doc || !doc.documentElement || doc.getElementsByTagName("parsererror").length) {
-									status.code = 500;
-									status.message = "parseerror";
-									throw "Invalid XML: " + xdr.responseText;
-								}
-								responses.xml = doc;
-							}
-						} catch(parseMessage) {
-							throw parseMessage;
-						} finally {
-							complete(status.code, status.message, responses, allResponseHeaders);
-						}
-					};
-					xdr.onerror = function() {
-						complete(500, "error", {
-							"text": xdr.responseText
-						});
-					};
-					var postData = typeof userOptions.data === "string"
-						? userOptions.data
-						: $.param(userOptions.data || "");
-					xdr.open(options.type, options.url);
-					xdr.send(postData);
-				},
-				"abort": function() {
-					if (xdr) {
-						xdr.abort();
-					}
-				}
-			};
-		});
 	}
 	// avoid caching the respond result
 	return $.extend(obj, {
