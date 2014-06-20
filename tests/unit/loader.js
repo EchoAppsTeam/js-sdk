@@ -587,9 +587,6 @@ Echo.Tests.asyncTest("canvases initialization", function() {
 							for (var i = 0; i < errorCodes.received.length; i++) {
 								var received = errorCodes.received[i];
 								var target = received.args.target;
-								if (!(errorCodes[target.data("canvas-id") || "*"]).test(target.html())) {
-									console.debug();
-								}
 								QUnit.ok(
 									(errorCodes[target.data("canvas-id") || "*"]).test(target.html()),
 									"Checking error rendering in any cases, canvas-id = " + target.data("canvas-id")
