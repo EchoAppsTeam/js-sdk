@@ -215,12 +215,13 @@ var _URLMocks = {
 	},
 	// mocks for /v1/search API
 	"api/search": {
-		"url": new RegExp("{%=baseURLs.api.streamserver%}/v1/search\\?q=(.*?)&"),
-		"response": function(request, query) {
+		"url": new RegExp("{%=baseURLs.api.streamserver%}/v1/search\\?q=(.*?)(?:&.*?)(&since=.*?)?(?:&|$)"),
+		"response": function(request, query, since) {
+			since = since || "";
 			request.respond(
 				200,
 				{"Content-Type": "application/x-javascript; charset=\"utf-8\""},
-				JSON.stringify(Echo.Tests.Fixtures.api.search[decodeURIComponent(query)])
+				JSON.stringify(Echo.Tests.Fixtures.api.search[decodeURIComponent(query) + since])
 			);
 		}
 	},

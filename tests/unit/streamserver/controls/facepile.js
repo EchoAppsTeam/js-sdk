@@ -123,7 +123,7 @@ suite.prototype.tests.dynamicWorkflow = {
 			"target" : this.config.target,
 			"appkey" : this.config.appkey,
 			"query"  : "childrenof:" + this.config.dataBaseLocation + "tests/facepile sortOrder:chronological " +
-				 "itemsPerPage: 2 -user.id:http://js-kit.com/ECHO/user/fake_user",
+				 "itemsPerPage:2 -user.id:http://js-kit.com/ECHO/user/fake_user",
 			"item"   : {"avatar": true, "text": true},
 			"liveUpdates": {
 				"enabled": false,
