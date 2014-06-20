@@ -455,6 +455,8 @@ canvas.methods._fetchConfig = function(callback) {
 					var config = isProviderFastly ? arguments[0] : getConfig();
 					if (!config || !config.apps || !config.apps.length) {
 						var message = self.labels.get("error_no_" + (config ? "apps" : "config"));
+						// clean up the target element to hide "Loading..." message
+						self.config.get("target").empty();
 						self._error({
 							"args": {"config": config, "target": target},
 							"code": "invalid_canvas_config",
@@ -469,7 +471,7 @@ canvas.methods._fetchConfig = function(callback) {
 		}, {"ratio": 1, "times": self.config.get("maxConfigFetchingRetries")})
 		.fail(function() {
 			self._error({
-				"args": arguments,
+				"args": {"target": self.config.get("target"), "network": arguments},
 				"code": "unable_to_retrieve_app_config",
 				"renderError": true
 			});

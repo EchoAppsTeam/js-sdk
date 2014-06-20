@@ -563,15 +563,41 @@ Echo.Tests.asyncTest("canvases initialization", function() {
 			"valid": 2,
 			"invalid": 8
 		};
+		var errorCodes = {
+			"*": /loading/i,
+			"js-sdk-tests/nonexistent-canvas-001": /error/i,
+			"js-sdk-tests/nonexistent-canvas-002": /error/i,
+			"js-sdk-tests/test-canvas-004": /^$/,
+			"js-sdk-tests/test-canvas-005": /^$/,
+			"js-sdk-tests/test-canvas-006": /^$/,
+			"received": []
+		};
 		// check invalid canvases
 		var handlerId = Echo.Events.subscribe({
 			"topic": "Echo.Canvas.onError",
-			"handler": function(topic, args) {
+			"handler": function(topic, params) {
+				errorCodes.received.push(params);
 				count.invalid--;
 				if (!count.invalid) {
 					Echo.Events.unsubscribe({"handlerId": handlerId});
 					QUnit.ok(true, "[valid and invalid canvases] Checking the number of invalid canvases");
-					if (!count.valid) callback();
+					if (!count.valid) {
+						// async it because of error canvas retrieving async nature
+						setTimeout(function() {
+							for (var i = 0; i < errorCodes.received.length; i++) {
+								var received = errorCodes.received[i];
+								var target = received.args.target;
+								if (!(errorCodes[target.data("canvas-id") || "*"]).test(target.html())) {
+									console.debug();
+								}
+								QUnit.ok(
+									(errorCodes[target.data("canvas-id") || "*"]).test(target.html()),
+									"Checking error rendering in any cases, canvas-id = " + target.data("canvas-id")
+								);
+							}
+							callback();
+						}, 0);
+					}
 				}
 			}
 		});
@@ -824,7 +850,7 @@ Echo.Tests.asyncTest("canvases initialization", function() {
 		appConfigOverrides,
 		clearCanvasConfigOnDestroy
 	];
-	QUnit.expect(21);
+	QUnit.expect(29);
 	Echo.Utils.sequentialCall(tests, function() {
 		QUnit.start();
 	});
