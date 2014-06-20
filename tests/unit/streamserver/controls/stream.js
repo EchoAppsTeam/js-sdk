@@ -108,7 +108,7 @@ Echo.Tests.asyncTest("item updates in a single response", function() {
 				"topic": "Echo.StreamServer.Controls.Stream.Item.onRerender",
 				"handler": function() {
 					// +1 because no items at initial time
-					QUnit.strictEqual(subscriptionLength + 1, Echo.Events._subscriptions["Echo.Control.onDataInvalidate"].global.handlers.length, "Check that unnecessary item was destroyed");
+					QUnit.strictEqual(subscriptionLength + 1, Echo.Events._subscriptions["Echo.Control.onDataInvalidate"].global.handlers.length, "Check that unnecessary item didn't add new subscriptions");
 					QUnit.strictEqual(self.threads[0].get("data.object.content"), "new content 2", "Check that item has been updated");
 					self.destroy();
 					QUnit.start();
