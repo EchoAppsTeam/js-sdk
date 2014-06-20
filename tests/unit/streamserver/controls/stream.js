@@ -90,7 +90,7 @@ Echo.Tests.asyncTest("unnecessary item", function() {
 	});
 });
 
-Echo.Tests.asyncTest("item updates in a single respone", function() {
+Echo.Tests.asyncTest("item updates in a single response", function() {
 	if (!Echo.Tests.Utils.isServerMocked()) {
 		QUnit.ok(true, "Not going to test with real requests");
 		QUnit.start();
@@ -107,7 +107,7 @@ Echo.Tests.asyncTest("item updates in a single respone", function() {
 			this.events.subscribe({
 				"topic": "Echo.StreamServer.Controls.Stream.Item.onRerender",
 				"handler": function() {
-					// +1 beacause no items at initial time
+					// +1 because no items at initial time
 					QUnit.strictEqual(subscriptionLength + 1, Echo.Events._subscriptions["Echo.Control.onDataInvalidate"].global.handlers.length, "Check that unnecessary item was destroyed");
 					QUnit.strictEqual(self.threads[0].get("data.object.content"), "new content 2", "Check that item has been updated");
 					self.destroy();
