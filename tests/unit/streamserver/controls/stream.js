@@ -80,7 +80,7 @@ Echo.Tests.asyncTest("unnecessary item", function() {
 				"once": true,
 				"handler": function() {
 					setTimeout(function() {
-						QUnit.strictEqual(subscriptionLength, Echo.Events._subscriptions["Echo.Control.onDataInvalidate"].global.handlers.length, "Check that unnecessary item was destroyed");
+						QUnit.strictEqual(subscriptionLength, Echo.Events._subscriptions["Echo.Control.onDataInvalidate"].global.handlers.length, "Check that unnecessary item didn't add new subscriptions");
 						self.destroy();
 						QUnit.start();
 					}, 1000);
