@@ -68,28 +68,28 @@ Echo.Tests.Fixtures.api.search = {
 		"children": {"maxDepth": "2", "sortOrder": "reverseChronological", "itemsPerPage": "2"},
 		"entries": []
 	},
-	"childrenof:http://example.com/sdk/stream/unecessary-item+itemsPerPage:+1": {
+	"childrenof:http://example.com/sdk/stream/unecessary-item+itemsPerPage:1": {
 		"hasMoreChildren": false,
 		"itemsPerPage": "1",
 		"children": {"maxDepth": "2", "sortOrder": "reverseChronological", "itemsPerPage": 2},
 		"nextSince": "1401350677.307007",
 		"entries": [entry]
 	},
-	"childrenof:http://example.com/sdk/stream/unecessary-item+itemsPerPage:+1&since=1401350677.307007": {
+	"childrenof:http://example.com/sdk/stream/unecessary-item+itemsPerPage:1&since=1401350677.307007": {
 		"hasMoreChildren": false,
 		"itemsPerPage": "1",
 		"children": {"maxDepth": "2", "sortOrder": "reverseChronological", "itemsPerPage": 2},
 		"nextSince": "1401350677.407007",
 		"entries": [$.extend(true, {}, entry, {"object": {"id": "http://example.com/ECHO/item/1366306330-580-89", "published": "2001-01-01T13:49:27Z"}})]
 	},
-	"childrenof:http://example.com/sdk/stream/item-updates+itemsPerPage:+1": {
+	"childrenof:http://example.com/sdk/stream/item-updates+itemsPerPage:1": {
 		"hasMoreChildren": false,
 		"itemsPerPage": "1",
 		"children": {"maxDepth": "2", "sortOrder": "reverseChronological", "itemsPerPage": 2},
 		"nextSince": "1401350677.307007",
 		"entries": []
 	},
-	"childrenof:http://example.com/sdk/stream/item-updates+itemsPerPage:+1&since=1401350677.307007": {
+	"childrenof:http://example.com/sdk/stream/item-updates+itemsPerPage:1&since=1401350677.307007": {
 		"hasMoreChildren": false,
 		"itemsPerPage": "1",
 		"children": {"maxDepth": "2", "sortOrder": "reverseChronological", "itemsPerPage": 2},
@@ -99,7 +99,7 @@ Echo.Tests.Fixtures.api.search = {
 			$.extend(true, {}, entry, {"object": {"content": "new content 2"}})
 		]
 	},
-	"childrenof:http://example.com/js-sdk/tests/facepile+sortOrder:chronological+itemsPerPage:+2+-user.id:http://js-kit.com/ECHO/user/fake_user": {
+	"childrenof:http://example.com/js-sdk/tests/facepile+sortOrder:chronological+itemsPerPage:2+-user.id:http://js-kit.com/ECHO/user/fake_user": {
 		"hasMoreChildren": "false",
 		"itemsPerPage": "2",
 		"nextPageAfter": "1397960999.0508101",
@@ -118,7 +118,7 @@ Echo.Tests.Fixtures.api.search = {
 			}
 		})]
 	},
-	"pageAfter:\"1397960999.0508101\"+childrenof:http://example.com/js-sdk/tests/facepile+sortOrder:chronological+itemsPerPage:+2+-user.id:http://js-kit.com/ECHO/user/fake_user": {
+	"pageAfter:\"1397960999.0508101\"+childrenof:http://example.com/js-sdk/tests/facepile+sortOrder:chronological+itemsPerPage:2+-user.id:http://js-kit.com/ECHO/user/fake_user": {
 		"hasMoreChildren": "false",
 		"itemsPerPage": "2",
 		"nextPageAfter": "1397960999.0508101",

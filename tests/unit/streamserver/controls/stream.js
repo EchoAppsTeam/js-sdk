@@ -71,7 +71,7 @@ Echo.Tests.asyncTest("unnecessary item", function() {
 		"target": $("#qunit-fixture"),
 		"appkey": "echo.jssdk.tests.aboutecho.com",
 		"liveUpdates": {"enabled": true, "transport": "polling", "polling": {"timeout": 1}},
-		"query": "childrenof:http://example.com/sdk/stream/unecessary-item itemsPerPage: 1",
+		"query": "childrenof:http://example.com/sdk/stream/unecessary-item itemsPerPage:1",
 		"ready": function() {
 			var self = this;
 			var subscriptionLength = Echo.Events._subscriptions["Echo.Control.onDataInvalidate"].global.handlers.length;
@@ -100,7 +100,7 @@ Echo.Tests.asyncTest("item updates in a single respone", function() {
 		"target": $("#qunit-fixture"),
 		"appkey": "echo.jssdk.tests.aboutecho.com",
 		"liveUpdates": {"enabled": true, "transport": "polling", "polling": {"timeout": 1}},
-		"query": "childrenof:http://example.com/sdk/stream/item-updates itemsPerPage: 1",
+		"query": "childrenof:http://example.com/sdk/stream/item-updates itemsPerPage:1",
 		"ready": function() {
 			var self = this;
 			var subscriptionLength = Echo.Events._subscriptions["Echo.Control.onDataInvalidate"].global.handlers.length;
