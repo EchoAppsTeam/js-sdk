@@ -1,5 +1,13 @@
 # Echo JS SDK CHANGELOG:
 
+##v3.0.21 - June 25, 2014
+
+* **Stream control was updated to avoid memory leaks** in certain situations when Stream Item instance is irrelevant (for example if an item doesn't match a rendering criteria on the client side).
+
+* **Echo.API base class was fixed to always use XDomainRequest object** in IE 8 and 9 for AJAX CORS requests.
+
+* Previously when **empty Canvas config was delivered to a client side**, we put debug information into browser console and left "Loading..." message on a screen. To avoid any confusion, the "Loading..." message is now removed if Canvas config contains no apps.
+
 ##v3.0.20 - June 4, 2014
 
 * **Canvas config retrieval process was improved by adding [retry](http://echoappsteam.github.io/js-sdk/docs/#!/api/Echo.Utils-static-method-retry) logic**. Now if a request fails, we make 2 [more retries](http://echoappsteam.github.io/js-sdk/docs/#!/api/Echo.Canvas-cfg-maxConfigFetchingRetries) to fetch Canvas config again.
