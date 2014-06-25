@@ -232,12 +232,13 @@ var _URLMocks = {
 	},
 	// mocks for /v1/search API
 	&quot;api/search&quot;: {
-		&quot;url&quot;: new RegExp(&quot;//api.echoenabled.com/v1/search\\?q=(.*?)&amp;&quot;),
-		&quot;response&quot;: function(request, query) {
+		&quot;url&quot;: new RegExp(&quot;//api.echoenabled.com/v1/search\\?q=(.*?)(?:&amp;.*?)(&amp;since=.*?)?(?:&amp;|$)&quot;),
+		&quot;response&quot;: function(request, query, since) {
+			since = since || &quot;&quot;;
 			request.respond(
 				200,
 				{&quot;Content-Type&quot;: &quot;application/x-javascript; charset=\&quot;utf-8\&quot;&quot;},
-				JSON.stringify(Echo.Tests.Fixtures.api.search[decodeURIComponent(query)])
+				JSON.stringify(Echo.Tests.Fixtures.api.search[decodeURIComponent(query) + since])
 			);
 		}
 	},

@@ -61,6 +61,63 @@ Echo.Tests.asyncTest("more button", function() {
 	});
 });
 
+Echo.Tests.asyncTest("unnecessary item", function() {
+	if (!Echo.Tests.Utils.isServerMocked()) {
+		QUnit.ok(true, "Not going to test with real requests");
+		QUnit.start();
+		return;
+	}
+	new Echo.StreamServer.Controls.Stream({
+		"target": $("#qunit-fixture"),
+		"appkey": "echo.jssdk.tests.aboutecho.com",
+		"liveUpdates": {"enabled": true, "transport": "polling", "polling": {"timeout": 1}},
+		"query": "childrenof:http://example.com/sdk/stream/unecessary-item itemsPerPage:1",
+		"ready": function() {
+			var self = this;
+			var subscriptionLength = Echo.Events._subscriptions["Echo.Control.onDataInvalidate"].global.handlers.length;
+			this.events.subscribe({
+				"topic": "Echo.StreamServer.Controls.Stream.onDataReceive",
+				"once": true,
+				"handler": function() {
+					setTimeout(function() {
+						QUnit.strictEqual(subscriptionLength, Echo.Events._subscriptions["Echo.Control.onDataInvalidate"].global.handlers.length, "Check that unnecessary item didn't add new subscriptions");
+						self.destroy();
+						QUnit.start();
+					}, 1000);
+				}
+			});
+		}
+	});
+});
+
+Echo.Tests.asyncTest("item updates in a single response", function() {
+	if (!Echo.Tests.Utils.isServerMocked()) {
+		QUnit.ok(true, "Not going to test with real requests");
+		QUnit.start();
+		return;
+	}
+	new Echo.StreamServer.Controls.Stream({
+		"target": $("#qunit-fixture"),
+		"appkey": "echo.jssdk.tests.aboutecho.com",
+		"liveUpdates": {"enabled": true, "transport": "polling", "polling": {"timeout": 1}},
+		"query": "childrenof:http://example.com/sdk/stream/item-updates itemsPerPage:1",
+		"ready": function() {
+			var self = this;
+			var subscriptionLength = Echo.Events._subscriptions["Echo.Control.onDataInvalidate"].global.handlers.length;
+			this.events.subscribe({
+				"topic": "Echo.StreamServer.Controls.Stream.Item.onRerender",
+				"handler": function() {
+					// +1 because no items at initial time
+					QUnit.strictEqual(subscriptionLength + 1, Echo.Events._subscriptions["Echo.Control.onDataInvalidate"].global.handlers.length, "Check that unnecessary item didn't add new subscriptions");
+					QUnit.strictEqual(self.threads[0].get("data.object.content"), "new content 2", "Check that item has been updated");
+					self.destroy();
+					QUnit.start();
+				}
+			});
+		}
+	});
+});
+
 var suite = Echo.Tests.Unit.Stream = function() {
 	this.constructRenderersTest({
 		"instance": {

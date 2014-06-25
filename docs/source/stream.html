@@ -972,6 +972,8 @@ stream.methods._applyLiveUpdates = function(entries, callback) {
 							&quot;propagation&quot;: false
 						});
 						self._applySpotUpdates(&quot;add&quot;, item);
+					} else {
+						item.destroy();
 					}
 					_callback();
 				});
@@ -1284,8 +1286,11 @@ stream.methods._spotUpdates.add = function(item, options) {
 	// we should change the operation to &quot;replace&quot;
 	var _item = this.items[item.get(&quot;data.unique&quot;)];
 	if (_item &amp;&amp; _item.view.rendered() &amp;&amp; options.priority !== &quot;high&quot;) {
-		this._applySpotUpdates(&quot;replace&quot;, item, {&quot;priority&quot;: &quot;highest&quot;});
-
+		this._applySpotUpdates(&quot;replace&quot;, this._updateItem(item.get(&quot;data&quot;)), {&quot;priority&quot;: &quot;highest&quot;});
+		// in case of &quot;replace&quot; operation we use incoming &quot;item&quot; object
+		// as a source of information and destroy this object after update
+		// application to cleanup the memory consumed by the object
+		item.destroy();
 		return;
 	}
 	this._applyStructureUpdates(&quot;add&quot;, item);

@@ -416,91 +416,92 @@ Echo.API.Transports.XDomainRequest = utils.inherit(Echo.API.Transports.AJAX, fun
 	return Echo.API.Transports.XDomainRequest.parent.constructor.apply(this, arguments);
 });
 
+/* global XDomainRequest:false, ActiveXObject:false */
+// jQuery.XDomainRequest.js
+// Author: Jason Moon - @JSONMOON
+// IE8+
+// link: https://github.com/MoonScript/jQuery-ajaxTransport-XDomainRequest
+if (!jQuery.support.cors &amp;&amp; window.XDomainRequest) {
+	var jsonRegEx = /\/json/i;
+	var xmlRegEx = /\/xml/i;
+
+	// ajaxTransport exists in jQuery 1.5+
+	jQuery.ajaxTransport(&quot;text html xml json&quot;, function(options, userOptions, jqXHR) {
+		var xdr = null;
+		var userType = (userOptions.dataType || &quot;&quot;).toLowerCase();
+		return {
+			&quot;send&quot;: function(headers, complete) {
+				xdr = new XDomainRequest();
+				if (/^\d+$/.test(userOptions.timeout)) {
+					xdr.timeout = userOptions.timeout;
+				}
+				xdr.ontimeout = function() {
+					complete(500, &quot;timeout&quot;);
+				};
+				xdr.onload = function() {
+					var allResponseHeaders = &quot;Content-Length: &quot; + xdr.responseText.length + &quot;\r\nContent-Type: &quot; + xdr.contentType;
+					var status = {
+						&quot;code&quot;: 200,
+						&quot;message&quot;: &quot;success&quot;
+					};
+					var responses = {
+						&quot;text&quot;: xdr.responseText
+					};
+					try {
+						if ((userType === &quot;json&quot;) || ((userType !== &quot;text&quot;) &amp;&amp; jsonRegEx.test(xdr.contentType))) {
+							try {
+								responses.json = $.parseJSON(xdr.responseText);
+							} catch(e) {
+								status.code = 500;
+								status.message = &quot;parseerror&quot;;
+							}
+						} else if ((userType === &quot;xml&quot;) || ((userType !== &quot;text&quot;) &amp;&amp; xmlRegEx.test(xdr.contentType))) {
+							var doc = new ActiveXObject(&quot;Microsoft.XMLDOM&quot;);
+							doc.async = false;
+							try {
+								doc.loadXML(xdr.responseText);
+							} catch(e) {
+								doc = undefined;
+							}
+							if (!doc || !doc.documentElement || doc.getElementsByTagName(&quot;parsererror&quot;).length) {
+								status.code = 500;
+								status.message = &quot;parseerror&quot;;
+								throw &quot;Invalid XML: &quot; + xdr.responseText;
+							}
+							responses.xml = doc;
+						}
+					} catch(parseMessage) {
+						throw parseMessage;
+					} finally {
+						complete(status.code, status.message, responses, allResponseHeaders);
+					}
+				};
+				xdr.onerror = function() {
+					complete(500, &quot;error&quot;, {
+						&quot;text&quot;: xdr.responseText
+					});
+				};
+				var postData = typeof userOptions.data === &quot;string&quot;
+					? userOptions.data
+					: $.param(userOptions.data || &quot;&quot;);
+				xdr.open(options.type, options.url);
+				xdr.send(postData);
+			},
+			&quot;abort&quot;: function() {
+				if (xdr) {
+					xdr.abort();
+				}
+			}
+		};
+	});
+}
+
 Echo.API.Transports.XDomainRequest.prototype._getTransportObject = function() {
-	/* global XDomainRequest:false, ActiveXObject:false */
 	var obj = Echo.API.Transports.XDomainRequest.parent._getTransportObject.call(this);
 	var domain = utils.parseURL(document.location.href).domain;
 	var targetDomain = utils.parseURL(this.config.get(&quot;uri&quot;)).domain;
 	if (domain === targetDomain) {
 		return obj;
-	}
-	// jQuery.XDomainRequest.js
-	// Author: Jason Moon - @JSONMOON
-	// IE8+
-	// link: https://github.com/MoonScript/jQuery-ajaxTransport-XDomainRequest
-	if (!jQuery.support.cors &amp;&amp; window.XDomainRequest) {
-		var jsonRegEx = /\/json/i;
-		var xmlRegEx = /\/xml/i;
-
-		// ajaxTransport exists in jQuery 1.5+
-		jQuery.ajaxTransport(&quot;text html xml json&quot;, function(options, userOptions, jqXHR) {
-			var xdr = null;
-			var userType = (userOptions.dataType || &quot;&quot;).toLowerCase();
-			return {
-				&quot;send&quot;: function(headers, complete) {
-					xdr = new XDomainRequest();
-					if (/^\d+$/.test(userOptions.timeout)) {
-						xdr.timeout = userOptions.timeout;
-					}
-					xdr.ontimeout = function() {
-						complete(500, &quot;timeout&quot;);
-					};
-					xdr.onload = function() {
-						var allResponseHeaders = &quot;Content-Length: &quot; + xdr.responseText.length + &quot;\r\nContent-Type: &quot; + xdr.contentType;
-						var status = {
-							&quot;code&quot;: 200,
-							&quot;message&quot;: &quot;success&quot;
-						};
-						var responses = {
-							&quot;text&quot;: xdr.responseText
-						};
-						try {
-							if ((userType === &quot;json&quot;) || ((userType !== &quot;text&quot;) &amp;&amp; jsonRegEx.test(xdr.contentType))) {
-								try {
-									responses.json = $.parseJSON(xdr.responseText);
-								} catch(e) {
-									status.code = 500;
-									status.message = &quot;parseerror&quot;;
-								}
-							} else if ((userType === &quot;xml&quot;) || ((userType !== &quot;text&quot;) &amp;&amp; xmlRegEx.test(xdr.contentType))) {
-								var doc = new ActiveXObject(&quot;Microsoft.XMLDOM&quot;);
-								doc.async = false;
-								try {
-									doc.loadXML(xdr.responseText);
-								} catch(e) {
-									doc = undefined;
-								}
-								if (!doc || !doc.documentElement || doc.getElementsByTagName(&quot;parsererror&quot;).length) {
-									status.code = 500;
-									status.message = &quot;parseerror&quot;;
-									throw &quot;Invalid XML: &quot; + xdr.responseText;
-								}
-								responses.xml = doc;
-							}
-						} catch(parseMessage) {
-							throw parseMessage;
-						} finally {
-							complete(status.code, status.message, responses, allResponseHeaders);
-						}
-					};
-					xdr.onerror = function() {
-						complete(500, &quot;error&quot;, {
-							&quot;text&quot;: xdr.responseText
-						});
-					};
-					var postData = typeof userOptions.data === &quot;string&quot;
-						? userOptions.data
-						: $.param(userOptions.data || &quot;&quot;);
-					xdr.open(options.type, options.url);
-					xdr.send(postData);
-				},
-				&quot;abort&quot;: function() {
-					if (xdr) {
-						xdr.abort();
-					}
-				}
-			};
-		});
 	}
 	// avoid caching the respond result
 	return $.extend(obj, {
