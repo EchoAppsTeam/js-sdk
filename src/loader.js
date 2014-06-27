@@ -88,14 +88,13 @@ Echo.Loader.getURL = function(url, devVersion) {
  *
  * @param {Function} [callback]
  * Callback function which should be called as soon as all requested files
- * were downloaded.
+ * are downloaded.
  *
  * @param {Object} [config]
- * Object with configuration parameters
+ * Object with configuration parameters.
  *
  * @param {Number} config.errorTimeout
- * Timeout loading of resources in milliseconds, use as yepnope.errorTimeout
- *
+ * Resource loading timeout in milliseconds.
  */
 Echo.Loader.download = function(resources, callback, config) {
 	config = config || {};
