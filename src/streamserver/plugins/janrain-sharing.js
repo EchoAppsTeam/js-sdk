@@ -82,7 +82,7 @@ plugin.config = {
 	/**
 	 * @cfg {String} [xdReceiver]
 	 * Full URL of the "rpx_xdcomm.html" file. This file should be downloaded
-	 * from the JanRain application dashboard (the "Deployment" ->
+	 * from the Janrain application dashboard (the "Deployment" ->
 	 * "Social Sharing" section) and placed in the root directory of your website.
 	 * @deprecated
 	 * See <a href="http://developers.janrain.com/documentation/widgets/legacy-sign-in-widget/" target="_blank">Janrain notice</a>
@@ -377,7 +377,7 @@ Echo.Plugin.create(plugin);
 
 /**
  * @class Echo.StreamServer.Controls.Stream.Item.Plugins.JanrainSharing
- * Plugin provides the ability to load JanRain sharing dialog clicking
+ * Plugin provides the ability to load Janrain sharing dialog clicking
  * the "Share" button in the item.
  *
  *		new Echo.StreamServer.Controls.Stream({
