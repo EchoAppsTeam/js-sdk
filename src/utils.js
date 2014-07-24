@@ -553,7 +553,13 @@ Echo.Utils.htmlTextTruncate = function(text, limit, postfix, forceClosingTags) {
  * Stripped string.
  */
 Echo.Utils.stripTags = function(text) {
-	return typeof text === "string" ? $("<div>").html(text).text() : text;
+	if (typeof text !== "string") return text;
+	// We intentionally break HTML attributes starting with "on".
+	// These attributes are only event handlers anyway and we don't want them.
+	// This action doesn't allow for "<img src=# onerror=alert(1)>" HTML string
+	// to execute JavaScript
+	text = text.replace(/(<[^>]+?\bon)([^>]+>)/ig, "$1_$2");
+	return $("<div>").html(text).text();
 };
 
 /**

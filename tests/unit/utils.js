@@ -176,7 +176,7 @@ Echo.Tests.test("htmlize()", function() {
 		"Checking with special characters");
 });
 
-Echo.Tests.test("stripTags()", function() {
+Echo.Tests.asyncTest("stripTags()", function() {
 	QUnit.equal(Echo.Utils.stripTags(), undefined,
 		"Checking with undefined param");
 	QUnit.equal(Echo.Utils.stripTags(""), "",
@@ -187,6 +187,16 @@ Echo.Tests.test("stripTags()", function() {
 		"Checking with simple HTML");
 	QUnit.equal(Echo.Utils.stripTags("<div>Outer<div><!-- Comment -->Inner</div></div>"), "OuterInner",
 		"Checking with complex HTML");
+
+	Echo.Tests.Fixtures.stripTagsHacked = false;
+	var actual = Echo.Utils.stripTags('1<img/src="1"/onerror="Echo.Tests.Fixtures.stripTagsHacked=true">2');
+	// wait some time for hack to onerror handler to work
+	setTimeout(function() {
+		QUnit.equal(actual, "12", "Checking with hackish HTML");
+		QUnit.strictEqual(Echo.Tests.Fixtures.stripTagsHacked, false, "Checking if hack worked");
+		delete Echo.Tests.Fixtures.stripTagsHacked;
+		QUnit.start();
+	}, 150);
 });
 
 Echo.Tests.test("objectToJSON()", function() {
