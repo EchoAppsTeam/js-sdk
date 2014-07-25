@@ -554,12 +554,70 @@ Echo.Utils.htmlTextTruncate = function(text, limit, postfix, forceClosingTags) {
  */
 Echo.Utils.stripTags = function(text) {
 	if (typeof text !== "string") return text;
-	// We intentionally break HTML attributes starting with "on".
-	// These attributes are only event handlers anyway and we don't want them.
-	// This action doesn't allow for "<img src=# onerror=alert(1)>" HTML string
-	// to execute JavaScript
-	text = text.replace(/(<[^>]+?\bon)([^>]+>)/ig, "$1_$2");
+	text = Echo.Utils.sanitize(text, "html");
 	return $("<div>").html(text).text();
+};
+
+/**
+ * @static
+ * Method allowing to sanitize user generated data using a number of
+ * predefined rules.
+ *
+ * @param {String} value
+ * The string to be sanitized.
+ *
+ * @param {String} type
+ * Type of the input value allowing to select appropriate sanitization rules.
+ * Can be one of the following values:
+ *
+ *   + number - performs direct translation to number, if any symbol not
+ *     allowed in a number is met, `undefined` value is returned.
+ *   + plainText - strips all HTML tags using #stripTags method.
+ *   + html - only breaks event handler attribute names like "onmouseover"
+ *     to prevent some XSS attacks.
+ *   + url - declines strings starting with "javascript:" or "vbscript:"
+ *     (with preceeding whitespaces), useful to prevent XSS attacks through
+ *     HTML attributes.
+ *
+ * @return {Mixed}
+ * Sanitized value if the input was good enough or `undefined` if it was not.
+ */
+Echo.Utils.sanitize = function(value, type) {
+	if (type === "number") {
+		value = +value;
+		return isNaN(value) ? undefined : value;
+	}
+
+	if (type === "plainText") {
+		return Echo.Utils.stripTags(value);
+	}
+
+	if (type === "html") {
+		// We intentionally break HTML attributes starting with "on".
+		// These attributes are only event handlers anyway and we don't want them.
+		// This action doesn't allow HTML strings like "<img src=# onerror=alert(1)>"
+		// to execute JavaScript
+		return value.replace(/(<[^>]+?\bon)([^>]+>)/ig, "$1_$2");
+	}
+
+	if (type === "url") {
+		// drop any chars with code [0-32] from the beginning
+		value = value.replace(/^[\x00-\x20]+/, "");
+		// perform some magic if value doesn't start with a single slash (which is relative path)
+		if (value.charAt(0) !== "/" || value.charAt(1) !== "/") {
+			var prefix = "";
+			while (true) {
+				// remove any whitespace from the first 11 symbols of value,
+				// (11 is simply a length of "javascript:" string)
+				prefix = value.substring(0, 11);
+				if (!/\s/.test(prefix)) break;
+				value = prefix.replace(/\s/g, "") + value.substring(11);
+			}
+		}
+		if (/^(?:java|vb)script:/i.test(value)) return undefined;
+	}
+
+	return value;
 };
 
 /**
