@@ -105,14 +105,13 @@ Echo.Loader.getURL = function(url, devVersion) {
  *
  * @param {Function} [callback]
  * Callback function which should be called as soon as all requested files
- * were downloaded.
+ * are downloaded.
  *
  * @param {Object} [config]
- * Object with configuration parameters
+ * Object with configuration parameters.
  *
  * @param {Number} config.errorTimeout
- * Timeout loading of resources in milliseconds, use as yepnope.errorTimeout
- *
+ * Resource loading timeout in milliseconds.
  */
 Echo.Loader.download = function(resources, callback, config) {
 	config = config || {};
@@ -445,26 +444,6 @@ Echo.Loader._initCanvas = function(target, initMode, config) {
 		};
 		onViewportChange(&quot;subscribe&quot;, handler);
 	}
-};
-
-// we are changing Comments app script
-// location from Echo CDN to original CDN
-Echo.Loader._prepareCanvasData = function(canvasData) {
-	if (!canvasData.data) return canvasData;
-	var replace = function(script) {
-		return script.replace(/((?:https?:)?\/\/)?cdn\.echoenabled\.com\/apps\/rtb\/comments/, function(match, protocol) {
-			var prefix = protocol === &quot;https://&quot;
-				? &quot;ssl&quot;
-				: (/^https/.test(window.location.protocol) &amp;&amp; protocol !== &quot;http://&quot;
-					? &quot;ssl&quot; : &quot;cdn&quot;);
-			return protocol + prefix + &quot;.realtidbits.com/libs&quot;;
-		});
-	};
-	Echo.Loader._map(canvasData.data.apps || [], function(app) {
-		app.script = replace(Echo.Canvas.prototype._getAppScriptURL(app));
-		app.scripts &amp;&amp; delete app.scripts;
-	});
-	return canvasData;
 };
 
 // we are changing Comments app script

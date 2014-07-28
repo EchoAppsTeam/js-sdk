@@ -30,6 +30,7 @@ Echo.Tests.module("Echo.Utils", {
 			"remove",
 			"random",
 			"safelyExecute",
+			"sanitize",
 			"sequentialCall",
 			"set",
 			"stripTags",
@@ -176,17 +177,78 @@ Echo.Tests.test("htmlize()", function() {
 		"Checking with special characters");
 });
 
-Echo.Tests.test("stripTags()", function() {
-	QUnit.equal(Echo.Utils.stripTags(), undefined,
+Echo.Tests.asyncTest("sanitize()", function() {
+	QUnit.strictEqual(Echo.Utils.sanitize(), undefined, "no parameters");
+	QUnit.strictEqual(Echo.Utils.sanitize("123"), "123",
+		"no type -> no sanitization");
+
+	var casesByType = {
+		"unknown": [
+			["123", "123", "unsupported type -> no sanitization"]
+		],
+		"number": [
+			["123", 123, "regular integer"],
+			["1.23e+1", 12.3, "regular float"],
+			["123 mm", undefined, "text with integer in it"],
+			["1.23e+1 mm", undefined, "text with float in it"]
+		],
+		"plainText": [
+			// we don't need many tests here as it's a simple wrapper around stripTags method
+			['<b>bold <a href="#">link</a></b>', "bold link", "HTML tags are removed"]
+		],
+		"html": [
+			[
+				'1<img/src="1"/onerror="alert(1)">2',
+				'1<img/src="1"/on_error="alert(1)">2',
+				"break HTML attributes that stores event handlers"
+			]
+		],
+		"url": [
+			["http://example.com", "http://example.com", "regular URL (http protocol)"],
+			["https://example.com", "https://example.com", "regular URL (https protocol)"],
+			["//example.com", "//example.com", "regular URL (no protocol)"],
+			["data:qwerty", "data:qwerty", "data directive"],
+			["vbscript:alert(1)", undefined, "vbscript directive"],
+			["javascript:alert(1)", undefined, "javascript directive (no tricks)"],
+			["javascript	:alert(1)", undefined, "javascript directive (tab symbol before semicolon)"],
+			["	javascript:alert(1)", undefined, "javascript directive (tab symbol in the beginning)"],
+			[" \u0001 javascript:alert(1)", undefined, "javascript directive (non-printable symbol in the beginning)"],
+			["java	script:alert(1)", undefined, "javascript directive (tab symbol inside directive)"]
+		]
+	};
+	$.each(casesByType, function(type, cases) {
+		$.each(cases, function(i, _case) {
+			QUnit.strictEqual(
+				Echo.Utils.sanitize(_case[0], type),
+				_case[1],
+				"[" + type + "] " + _case[2]
+			);
+		});
+	});
+	QUnit.start();
+});
+
+Echo.Tests.asyncTest("stripTags()", function() {
+	QUnit.strictEqual(Echo.Utils.stripTags(), undefined,
 		"Checking with undefined param");
-	QUnit.equal(Echo.Utils.stripTags(""), "",
+	QUnit.strictEqual(Echo.Utils.stripTags(""), "",
 		"Checking with empty string param");
-	QUnit.equal(Echo.Utils.stripTags(20), 20,
+	QUnit.strictEqual(Echo.Utils.stripTags(20), 20,
 		"Checking with integer param (expecting the same integer to be returned)");
-	QUnit.equal(Echo.Utils.stripTags("<div>Content</div>"), "Content",
+	QUnit.strictEqual(Echo.Utils.stripTags("<div>Content</div>"), "Content",
 		"Checking with simple HTML");
-	QUnit.equal(Echo.Utils.stripTags("<div>Outer<div><!-- Comment -->Inner</div></div>"), "OuterInner",
+	QUnit.strictEqual(Echo.Utils.stripTags("<div>Outer<div><!-- Comment -->Inner</div></div>"), "OuterInner",
 		"Checking with complex HTML");
+
+	Echo.Tests.Fixtures.stripTagsHacked = false;
+	var actual = Echo.Utils.stripTags('1<img/src="1"/onerror="Echo.Tests.Fixtures.stripTagsHacked=true">2');
+	// wait some time for hack to onerror handler to work
+	setTimeout(function() {
+		QUnit.equal(actual, "12", "Checking with hackish HTML");
+		QUnit.strictEqual(Echo.Tests.Fixtures.stripTagsHacked, false, "Checking if hack worked");
+		delete Echo.Tests.Fixtures.stripTagsHacked;
+		QUnit.start();
+	}, 150);
 });
 
 Echo.Tests.test("objectToJSON()", function() {
