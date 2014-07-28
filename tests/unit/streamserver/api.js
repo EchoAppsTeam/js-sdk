@@ -1,4 +1,5 @@
 (function($) {
+"use strict";
 
 var suite = Echo.Tests.Unit.StreamServerAPI = function() {};
 
@@ -226,7 +227,7 @@ suite.prototype.cases.backwardCompatibility = function(callback) {
 suite.prototype.cases.websockets = function(callback) {
 	var item = $.extend(true, {}, this.items.post);
 	var params = $.extend({}, this.params);
-	var q = params.q.replace(/\s+children:\d+$/, "") + "/11111"
+	var q = params.q.replace(/\s+children:\d+$/, "") + "/11111";
 	var target = q.replace(/^childrenof:(http:\/\/\S+).*$/, "$1");
 	item.targets[0].id = target;
 	item.targets[0].conversationID = target;
@@ -280,7 +281,7 @@ suite.prototype.cases.websockets = function(callback) {
 suite.prototype.cases.webSocketSinceCase = function(callback) {
 	var item = $.extend(true, {}, this.items.post);
 	var params = $.extend({}, this.params);
-	var q = params.q.replace(/\s+children:\d+$/, "") + "/11111"
+	var q = params.q.replace(/\s+children:\d+$/, "") + "/11111";
 	var target = q.replace(/^childrenof:(http:\/\/\S+).*$/, "$1");
 	item.targets[0].id = target;
 	item.targets[0].conversationID = target;
@@ -337,6 +338,8 @@ suite.prototype.cases.websocketFallback = function(callback) {
 			"onOpen": function(data) {
 				QUnit.ok(req.liveUpdates instanceof Echo.StreamServer.API.Polling && !(req.liveUpdates instanceof Echo.StreamServer.API.WebSockets), "Checking WS connection fallback");
 				stub.restore();
+				//clearing up after method override
+				delete Echo.API.Transports.WebSockets.socketByURI["live.echoenabled.com/v1/ws"];
 				req.abort();
 				callback();
 			}
@@ -349,7 +352,7 @@ suite.prototype.cases.websocketFallback = function(callback) {
 suite.prototype.cases.multipleWebsocketRequests = function(callback) {
 	var item = $.extend(true, {}, this.items.post);
 	var params = $.extend({}, this.params);
-	var q = params.q.replace(/\s+children:\d+$/, "") + "/222"
+	var q = params.q.replace(/\s+children:\d+$/, "") + "/222";
 	var target = q.replace(/^childrenof:(http:\/\/\S+).*$/, "$1");
 	item.targets[0].id = target;
 	item.targets[0].conversationID = target;
@@ -381,21 +384,23 @@ suite.prototype.cases.multipleWebsocketRequests = function(callback) {
 	// 21 is a euristic non documented number
 	// The server allows to subscribe to no more than 20 subscriptions per connect.
 	for (var i = 0; i < 21; i++) {
+		/* jshint loopfunc: true */
 		(function(i) {
 			def.push($.Deferred());
 			requests.push(
 				getRequest(i)
 			);
 		})(i);
+		/* jshint loopfunc: false */
 	}
-	var chained = function chain(i, r) {
+	var chained = (function chain(i, r) {
 		if (requests[i + 1]) {
 			return chain(i + 1, r.pipe(function() {
 				return requests[i + 1].send();
 			}));
 		}
 		return r;
-	}(0, requests[0].send());
+	})(0, requests[0].send());
 	Echo.Events.subscribe({
 		"topic": "Echo.API.Transports.WebSockets.onOpen",
 		"context": "live.echoenabled.com-v1-ws",
@@ -452,7 +457,7 @@ suite.prototype.tests.PublicInterfaceTests = {
 		}
 		// WebSocket specific tests
 		if (Echo.API.Transports.WebSockets.available()) {
-			sequentialTests = sequentialTests.concat(["websockets", "multipleWebsocketRequests", "websocketFallback", "webSocketSinceCase"]);
+			sequentialTests = sequentialTests.concat(["websockets", "multipleWebsocketRequests", "webSocketSinceCase", "websocketFallback"]);
 		}
 		this.sequentialAsyncTests(sequentialTests, "cases");
 	}

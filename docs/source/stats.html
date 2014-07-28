@@ -29,11 +29,31 @@ Echo.Tests.Stats.markFunctionTested = function(fn) {
 	_coverage.functions.raw.tested[fn] = true;
 };
 
-QUnit.begin(initStats);
+QUnit.begin(function() {
+	getFunctionNames(Echo.Tests.Stats.root.object, Echo.Tests.Stats.root.namespace);
+	startEventsSpy();
+});
 
-QUnit.done(showStats);
+QUnit.done(function(results) {
+	exportStats(results);
+	stopEventsSpy();
+	calculateFunctionsCoverage();
+	calculateEventsCoverage();
+	showCoverage();
+});
 
-QUnit.log(testLogSpy);
+QUnit.log(function(result) {
+	if (!result.result) {
+		// TODO: either remove or make saucelabs accept it
+		_detailErrors.push({
+			&quot;module&quot;: result.module,
+			&quot;name&quot;: result.name,
+			&quot;message&quot;: result.message,
+			&quot;source&quot;: result.source,
+			&quot;testNumber&quot;: QUnit.config.current.testNumber
+		});
+	}
+});
 
 // private stuff
 
@@ -84,33 +104,7 @@ _coverage.events = {
 	}
 };
 
-function initStats() {
-	getFunctionNames(Echo.Tests.Stats.root.object, Echo.Tests.Stats.root.namespace);
-	startEventsSpy();
-}
-
-function showStats(results) {
-	exportStats(results);
-	stopEventsSpy();
-	calculateFunctionsCoverage();
-	calculateEventsCoverage();
-	showCoverage();
-}
-
 var _eventsPublish, _eventsSubscribe, _detailErrors = [];
-
-function testLogSpy(result) {
-	if (!result.result) {
-		// TODO: either remove or make saucelabs accept it
-		_detailErrors.push({
-			&quot;module&quot;: result.module,
-			&quot;name&quot;: result.name,
-			&quot;message&quot;: result.message,
-			&quot;source&quot;: result.source,
-			&quot;testNumber&quot;: this.config.current.testNumber
-		});
-	}
-}
 
 function exportStats(results) {
 	window.global_test_results = results;
@@ -160,7 +154,7 @@ function startEventsSpy() {
 			}
 		}
 		return _eventsPublish(params);
-	}
+	};
 }
 
 function stopEventsSpy() {
@@ -257,7 +251,7 @@ function getEventsCount(type, expectedValue, isEquiv) {
 	var check = function(expected) {
 		if (typeof expected === &quot;string&quot;) {
 			if (isEquiv) {
-				isOk = QUnit.equiv(processed[type], processed[expected])
+				isOk = QUnit.equiv(processed[type], processed[expected]);
 			} else {
 				isOk = processed[type].length === processed[expected].length;
 			}
@@ -298,7 +292,7 @@ function showCoverage() {
 			}).join(&quot;&quot;) +
 			&#39;&lt;/div&gt;&#39; +
 			(!Echo.Tests.Events
-				? &#39;&#39; 
+				? &#39;&#39;
 				: &#39;&lt;div class=&quot;echo-tests-coverage-events&quot;&gt;&#39; +
 					&#39;&lt;h3&gt;Events analysis&lt;/h3&gt; &#39; +
 					&#39;&lt;p&gt;Total contract defined: &lt;b&gt;&#39; + events.processed.count + &#39;&lt;/b&gt;&lt;/p&gt; &#39; +
@@ -323,7 +317,7 @@ function showCoverage() {
 
 var _isListVisible, _lastListType;
 function showCoverageList(type, prefix) {
-	var html = &quot;&quot;, data = [];
+	var html = &quot;&quot;;
 	var el = $(&quot;.echo-tests-stats-info&quot;);
 	var list = _coverage[prefix].processed[type];
 	list &amp;&amp; list.sort();
@@ -358,7 +352,7 @@ function showCoverageList(type, prefix) {
 				html += getDiff(&quot;subscribed&quot;, &quot;published&quot;, &quot;Subscribed but not published&quot;);
 			} else {
 				var getTextCount = function(count) {
-					return count === 1 ? &quot;once&quot; : count + &quot; times&quot;
+					return count === 1 ? &quot;once&quot; : count + &quot; times&quot;;
 				};
 				$.each(list, function(i, topic) {
 					if (type === &quot;subscribed&quot;) {
@@ -374,7 +368,7 @@ function showCoverageList(type, prefix) {
 						}
 
 						if( type === &quot;notTested&quot; || type === &quot;failed&quot;) {
-							html +=	&#39; [&lt;a class=&quot;echo-clickable&quot; data-topic=&quot;&#39; + topic + &#39;&quot;&gt;view data&lt;/a&gt;] &lt;div class=&quot;echo-tests-event-data&quot;&gt;&#39; + &#39;&lt;/div&gt;&#39;;
+							html +=	&#39; [&lt;a class=&quot;echo-clickable&quot; data-topic=&quot;&#39; + topic + &#39;&quot;&gt;view data&lt;/a&gt;] &lt;div class=&quot;echo-tests-event-data&quot;&gt;&lt;/div&gt;&#39;;
 						}
 						html +=	&#39;&lt;/li&gt;&#39;;
 					}
@@ -383,7 +377,7 @@ function showCoverageList(type, prefix) {
 				if (!html.length) {
 					html = &quot;&lt;ul&gt;&lt;li&gt;Empty list&lt;/li&gt;&lt;/ul&gt;&quot;;
 				} else {
-					html = &quot;&lt;ul&gt;&quot;+html+&quot;&lt;/ul&gt;&quot;;
+					html = &quot;&lt;ul&gt;&quot; + html + &quot;&lt;/ul&gt;&quot;;
 				}
 			}
 
@@ -391,9 +385,11 @@ function showCoverageList(type, prefix) {
 				.find(&quot;.echo-clickable&quot;).click(function() {
 					var dataTag = $(this).parent().find(&quot;.echo-tests-event-data&quot;);
 					if (dataTag.html() === &quot;&quot;) {
-						var data = $.map(events.raw.published[$(this).data(&quot;topic&quot;)].data, function(val) {
+						var topic = $(this).data(&quot;topic&quot;);
+						var data = $.map(events.raw.published[topic].data, function(val) {
 							return &#39;&lt;pre&gt;&#39; + QUnit.jsDump.parse(prepareEventData(val)) + &#39;&lt;/pre&gt;&#39;;
 						});
+						data.unshift(&quot;&lt;pre&gt;&lt;u&gt;Expected&lt;/u&gt;: &quot; + QUnit.jsDump.parse(Echo.Tests.Events.contracts[topic]) + &quot;&lt;/pre&gt;&quot;);
 						dataTag.html(data.join(&quot;&quot;));
 					}
 
@@ -454,7 +450,7 @@ function prepareEventData(obj, level) {
 	if (($.type(obj) === &quot;object&quot; || $.type(obj) === &quot;array&quot;)) {
 		if (obj.tagName || obj.jquery) {
 			obj = &quot;[object DOM]&quot;;
-		} else if (level &lt;= 2) {
+		} else if (level &lt;= 3) {
 			$.each(obj, function(key) {
 				obj[key] = prepareEventData(obj[key], level + 1);
 			});
@@ -477,8 +473,8 @@ Echo.Utils.addCSS(
 	&#39;.echo-tests-event-data { color: black; display: none; }&#39; +
 	&#39;.echo-tests-event-data pre { border: 1px dashed #999999; padding: 10px; background: #B0D0D0; }&#39; +
 	&#39;.echo-tests-coverage-functions, .echo-tests-coverage-events { float: left; width: 400px; }&#39; +
-	&#39;.echo-clear { clear: both; }&#39;
-, &quot;echo-tests&quot;);
+	&#39;.echo-clear { clear: both; }&#39;,
+&quot;echo-tests&quot;);
 
 })(Echo.jQuery);
 </pre>

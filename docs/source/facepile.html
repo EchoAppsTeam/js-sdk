@@ -25,16 +25,16 @@ var $ = jQuery;
  * Echo FacePile control displays users (actors) returned in any activity stream and displays a live updating collection of avatars and names.
  * It is either a static list formed by a predefined data set or live updated list constructed using the Echo Query Language.
  *
- * 	new Echo.StreamServer.Controls.FacePile({
- * 		&quot;target&quot;: document.getElementById(&quot;echo-facepile&quot;),
- * 		&quot;appkey&quot;: &quot;echo.jssdk.demo.aboutecho.com&quot;,
- * 		&quot;query&quot;: &quot;childrenof:http://example.com/* itemsPerPage:2 children:0&quot;,
- * 		&quot;suffixText&quot;: &quot; commented on aboutecho.com&quot;,
- * 		&quot;item&quot;: {&quot;avatar&quot;: true, &quot;text&quot;: true}
- * 	});
+ *		new Echo.StreamServer.Controls.FacePile({
+ *			&quot;target&quot;: document.getElementById(&quot;echo-facepile&quot;),
+ *			&quot;appkey&quot;: &quot;echo.jssdk.demo.aboutecho.com&quot;,
+ *			&quot;query&quot;: &quot;childrenof:http://example.com/* itemsPerPage:2 children:0&quot;,
+ *			&quot;suffixText&quot;: &quot; commented on aboutecho.com&quot;,
+ *			&quot;item&quot;: {&quot;avatar&quot;: true, &quot;text&quot;: true}
+ *		});
  *
  * More information regarding the possible ways of the Control initialization
- * can be found in the [“How to initialize Echo components”](#!/guide/how_to_initialize_components-section-initializing-an-app) guide.
+ * can be found in the [&quot;How to initialize Echo components&quot;](#!/guide/how_to_initialize_components-section-initializing-an-app) guide.
  *
  * @extends Echo.Control
  *
@@ -147,11 +147,11 @@ pile.config = {
 	 * &lt;a href=&quot;http://echoplatform.com/streamserver/docs/rest-api/items-api/search/&quot; target=&quot;_blank&quot;&gt;&quot;search&quot; API&lt;/a&gt;
 	 * method specification.
 	 *
-	 * 	new Echo.StreamServer.Controls.FacePile({
-	 * 		&quot;target&quot;: document.getElementById(&quot;echo-facepile&quot;),
-	 * 		&quot;appkey&quot;: &quot;echo.jssdk.demo.aboutecho.com&quot;,
-	 * 		&quot;query&quot; : &quot;childrenof:http://example.com/test/*&quot;
-	 * 	});
+	 *		new Echo.StreamServer.Controls.FacePile({
+	 *			&quot;target&quot;: document.getElementById(&quot;echo-facepile&quot;),
+	 *			&quot;appkey&quot;: &quot;echo.jssdk.demo.aboutecho.com&quot;,
+	 *			&quot;query&quot; : &quot;childrenof:http://example.com/test/*&quot;
+	 *		});
 	 */
 	&quot;query&quot;: &quot;&quot;,
 
@@ -370,7 +370,7 @@ pile.methods._fromExternalData = function() {
 
 pile.methods._request = function() {
 	var self = this;
- 	var request = this.get(&quot;request&quot;);
+	var request = this.get(&quot;request&quot;);
 	if (!request) {
 		request = Echo.StreamServer.API.request({
 			&quot;endpoint&quot;: &quot;search&quot;,
@@ -580,7 +580,7 @@ pile.methods._intersperse = function(object, separator) {
 	});
 };
 
-pile.css = 
+pile.css =
 	&#39;.{class:container} { line-height: 20px; vertical-align: middle; }&#39; +
 	&#39;.{class:more} { white-space: nowrap; }&#39; +
 	&#39;.{class:more}.echo-linkColor a, .{class:more}.echo-linkColor a:hover { color: #476CB8; text-decoration: underline; }&#39; +
@@ -592,8 +592,6 @@ Echo.Control.create(pile);
 
 (function(jQuery) {
 &quot;use strict&quot;;
-
-var $ = jQuery;
 
 <span id='Echo-StreamServer-Controls-FacePile-Item-method-constructor'><span id='Echo-StreamServer-Controls-FacePile-Item'>/**
 </span></span> * @class Echo.StreamServer.Controls.FacePile.Item
@@ -701,9 +699,8 @@ item.templates.main =
 </span> * @echo_renderer
  */
 item.renderers.avatar = function(element) {
-	var self = this;
 	if (this.config.get(&quot;avatar&quot;)) {
-		this.placeImage({ 
+		this.placeImage({
 			&quot;container&quot;: element,
 			&quot;image&quot;: this.get(&quot;data.avatar&quot;),
 			&quot;defaultImage&quot;: this.config.get(&quot;defaultAvatar&quot;)

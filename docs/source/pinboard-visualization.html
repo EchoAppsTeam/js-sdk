@@ -145,7 +145,6 @@ mediaGallery.renderers.controls = function(element) {
 	$.each(this.elements, function(i, element) {
 		element = $(element);
 		self._normalizeFlashContent(element);
-		var ratio;
 		var isCurrentControl = (i === self.currentIndex);
 		var itemContainer = $(&#39;&lt;div&gt;&lt;/div&gt;&#39;).append(element).addClass(itemClass);
 		var showCurrentMedia = function() {
@@ -211,7 +210,7 @@ mediaGallery.methods._normalizeFlashContent = function(element) {
 		var query = parts.query;
 		query = query &amp;&amp; ~query.indexOf(&quot;wmode&quot;)
 			? query.replace(/(wmode=)([^&amp;?]+)/g, function($0, $1, $2) {
-				if ($2 != &quot;opaque&quot; || $2 != &quot;transparent&quot;) {
+				if ($2 !== &quot;opaque&quot; || $2 !== &quot;transparent&quot;) {
 					return $1 + &quot;opaque&quot;;
 				}
 			})
@@ -225,7 +224,7 @@ mediaGallery.methods._normalizeFlashContent = function(element) {
 		}));
 	} else if (tagName === &quot;embed&quot;) {
 		var wmode = element.attr(&quot;wmode&quot;);
-		if (wmode != &quot;opaque&quot; || wmode != &quot;transparent&quot;) {
+		if (wmode !== &quot;opaque&quot; || wmode !== &quot;transparent&quot;) {
 			element.attr(&quot;wmode&quot;, &quot;opaque&quot;);
 		}
 	}
@@ -306,16 +305,16 @@ var $ = jQuery;
  * The PinboardVisualization plugin transforms Stream.Item control into a
  * pinboard-style block.
  *
- * 	new Echo.StreamServer.Controls.Stream({
- * 		&quot;target&quot;: document.getElementById(&quot;echo-stream&quot;),
- * 		&quot;query&quot;: &quot;childrenof:http://example.com/js-sdk&quot;,
- * 		&quot;appkey&quot;: &quot;echo.jssdk.demo.aboutecho.com&quot;,
- * 		&quot;plugins&quot;: [{
- * 			&quot;name&quot;: &quot;PinboardVisualization&quot;,
- * 			&quot;columnWidth&quot;: 100,
- * 			&quot;gallery&quot;: {&quot;resizeDuration&quot;: 550}
- * 		}]
- * 	});
+ *		new Echo.StreamServer.Controls.Stream({
+ *			&quot;target&quot;: document.getElementById(&quot;echo-stream&quot;),
+ *			&quot;query&quot;: &quot;childrenof:http://example.com/js-sdk&quot;,
+ *			&quot;appkey&quot;: &quot;echo.jssdk.demo.aboutecho.com&quot;,
+ *			&quot;plugins&quot;: [{
+ *				&quot;name&quot;: &quot;PinboardVisualization&quot;,
+ *				&quot;columnWidth&quot;: 100,
+ *				&quot;gallery&quot;: {&quot;resizeDuration&quot;: 550}
+ *			}]
+ *		});
  *
  * __Note__: PinboardVisualization plugin modifies not only the Stream layout,
  * but also the UI of the Stream.Item control. It is notable that &quot;reTag&quot; section
@@ -326,7 +325,7 @@ var $ = jQuery;
  * parameter can be found [here](#!/api/Echo.StreamServer.Controls.Stream.Item-cfg-reTag).
  *
  * More information regarding the plugins installation can be found
- * in the [“How to initialize Echo components”](#!/guide/how_to_initialize_components-section-initializing-plugins) guide.
+ * in the [&quot;How to initialize Echo components&quot;](#!/guide/how_to_initialize_components-section-initializing-plugins) guide.
  *
  * @extends Echo.Plugin
  *
@@ -338,7 +337,6 @@ var plugin = Echo.Plugin.manifest(&quot;PinboardVisualization&quot;, &quot;Echo.
 if (Echo.Plugin.isDefined(plugin)) return;
 
 plugin.init = function() {
-	var self = this, item = this.component;
 	this.extendTemplate(&quot;replace&quot;, &quot;container&quot;, plugin.templates.container);
 };
 
@@ -372,10 +370,10 @@ plugin.config = {
 	 * 
 	 * Example (also used as a default value):
 	 *
-	 * 	&quot;mediaSelector&quot;: function(content) {
-	 * 		var dom = $(&quot;&lt;div&gt;&quot; + content + &quot;&lt;/div&gt;&quot;);
-	 * 		return $(&quot;img, video, embed, iframe&quot;, dom);
-	 * 	}
+	 *		&quot;mediaSelector&quot;: function(content) {
+	 *			var dom = $(&quot;&lt;div&gt;&quot; + content + &quot;&lt;/div&gt;&quot;);
+	 *			return $(&quot;img, video, embed, iframe&quot;, dom);
+	 *		}
 	 */
 	&quot;mediaSelector&quot;: function(content) {
 		var dom = $(&quot;&lt;div&gt;&quot; + content + &quot;&lt;/div&gt;&quot;);
@@ -404,7 +402,7 @@ plugin.config = {
 };
 
 plugin.enabled = function() {
-	return document.compatMode !== &quot;BackCompat&quot;
+	return document.compatMode !== &quot;BackCompat&quot;;
 };
 
 plugin.labels = {
@@ -570,10 +568,11 @@ plugin.renderers.media = function(element) {
 };
 
 plugin.methods._getCSSByLength = function(length) {
-	var plugin = this, item = this.component;
+	var plugin = this;
 	var handler = function(range, acc, className) {
 		if (length &gt;= range[0] &amp;&amp; length &lt; range[1]) {
-			return (acc = className);
+			acc = className;
+			return acc;
 		}
 	};
 	return Echo.Utils.foldl(&quot;&quot;, plugin.config.get(&quot;itemCSSClassByContentLength&quot;), handler);
@@ -600,8 +599,8 @@ plugin.templates.container =
 		&#39;&lt;div class=&quot;{class:wrapper}&quot;&gt;&#39; +
 			&#39;&lt;div class=&quot;{class:subcontainer}&quot;&gt;&#39; +
 				&#39;&lt;div class=&quot;{class:data}&quot;&gt;&#39; +
-					&#39;&lt;div class=&quot;{plugin.class:media}&quot;&gt;&lt;/div&gt;&#39; + 
-					&#39;&lt;div class=&quot;{class:body} echo-primaryColor&quot;&gt; &#39; + 
+					&#39;&lt;div class=&quot;{plugin.class:media}&quot;&gt;&lt;/div&gt;&#39; +
+					&#39;&lt;div class=&quot;{class:body} echo-primaryColor&quot;&gt; &#39; +
 						&#39;&lt;span class=&quot;{class:text}&quot;&gt;&lt;/span&gt;&#39; +
 						&#39;&lt;span class=&quot;{class:textEllipses}&quot;&gt;...&lt;/span&gt;&#39; +
 						&#39;&lt;span class=&quot;{class:textToggleTruncated} echo-linkColor echo-clickable&quot;&gt;&lt;/span&gt;&#39; +
@@ -686,8 +685,6 @@ Echo.Plugin.create(plugin);
 (function(jQuery) {
 &quot;use strict&quot;;
 
-var $ = jQuery;
-
 <span id='Echo-StreamServer-Controls-Stream-Plugins-PinboardVisualization'>/**
 </span> * @class Echo.StreamServer.Controls.Stream.Plugins.PinboardVisualization
  * The PinboardVisualization plugin transforms Echo Stream Client visualization
@@ -704,16 +701,16 @@ var $ = jQuery;
  * http://cdn.echoenabled.com/sdk/v3/streamserver/plugins/pinboard-visualization.js  
  * http://cdn.echoenabled.com/sdk/v3/dev/streamserver/plugins/pinboard-visualization.js
  *
- * 	new Echo.StreamServer.Controls.Stream({
- * 		&quot;target&quot;: document.getElementById(&quot;echo-stream&quot;),
- * 		&quot;appkey&quot;: &quot;echo.jssdk.demo.aboutecho.com&quot;,
- * 		&quot;plugins&quot;: [{
- * 			&quot;name&quot;: &quot;PinboardVisualization&quot;
- * 		}]
- * 	});
+ *		new Echo.StreamServer.Controls.Stream({
+ *			&quot;target&quot;: document.getElementById(&quot;echo-stream&quot;),
+ *			&quot;appkey&quot;: &quot;echo.jssdk.demo.aboutecho.com&quot;,
+ *			&quot;plugins&quot;: [{
+ *				&quot;name&quot;: &quot;PinboardVisualization&quot;
+ *			}]
+ *		});
  *
  * More information regarding the plugins installation can be found
- * in the [“How to initialize Echo components”](#!/guide/how_to_initialize_components-section-initializing-plugins) guide.
+ * in the [&quot;How to initialize Echo components&quot;](#!/guide/how_to_initialize_components-section-initializing-plugins) guide.
  *
  * @extends Echo.Plugin
  *
@@ -768,7 +765,7 @@ plugin.init = function() {
 };
 
 plugin.enabled = function() {
-	return document.compatMode !== &quot;BackCompat&quot;
+	return document.compatMode !== &quot;BackCompat&quot;;
 };
 
 plugin.dependencies = [{
@@ -814,7 +811,7 @@ plugin.methods._refreshView = function() {
 		);
 };
 
-plugin.css = 
+plugin.css =
 	&#39;.{plugin.class} .isotope { -webkit-transition-property: height, width; -moz-transition-property: height, width; -o-transition-property: height, width; transition-property: height, width;  -webkit-transition-duration: 0.8s; -moz-transition-duration: 0.8s; -o-transition-duration: 0.8s; transition-duration: 0.8s; }&#39; +
 	&#39;.{plugin.class} .isotope .isotope-item { -webkit-transition-property: -webkit-transform, opacity; -moz-transition-property: -moz-transform, opacity; -o-transition-property: top, left, opacity; transition-property:transform, opacity; -webkit-transition-duration: 0.8s; -moz-transition-duration: 0.8s; -o-transition-duration: 0.8s; transition-duration: 0.8s; }&#39;;
 

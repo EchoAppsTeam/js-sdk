@@ -16,6 +16,7 @@
 </head>
 <body onload="prettyPrint(); highlight();">
   <pre class="prettyprint lang-js">(function(jQuery) {
+&quot;use strict&quot;;
 
 var $ = jQuery;
 
@@ -370,7 +371,7 @@ Echo.GUI.Tabs.prototype.update = function(id, config) {
 Echo.GUI.Tabs.prototype.show = function(id) {
 	this.get(id).tab(&quot;show&quot;);
 	// sometimes panel is in detached DOM so we explicitly activate it
-	this._getPanel(id).addClass(&quot;active&quot;);
+	this._getPanel(id).addClass(&quot;active echo-active&quot;);
 };
 
 Echo.GUI.Tabs.prototype._getTabIndex = function(id) {
@@ -381,7 +382,7 @@ Echo.GUI.Tabs.prototype._getTabIndex = function(id) {
 		}
 	}
 	return -1;
-}
+};
 
 Echo.GUI.Tabs.prototype._getPanel = function(id) {
 	return this.getPanels().find(&quot;#&quot; + this._getTabFullId(id));

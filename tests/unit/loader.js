@@ -1,7 +1,7 @@
 (function(jQuery) {
-var $ = jQuery;
-
 "use strict";
+
+var $ = jQuery;
 
 Echo.Tests.module("Echo.Loader", {
 	"meta": {
@@ -173,10 +173,12 @@ Echo.Tests.asyncTest("resource downloading", function() {
 		count = count || existingScriptsCount;
 		var resources = [];
 		for (var i = 1; i <= count; i++) {
+			/* jshint loopfunc: true */
 			resources.push({
 				"url": base + (count > existingScriptsCount ? "non-existing" : i) + ".js",
 				"loaded": function() { return !!Echo.Tests.Fixtures.loader["object" + i]; }
 			});
+			/* jshint loopfunc: false */
 		}
 		Echo.Loader.download(resources, function() {
 			var success = true;
@@ -424,8 +426,8 @@ Echo.Tests.asyncTest("application initialization", function() {
 Echo.Tests.asyncTest("getting canvas elements", function() {
 	var defaultInit = Echo.Tests.isolate(function(callback) {
 		$(this.document.body)
-			.append('<div class="echo-canvas" data-canvas-id="js-sdk-tests/test-canvas-001"></div>')
-			.append('<div class="echo-canvas" data-canvas-id="js-sdk-tests/test-canvas-001"></div>')
+			.append('<div class="echo-canvas" data-canvas-id="js-sdk-tests/test-canvas-001" data-canvas-maxConfigFetchingRetries="0"></div>')
+			.append('<div class="echo-canvas" data-canvas-id="js-sdk-tests/test-canvas-001" data-canvas-maxConfigFetchingRetries="0"></div>');
 
 		Echo.Loader._lookupCanvases({
 			"target": this.document.body
@@ -437,9 +439,9 @@ Echo.Tests.asyncTest("getting canvas elements", function() {
 
 	var nativeElements = Echo.Tests.isolate(function(callback) {
 		$(this.document.body)
-			.append('<div class="echo-canvas-test" data-canvas-id="js-sdk-tests/test-canvas-001"></div>')
-			.append('<div class="echo-canvas-test" data-canvas-id="js-sdk-tests/test-canvas-001"></div>')
-			.append('<div class="echo-canvas-test" data-canvas-id="js-sdk-tests/test-canvas-001"></div>');
+			.append('<div class="echo-canvas-test" data-canvas-maxConfigFetchingRetries="0" data-canvas-id="js-sdk-tests/test-canvas-001"></div>')
+			.append('<div class="echo-canvas-test" data-canvas-maxConfigFetchingRetries="0" data-canvas-id="js-sdk-tests/test-canvas-001"></div>')
+			.append('<div class="echo-canvas-test" data-canvas-maxConfigFetchingRetries="0" data-canvas-id="js-sdk-tests/test-canvas-001"></div>');
 
 		Echo.Loader._lookupCanvases({
 			"target": this.document.body,
@@ -454,7 +456,7 @@ Echo.Tests.asyncTest("getting canvas elements", function() {
 
 	var nativeSingleElement = Echo.Tests.isolate(function(callback) {
 		$(this.document.body)
-			.append('<div id="echo-canvas-test" data-canvas-id="js-sdk-tests/test-canvas-001"></div>');
+			.append('<div id="echo-canvas-test" data-canvas-id="js-sdk-tests/test-canvas-001" data-canvas-maxConfigFetchingRetries="0"></div>');
 
 		Echo.Loader._lookupCanvases({
 			"target": this.document.body,
@@ -467,9 +469,9 @@ Echo.Tests.asyncTest("getting canvas elements", function() {
 
 	var jQueryElements = Echo.Tests.isolate(function(callback) {
 		$(this.document.body)
-			.append('<div class="echo-canvas-test" data-canvas-id="js-sdk-tests/test-canvas-001"></div>')
-			.append('<div class="echo-canvas-test" data-canvas-id="js-sdk-tests/test-canvas-001"></div>')
-			.append('<div class="echo-canvas-test" data-canvas-id="js-sdk-tests/test-canvas-001"></div>');
+			.append('<div class="echo-canvas-test" data-canvas-maxConfigFetchingRetries="0" data-canvas-id="js-sdk-tests/test-canvas-001"></div>')
+			.append('<div class="echo-canvas-test" data-canvas-maxConfigFetchingRetries="0" data-canvas-id="js-sdk-tests/test-canvas-001"></div>')
+			.append('<div class="echo-canvas-test" data-canvas-maxConfigFetchingRetries="0" data-canvas-id="js-sdk-tests/test-canvas-001"></div>');
 
 		Echo.Loader._lookupCanvases({
 			"target": $("body", this.document),
@@ -495,7 +497,7 @@ Echo.Tests.asyncTest("canvases initialization", function() {
 	var _eventsCountCheck = function(events) {
 		var success = true;
 		$.each(events, function(id, event) {
-			if (event[0] != event[1]) {
+			if (event[0] !== event[1]) {
 				success = false;
 				return false; // break
 			}
@@ -503,7 +505,7 @@ Echo.Tests.asyncTest("canvases initialization", function() {
 		return success;
 	};
 	var simpleValidCanvas = Echo.Tests.isolate(function(callback) {
-		$(this.document.body).append('<div class="echo-canvas" data-canvas-id="js-sdk-tests/test-canvas-001"></div>');
+		$(this.document.body).append('<div class="echo-canvas" data-canvas-maxConfigFetchingRetries="0" data-canvas-id="js-sdk-tests/test-canvas-001"></div>');
 		var expecting = 2;
 		var waitForCompletion = function(canvasID, appID) {
 			Echo.Loader.override(canvasID, appID, {"ready": function() {
@@ -519,6 +521,23 @@ Echo.Tests.asyncTest("canvases initialization", function() {
 		waitForCompletion("js-sdk-tests/test-canvas-001", "stream");
 		Echo.Loader.init({"target": this.document.body});
 	});
+	var simpleValidCanvasViaFastly = Echo.Tests.isolate(function(callback) {
+		$(this.document.body).append('<div class="echo-canvas" data-canvas-maxConfigFetchingRetries="0" data-canvas-provider="fastly" data-canvas-id="js-sdk-tests/test-canvas-fastly-001"></div>');
+		var expecting = 2;
+		var waitForCompletion = function(canvasID, appID) {
+			Echo.Loader.override(canvasID, appID, {"ready": function() {
+				QUnit.ok(true, "[simple valid canvas] Checking if " + appID + " control is initialized correctly after a page canvases lookup (provider = fastly)");
+				this.destroy();
+				expecting--;
+				if (!expecting) {
+					callback();
+				}
+			}});
+		};
+		waitForCompletion("js-sdk-tests/test-canvas-fastly-001", "submit");
+		waitForCompletion("js-sdk-tests/test-canvas-fastly-001", "stream");
+		Echo.Loader.init({"target": this.document.body});
+	});
 	var validAndInvalidCanvases = Echo.Tests.isolate(function(callback) {
 		Echo.Loader.canvases = [];
 		Echo.Loader.canvasesConfigById = {};
@@ -529,30 +548,53 @@ Echo.Tests.asyncTest("canvases initialization", function() {
 		// missing canvas id
 		body.append('<div class="echo-canvas" data-appkey="canvas.003"></div>');
 		// all fields defined, but no config available for the canvas id specified
-		body.append('<div class="echo-canvas" data-canvas-id="js-sdk-tests/nonexistent-canvas-001"></div>');
-		body.append('<div class="echo-canvas" data-canvas-id="js-sdk-tests/nonexistent-canvas-002"></div>');
+		body.append('<div class="echo-canvas" data-canvas-maxConfigFetchingRetries="0" data-canvas-id="js-sdk-tests/nonexistent-canvas-001"></div>');
+		body.append('<div class="echo-canvas" data-canvas-maxConfigFetchingRetries="0" data-canvas-id="js-sdk-tests/nonexistent-canvas-002"></div>');
 		// canvas with empty app list
-		body.append('<div class="echo-canvas" data-canvas-id="js-sdk-tests/test-canvas-004"></div>');
+		body.append('<div class="echo-canvas" data-canvas-maxConfigFetchingRetries="0" data-canvas-id="js-sdk-tests/test-canvas-004"></div>');
 		// canvas with no app list and no Backplane config
-		body.append('<div class="echo-canvas" data-canvas-id="js-sdk-tests/test-canvas-005"></div>');
+		body.append('<div class="echo-canvas" data-canvas-maxConfigFetchingRetries="0" data-canvas-id="js-sdk-tests/test-canvas-005"></div>');
 		// canvas with no configuration at all (empty JSON object)
-		body.append('<div class="echo-canvas" data-canvas-id="js-sdk-tests/test-canvas-006"></div>');
+		body.append('<div class="echo-canvas" data-canvas-maxConfigFetchingRetries="0" data-canvas-id="js-sdk-tests/test-canvas-006"></div>');
 		// valid canvas with existing configuration
-		body.append('<div class="echo-canvas" data-canvas-id="js-sdk-tests/test-canvas-001"></div>');
+		body.append('<div class="echo-canvas" data-canvas-maxConfigFetchingRetries="0" data-canvas-id="js-sdk-tests/test-canvas-001"></div>');
 
 		var count = {
 			"valid": 2,
 			"invalid": 8
 		};
+		var errorCodes = {
+			"*": /loading/i,
+			"js-sdk-tests/nonexistent-canvas-001": /error/i,
+			"js-sdk-tests/nonexistent-canvas-002": /error/i,
+			"js-sdk-tests/test-canvas-004": /^$/,
+			"js-sdk-tests/test-canvas-005": /^$/,
+			"js-sdk-tests/test-canvas-006": /^$/,
+			"received": []
+		};
 		// check invalid canvases
 		var handlerId = Echo.Events.subscribe({
 			"topic": "Echo.Canvas.onError",
-			"handler": function(topic, args) {
+			"handler": function(topic, params) {
+				errorCodes.received.push(params);
 				count.invalid--;
 				if (!count.invalid) {
 					Echo.Events.unsubscribe({"handlerId": handlerId});
 					QUnit.ok(true, "[valid and invalid canvases] Checking the number of invalid canvases");
-					if (!count.valid) callback();
+					if (!count.valid) {
+						// async it because of error canvas retrieving async nature
+						setTimeout(function() {
+							for (var i = 0; i < errorCodes.received.length; i++) {
+								var received = errorCodes.received[i];
+								var target = received.args.target;
+								QUnit.ok(
+									(errorCodes[target.data("canvas-id") || "*"]).test(target.html()),
+									"Checking error rendering in any cases, canvas-id = " + target.data("canvas-id")
+								);
+							}
+							callback();
+						}, 0);
+					}
 				}
 			}
 		});
@@ -573,7 +615,7 @@ Echo.Tests.asyncTest("canvases initialization", function() {
 	});
 	var doubleInitializationPrevention = Echo.Tests.isolate(function(callback) {
 		var body = $(this.document.body);
-		body.append('<div class="echo-canvas" id="canvas" data-canvas-id="js-sdk-tests/test-canvas-001"></div>');
+		body.append('<div class="echo-canvas" id="canvas" data-canvas-maxConfigFetchingRetries="0" data-canvas-id="js-sdk-tests/test-canvas-001"></div>');
 		var count = {
 			"valid": 2,
 			"invalid": 3
@@ -616,11 +658,11 @@ Echo.Tests.asyncTest("canvases initialization", function() {
 	});
 	var differentInitializationSchemas = Echo.Tests.isolate(function(callback) {
 		var body = $(this.document.body);
-		body.append('<div class="echo-canvas" id="testcanvas" data-canvas-id="js-sdk-tests/test-canvas-002-1"></div>');
-		body.append('<div class="echo-canvas" id="js-sdk-tests/test-canvas-002-2" data-canvas-id="js-sdk-tests/test-canvas-002-2"></div>');
-		body.append('<div class="some-class echo-canvas" data-canvas-id="js-sdk-tests/test-canvas-002-3"></div>');
-		body.append('<div class="canvases-container"><div class="echo-canvas" data-canvas-id="js-sdk-tests/test-canvas-002-4"></div></div>');
-		body.append('<div class="echo-canvas" data-canvas-id="js-sdk-tests/test-canvas-002-5"></div>');
+		body.append('<div class="echo-canvas" id="testcanvas" data-canvas-maxConfigFetchingRetries="0" data-canvas-id="js-sdk-tests/test-canvas-002-1"></div>');
+		body.append('<div class="echo-canvas" id="js-sdk-tests/test-canvas-002-2" data-canvas-maxConfigFetchingRetries="0" data-canvas-id="js-sdk-tests/test-canvas-002-2"></div>');
+		body.append('<div class="some-class echo-canvas" data-canvas-maxConfigFetchingRetries="0" data-canvas-id="js-sdk-tests/test-canvas-002-3"></div>');
+		body.append('<div class="canvases-container"><div class="echo-canvas" data-canvas-maxConfigFetchingRetries="0" data-canvas-id="js-sdk-tests/test-canvas-002-4"></div></div>');
+		body.append('<div class="echo-canvas" data-canvas-maxConfigFetchingRetries="0" data-canvas-id="js-sdk-tests/test-canvas-002-5"></div>');
 
 		var count = {
 			"valid": 5,
@@ -679,7 +721,7 @@ Echo.Tests.asyncTest("canvases initialization", function() {
 	});
 	var multipleAppsCanvas = Echo.Tests.isolate(function(callback) {
 		var body = $(this.document.body);
-		body.append('<div class="echo-canvas" data-canvas-id="js-sdk-tests/test-canvas-003"></div>');
+		body.append('<div class="echo-canvas" data-canvas-maxConfigFetchingRetries="0" data-canvas-id="js-sdk-tests/test-canvas-003"></div>');
 		var expecting = 15;
 		var waitForCompletion = function(canvasID, appID) {
 			Echo.Loader.override(canvasID, appID, {"ready": function() {
@@ -699,8 +741,8 @@ Echo.Tests.asyncTest("canvases initialization", function() {
 	});
 	var overridesSameCanvases = Echo.Tests.isolate(function(callback) {
 		var body = $(this.document.body);
-		body.append('<div class="echo-canvas" data-canvas-id="js-sdk-tests/test-canvas-008#foo"></div>');
-		body.append('<div class="echo-canvas" data-canvas-id="js-sdk-tests/test-canvas-008#bar"></div>');
+		body.append('<div class="echo-canvas" data-canvas-maxConfigFetchingRetries="0" data-canvas-id="js-sdk-tests/test-canvas-008#foo"></div>');
+		body.append('<div class="echo-canvas" data-canvas-maxConfigFetchingRetries="0" data-canvas-id="js-sdk-tests/test-canvas-008#bar"></div>');
 		var getCanvasById = function(canvasId) {
 			for (var i = 0; i < Echo.Loader.canvases.length; i++) {
 				if (Echo.Loader.canvases[i].config.get("id") === canvasId) {
@@ -736,7 +778,7 @@ Echo.Tests.asyncTest("canvases initialization", function() {
 	});
 	var appConfigOverrides = Echo.Tests.isolate(function(callback) {
 		var body = $(this.document.body);
-		body.append('<div class="echo-canvas" data-canvas-id="js-sdk-tests/test-canvas-008"></div>');
+		body.append('<div class="echo-canvas" data-canvas-maxConfigFetchingRetries="0" data-canvas-id="js-sdk-tests/test-canvas-008"></div>');
 		Echo.Loader.override("js-sdk-tests/test-canvas-008", "auth", {
 			"appkey": "test.js-kit.com",
 			"identityManager": {"logout": "test"},
@@ -761,7 +803,7 @@ Echo.Tests.asyncTest("canvases initialization", function() {
 			return ((id + "#" + hash) in Echo.Loader.canvasesConfigById);
 		};
 		var deferred = Echo.Utils.foldl([], ["#foo", "#bar"], function(extra, acc) {
-			body.append('<div class="echo-canvas" data-canvas-id="' + id + extra + '"></div>');
+			body.append('<div class="echo-canvas" data-canvas-maxConfigFetchingRetries="0" data-canvas-id="' + id + extra + '"></div>');
 			$.map(["stream", "submit"], function(app) {
 				var def = Echo.jQuery.Deferred();
 				Echo.Loader.override(id + extra, app, {
@@ -796,6 +838,7 @@ Echo.Tests.asyncTest("canvases initialization", function() {
 	});
 	var tests = [
 		simpleValidCanvas,
+		simpleValidCanvasViaFastly,
 		validAndInvalidCanvases,
 		doubleInitializationPrevention,
 		differentInitializationSchemas,
@@ -804,12 +847,12 @@ Echo.Tests.asyncTest("canvases initialization", function() {
 		appConfigOverrides,
 		clearCanvasConfigOnDestroy
 	];
-	QUnit.expect(19);
+	QUnit.expect(29);
 	Echo.Utils.sequentialCall(tests, function() {
 		QUnit.start();
 	});
 }, {
-	"timeout": 20000
+	"timeout": 40000
 });
 
 /*

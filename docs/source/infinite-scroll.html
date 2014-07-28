@@ -35,7 +35,7 @@ var $ = jQuery;
  * 	});
  *
  * More information regarding the plugins installation can be found
- * in the [“How to initialize Echo components”](#!/guide/how_to_initialize_components-section-initializing-plugins) guide.
+ * in the [&quot;How to initialize Echo components&quot;](#!/guide/how_to_initialize_components-section-initializing-plugins) guide.
  *
  * @extends Echo.Plugin
  *
@@ -50,10 +50,12 @@ plugin.init = function() {
 	var plugin = this;
 	var handler = function(event) {
 		var element = plugin.component.view.get(&quot;more&quot;);
-		if (element &amp;&amp; !plugin.get(&quot;requestInProgress&quot;) &amp;&amp;
-			$.inviewport(element, {&quot;threshold&quot;: 0})) {
-				plugin.set(&quot;requestInProgress&quot;, true);
-				element.click();
+		if (element &amp;&amp;
+			!plugin.get(&quot;renderInProgress&quot;) &amp;&amp;
+			!plugin.get(&quot;requestInProgress&quot;) &amp;&amp;
+			$.inviewport(element, {&quot;threshold&quot;: 0})
+		) {
+			element.click();
 		}
 	};
 	plugin.set(&quot;scrollHandler&quot;, handler);
@@ -61,9 +63,19 @@ plugin.init = function() {
 };
 
 plugin.events = {
-	&quot;Echo.StreamServer.Controls.Stream.onDataReceive&quot;: function(topic, args) {
+	&quot;Echo.StreamServer.Controls.Stream.onDataReceive&quot;: function() {
 		this.set(&quot;requestInProgress&quot;, false);
+	},
+	&quot;Echo.StreamServer.Controls.Stream.onMoreButtonPress&quot;: function() {
+		this.set(&quot;requestInProgress&quot;, true);
+		this.set(&quot;renderInProgress&quot;, true);
 	}
+};
+
+plugin.component.renderers.more = function(element) {
+	this.parentRenderer(&quot;more&quot;, arguments);
+	this.set(&quot;renderInProgress&quot;, false);
+	return element;
 };
 
 plugin.methods.destroy = function() {

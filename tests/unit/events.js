@@ -1,4 +1,5 @@
 (function($) {
+"use strict";
 
 var published = [];
 var order;
@@ -105,16 +106,22 @@ Echo.Tests.test("public methods", function() {
 	QUnit.deepEqual(published, [8, 9], "Publish: handlers order (topic \"X\", global context)");
 	publish({"topic": "X.test", "context": "a2"});
 	QUnit.deepEqual(published, [10, 8, 9], "Publish: handlers order (topic \"X\", context \"a2\")");
+	$.each(["A.test", "X.test", "Z.test"], function(i, topic) {
+		QUnit.deepEqual(Echo.Events._subscriptions[topic], subscriptions[topic], "Checking that subscriptions for topic \"" + topic + "\" aren't changed after publish");
+	});
+
 	publish({"topic": "B.test", "context": "b1", "global": false});
 	QUnit.deepEqual(published, [11], "Publish: handlers order (topic \"B\", context \"b1\", one-time subscription)");
 	publish({"topic": "B.test", "context": "b1", "global": false});
 	QUnit.deepEqual(published, [], "Publish: handlers order (topic \"B\", context \"b1\" again)");
+	QUnit.deepEqual(Echo.Events._subscriptions["B.test"], {}, "Checking that there are no subscriptions for topic \"B.test\"");
 
 	QUnit.ok(unsubscribe("A.test", s1.id, "a1/b1/c1"), "Unsubscribe: event \"A\", handlerId: \"" + s1.id + "\", context \"a1/b1/c1\"");
 	QUnit.ok(unsubscribe("A.test", s2.id), "Unsubscribe: event \"A\", handlerId: \"" + s2.id + "\", unknown context");
 	QUnit.ok(unsubscribe(undefined, undefined, "a2"), "Unsubscribe: all events, all handlers, context \"a2\"");
 	QUnit.ok(!unsubscribe("A.test", s1.id, "a1/b1/c1"), "Unsubscribe from previously unsubscribed handler using all available data: nothing to do");
 	QUnit.ok(!unsubscribe(undefined, s1.id), "Unsubscribe from previously unsubscribed handler using only handlerId: nothing to do");
+	QUnit.ok(unsubscribe("A.test", undefined, "a1/b1/x1"), "Unsubscribe from undefined context with undefined handlerId");
 	var subscriptions2 = {
 		"A.test": {
 			"a1": {
@@ -133,23 +140,21 @@ Echo.Tests.test("public methods", function() {
 					}
 				},
 				"handlers": []
-			},
-			"global": {
-				"contexts": {},
-				"handlers": []
 			}
 		},
 		"Z.test": {},
 		"X.test": {
 			"global": {"contexts": {}, "handlers": [{"id": s8.id, "handler": s8.handler}, {"id": s9.id, "handler": s9.handler}]}
 		},
-		"B.test": {
-			"b1": {"contexts": {}, "handlers": []}
-		}
+		"B.test": {}
 	};
 	$.each(["A.test", "B.test", "X.test", "Z.test"], function(i, topic) {
 		QUnit.deepEqual(Echo.Events._subscriptions[topic], subscriptions2[topic], "Checking full structure of subscribers for topic \"" + topic + "\" after several unsubscriptions");
 	});
+
+	var x = subscribe("Z.test", "x1/x2/x3");
+	unsubscribe("Z.test", x.id, "x1/x2/x3");
+	QUnit.deepEqual(Echo.Events._subscriptions["Z.test"], {}, "Checking that all parent contexts are cleared in case they are empty");
 
 	publish({"topic": "A.test", "context": "a1"});
 	QUnit.deepEqual(published, [6, 7, 5], "Publish: handlers order (topic \"A\", context \"a1\")");
@@ -187,6 +192,7 @@ Echo.Tests.test("public methods", function() {
 
 Echo.Tests.test("advanced publishing", function() {
 	order = 0;
+	/* jshint unused: false */
 	var s1 = subscribe("A.test", "a1/b1/c1", ["propagation.siblings"]);
 	var s2 = subscribe("A.test", "a1", ["bubble"]);
 	var s3 = subscribe("A.test", "a2", ["propagation.children"]);
@@ -204,6 +210,7 @@ Echo.Tests.test("advanced publishing", function() {
 	var s14 = subscribe("A.test", "a1/b1/c1/d1/e1");
 	unsubscribe("A.test", s14.id, "a1/b1/c1/d1/e1");
 	var s15 = subscribe("A.test", "a1/b2/c3");
+	var s16 = subscribe("A.test", "x");
 
 	publish({"topic": "A.test", "context": "a1/b2/c2"});
 	QUnit.deepEqual(published, [5, 7, 2], "Publish: handlers order (topic \"A\", context \"a1/b2/c2\", stop:bubble)");
@@ -226,6 +233,10 @@ Echo.Tests.test("advanced publishing", function() {
 	QUnit.deepEqual(published, [7, 2], "Publish: handlers order (topic \"A\", context \"a1/b2\", bubble:true, propagation:false)");
 	publish({"topic": "A.test", "context": "a1/b2", "bubble": false, "propagation": false});
 	QUnit.deepEqual(published, [7], "Publish: handlers order (topic \"A\", context \"a1/b2\", bubble:false, propagation:false)");
+	publish({"topic": "A.test", "context": "x/a/x", "bubble": false});
+	QUnit.deepEqual(published, [], "Publish same context name as a parents one should not execute a parents handler (x - subscribed, x/a/x - published)");
+	publish({"topic": "A.test", "context": "x/x/x", "bubble": false});
+	QUnit.deepEqual(published, [], "Publish same context name as a parents one should not execute a parents handler (x - subscribed, x/x/x - published)");
 
 	publish({"topic": "W.test"});
 	QUnit.deepEqual(published, [], "Publish: handlers order (nonexistent topic)");

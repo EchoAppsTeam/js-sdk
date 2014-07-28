@@ -1,4 +1,5 @@
 (function($) {
+"use strict";
 
 Echo.Tests.module("Echo.Canvas", {
 	"meta": {
@@ -15,48 +16,61 @@ Echo.Tests.renderersTest("Echo.Canvas", {
 Echo.Tests.asyncTest("common workflow", function() {
 	var target = $("#qunit-fixture");
 	target.append('<div id="echo-canvas" data-canvas-id="js-sdk-tests/test-canvas-001#some-id_001"></div>');
+	var deferred = $.map(["Stream", "Submit"], function(name) {
+		var def = $.Deferred();
+		Echo.Events.subscribe({
+			"topic": "Echo.StreamServer.Controls." + name + ".onReady",
+			"once": true,
+			"handler": function() {
+				def.resolve();
+			}
+		});
+		return def.promise();
+	});
 	Echo.Loader.canvases.push(new Echo.Canvas({
 		"target": $("#echo-canvas"),
 		"ready": function() {
-			QUnit.ok(true, "Check that component is initialized");
-			Echo.Loader.canvases.pop();
-			QUnit.ok(this.apps.length === 2, "Check that all apps are initialized");
-			QUnit.ok(
-				this.config.get("target").is(".echo-canvas-js-sdk-tests-test-canvas-001"),
-				"Check that target is marked with CSS class based on canvas ID"
-			);
-			QUnit.ok(
-				this.config.get("target").is(".echo-canvas-js-sdk-tests-test-canvas-001-some-id-001"),
-				"Check that target is marked with CSS class based on canvas ID and additional ID separated with #"
-			);
-			QUnit.ok(
-				$.grep(this.apps, function(app) {
-					return app.config.get("canvasId") === "js-sdk-tests/test-canvas-001#some-id_001";
-				}).length === 2,
-				"Check that all apps received the canvas ID"
-			);
-			QUnit.ok(
-				$.grep(this.apps, function(app) {
-					return !!~app.config.get("target").attr("class").indexOf("echo-canvas-appId-");
-				}).length === 2,
-				"Check that all apps marked with appId"
-			);
-			QUnit.ok(
-				this.config.get("target").data("echo-canvas-initialized"),
-				"Check that target marked as initialized canvas"
-			);
-			this.destroy();
-			QUnit.ok(
-				!this.config.get("target").data("echo-canvas-initialized"),
-				"Check that target is not marked as initialized canvas"
-			);
-			QUnit.ok(
-				$.grep(this.apps, function(app) {
-					return $.isEmptyObject(app.subscriptionIDs);
-				}).length === 2,
-				"Check all apps unsubscribed from all events after destroy canvas"
-			);
-			QUnit.start();
+			$.when.apply($, deferred).then($.proxy(function() {
+				QUnit.ok(true, "Check that component is initialized");
+				Echo.Loader.canvases.pop();
+				QUnit.ok(this.apps.length === 2, "Check that all apps are initialized");
+				QUnit.ok(
+					this.config.get("target").is(".echo-canvas-js-sdk-tests-test-canvas-001"),
+					"Check that target is marked with CSS class based on canvas ID"
+				);
+				QUnit.ok(
+					this.config.get("target").is(".echo-canvas-js-sdk-tests-test-canvas-001-some-id-001"),
+					"Check that target is marked with CSS class based on canvas ID and additional ID separated with #"
+				);
+				QUnit.ok(
+					$.grep(this.apps, function(app) {
+						return app.config.get("canvasId") === "js-sdk-tests/test-canvas-001#some-id_001";
+					}).length === 2,
+					"Check that all apps received the canvas ID"
+				);
+				QUnit.ok(
+					$.grep(this.apps, function(app) {
+						return !!~app.config.get("target").attr("class").indexOf("echo-canvas-appId-");
+					}).length === 2,
+					"Check that all apps marked with appId"
+				);
+				QUnit.ok(
+					this.config.get("target").data("echo-canvas-initialized"),
+					"Check that target marked as initialized canvas"
+				);
+				this.destroy();
+				QUnit.ok(
+					!this.config.get("target").data("echo-canvas-initialized"),
+					"Check that target is not marked as initialized canvas"
+				);
+				QUnit.ok(
+					$.grep(this.apps, function(app) {
+						return $.isEmptyObject(app.subscriptionIDs);
+					}).length === 2,
+					"Check all apps unsubscribed from all events after destroy canvas"
+				);
+				QUnit.start();
+			}, this));
 		}
 	}));
 });
@@ -131,7 +145,7 @@ Echo.Tests.test("canvas contract", function() {
 	window.CanvasAdapter = function(config) {
 		QUnit.equal(config.id, 256, "Check if canvas adapter was initialized with valid custom param in config");
 		QUnit.ok(config.target instanceof Echo.jQuery, "Check if canvas adapter was initialized with valid target");
-		QUnit.equal(config.canvasId, "js-sdk-test", "Check if canvas adapter was initialized with valid canvasId")
+		QUnit.equal(config.canvasId, "js-sdk-test", "Check if canvas adapter was initialized with valid canvasId");
 	};
 
 	var canvas = new Echo.Canvas({
@@ -169,7 +183,7 @@ Echo.Tests.test("canvas destroy", function() {
 		}
 	};
 
-	$.each(TestCanvases, function(component) {
+	$.each(window.TestCanvases, function(component) {
 		var result;
 		var canvas = new Echo.Canvas({
 			"target": $("#qunit-fixture"),

@@ -1,4 +1,5 @@
 (function($) {
+"use strict";
 
 Echo.Tests.module("Echo.UserSession", {
 	"meta": {
@@ -85,7 +86,6 @@ Echo.Tests.asyncTest("anonymous checks", function() {
 			QUnit.equal(user.is("logged"), user._isLogged(),
 				"Check \"is\" function delegation using \"logged\" property");
 
-			var avatar = user.get("avatar");
 			var defaultAvatar = "http://example.com/default-avatar.png";
 			QUnit.equal(user.get("avatar", defaultAvatar), defaultAvatar,
 				"Checking get operation with existing attribute and default value via function call delegation (avatar field)");
@@ -174,7 +174,6 @@ Echo.Tests.asyncTest("backplane corner cases", function() {
 Echo.Tests._asyncTest("error handling", function() {
 	Echo.UserSession({
 		"ready": function() {
-			var user = this;
 			QUnit.ok(true, "The \"ready\" callback is executed even when the appkey is missing");
 			QUnit.ok(
 				!this.is("logged"),
@@ -244,7 +243,7 @@ function checkBasicOperations(user) {
 	QUnit.equal(user.get("fake_attr", "default value"), "default value",
 		"Checking get operation with fake attribute and default value");
 
-	var roles = ["role1", "role2", "role3"];	
+	var roles = ["role1", "role2", "role3"];
 	user.set("roles", roles);
 	QUnit.equal(user.get("roles").length, roles.length,
 		"Checking get/set operations with arrays (user roles)");
@@ -257,7 +256,7 @@ function checkBasicOperations(user) {
 	QUnit.ok(!user.has("role", "non-existing-role"),
 		"Checking user.has() function for non-existing role");
 
-	var markers = ["marker1", "marker2", "marker3"];	
+	var markers = ["marker1", "marker2", "marker3"];
 	user.set("markers", markers);
 	QUnit.equal(user.get("markers").length, markers.length,
 		"Checking get/set operations with arrays (user markers)");

@@ -1,4 +1,5 @@
 (function($) {
+"use strict";
 
 Echo.Tests.module("Echo.View", {
 	"meta": {
@@ -62,20 +63,21 @@ Echo.Tests.test("public interface", function() {
 });
 
 Echo.Tests.test("rendering with partial or incorrect config", function() {
-	var view = new Echo.View();
+	var view, result, dom;
+	view = new Echo.View();
 	QUnit.ok(!!view, "Checking if the Echo.View class can be instantiated with no config");
-	var result = view.render();
+	result = view.render();
 	QUnit.ok(!result, "Checking if the \"render\" call with no arguments doesn't throw an exception and returns 'false'");
 
-	var result = view.render({"template": ""});
+	result = view.render({"template": ""});
 	QUnit.ok(!result, "Checking if the \"render\" call with no the template defined as an empty string returns 'false'");
 
-	var dom = view.render({"template": "  "});
+	dom = view.render({"template": "  "});
 	QUnit.strictEqual(dom.html(), undefined,
 		"Checking if the \"render\" call returns \"undefined\" of whitespaces only");
 
 	// simple template rendering with no cssPrefix defined
-	var view = new Echo.View();
+	view = new Echo.View();
 	view.render({
 		"template": templates.simple
 	});
@@ -88,8 +90,8 @@ Echo.Tests.test("rendering with partial or incorrect config", function() {
 		"[no cssPrefix] Checking if the {data:KEY} pattern is replaced with the empty string in case no data is available");
 
 	// rendering of the template with incorrect placeholders
-	var view = new Echo.View({"cssPrefix": "echo-"});
-	var dom = view.render({
+	view = new Echo.View({"cssPrefix": "echo-"});
+	dom = view.render({
 		"template": templates.incorrect
 	});
 
@@ -126,7 +128,7 @@ Echo.Tests.test("different ways of specifying renderers", function() {
 	});
 	checks("[via object in config]");
 
-	var view = new Echo.View({"cssPrefix": "echo-"});
+	view = new Echo.View({"cssPrefix": "echo-"});
 	view.render({
 		"template": templates.simple,
 		"renderers": renderers
@@ -134,7 +136,7 @@ Echo.Tests.test("different ways of specifying renderers", function() {
 	checks("[in 'render' call]");
 
 	// same set of renderers applied via "renderer" function in config
-	var view = new Echo.View({
+	view = new Echo.View({
 		"cssPrefix": "echo-",
 		"renderer": function(args) {
 			if (renderers[args.name]) {

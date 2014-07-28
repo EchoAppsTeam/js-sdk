@@ -189,26 +189,28 @@ Echo.Configuration.prototype._clearCacheByPrefix = function(prefix) {
 Echo.Configuration.prototype._merge = function(master, slave, keepRefsFor) {
 	var self = this, target, src, options;
 	var inputs = [master, slave];
+	var mergeObject = function(name, copy) {
+		src = target[name];
+		if (keepRefsFor &amp;&amp; keepRefsFor[name]) {
+			if (!target.hasOwnProperty(name)) {
+				target[name] = copy;
+			}
+		} else if ($.isPlainObject(src)) {
+			target[name] = self._merge(src, copy);
+		} else if (!target.hasOwnProperty(name)) {
+			target[name] = self._merge(copy);
+		}
+	};
+	var mergeArray = function(option) {
+		return self._merge(option);
+	};
 	for (var i = 0; i &lt; inputs.length; i++) {
 		options = inputs[i];
 		if ($.isPlainObject(options)) {
 			target = target || {};
-			$.each(options, function(name, copy) {
-				src = target[name];
-				if (keepRefsFor &amp;&amp; keepRefsFor[name]) {
-					if (!target.hasOwnProperty(name)) {
-						target[name] = copy;
-					}
-				} else if ($.isPlainObject(src)) {
-					target[name] = self._merge(src, copy);
-				} else if (!target.hasOwnProperty(name)) {
-					target[name] = self._merge(copy);
-				}
-			});
+			$.each(options, mergeObject);
 		} else if ($.isArray(options)) {
-			target = $.map(options, function(option) {
-				return self._merge(option);
-			});
+			target = $.map(options, mergeArray);
 		} else if (typeof target === &quot;undefined&quot; &amp;&amp; typeof options !== &quot;undefined&quot;) {
 			target = options;
 		}

@@ -40,10 +40,17 @@ Echo.Loader = {
 </span>	&quot;config&quot;: {
 		&quot;cdnBaseURL&quot;: protocol + &quot;//cdn.echoenabled.com/&quot;,
 		&quot;storageURL&quot;: {
-			&quot;prod&quot;: protocol + &quot;//dqspik3j3bxvu.cloudfront.net/&quot;,
-			&quot;dev&quot;: protocol + &quot;//s3.amazonaws.com/echo-canvases/&quot;
+			&quot;aws&quot;: {
+				&quot;prod&quot;: protocol + &quot;//dqspik3j3bxvu.cloudfront.net/&quot;,
+				&quot;dev&quot;: protocol + &quot;//s3.amazonaws.com/echo-canvases/&quot;
+			},
+			&quot;fastly&quot;: {
+				&quot;prod&quot;: protocol + &quot;//echo-canvases-prod.global.ssl.fastly.net/&quot;,
+				&quot;dev&quot;: protocol + &quot;//echo-canvases-prod.global.ssl.fastly.net/&quot;
+			}
 		},
-		&quot;errorTimeout&quot;: 5000 // 5 sec
+		&quot;errorTimeout&quot;: 10000, // 10 sec
+		&quot;viewportChangeTimeout&quot;: 50 // 50 ms
 	},
 <span id='global-property-canvases'>	/** @ignore */
 </span>	&quot;canvases&quot;: [],  // Canvases list initialized on the page
@@ -73,7 +80,7 @@ Echo.Loader = {
  */
 Echo.Loader.getURL = function(url, devVersion) {
 	if (typeof devVersion === &quot;undefined&quot;) devVersion = true;
-	return /^https?:\/\/|^\/\//.test(url)
+	return (/^https?:\/\/|^\/\//).test(url)
 		? url
 		: Echo.Loader.config.cdnBaseURL + &quot;sdk/v&quot; + Echo.Loader.version +
 			(devVersion &amp;&amp; Echo.Loader.isDebug() ? &quot;/dev&quot; : &quot;&quot;) +
@@ -313,6 +320,7 @@ Echo.Loader.init = function(config) {
 		Echo.Loader._map(canvases, function(canvas) {
 			Echo.Loader._initCanvas(canvas, canvas.getAttribute(&quot;data-canvas-init&quot;), {
 				&quot;target&quot;: canvas,
+				&quot;refreshOnUserInvalidate&quot;: canvas.getAttribute(&quot;data-canvas-refreshOnUserInvalidate&quot;) === &quot;true&quot;,
 				&quot;overrides&quot;: Echo.Loader.overrides[canvas.getAttribute(&quot;data-canvas-id&quot;)] || {}
 			});
 		});
@@ -380,6 +388,7 @@ Echo.Loader.initApplication = function(app) {
 		Echo.Loader._initCanvas(target, app.init, {
 			&quot;target&quot;: app.config.target,
 			&quot;useSecureAPI&quot;: !!app.config.useSecureAPI,
+			&quot;refreshOnUserInvalidate&quot;: app.refreshOnUserInvalidate,
 			&quot;data&quot;: { // as we receive if from the Canvas Storage
 				&quot;apps&quot;: [app],
 				&quot;backplane&quot;: app.backplane
@@ -417,19 +426,45 @@ Echo.Loader._lookupCanvases = function(config, callback) {
 };
 
 Echo.Loader._initCanvas = function(target, initMode, config) {
-	// this function might be called either immediately (with no arguments)
-	// or after &quot;scroll&quot;/&quot;resize&quot; events (with &quot;event&quot; argument);
-	// function workflow varies depending on the given argument
-	(function init(event) {
-		if (initMode !== &quot;when-visible&quot; || Echo.Loader._isInViewport(target)) {
-			event &amp;&amp; onViewportChange(&quot;unsubscribe&quot;, init);
-			Echo.Loader.initEnvironment(function() {
-				Echo.Loader.canvases.push(new Echo.Canvas(Echo.Loader._prepareCanvasData(config)));
-			});
-		} else if (!event) {
-			onViewportChange(&quot;subscribe&quot;, init);
-		}
-	})();
+	var initCanvas = function() {
+		Echo.Loader.canvases.push(new Echo.Canvas(Echo.Loader._prepareCanvasData(config)));
+	};
+
+	if (initMode !== &quot;when-visible&quot; || Echo.Loader._isInViewport(target)) {
+		Echo.Loader.initEnvironment(initCanvas);
+	} else {
+		var timeout;
+		var handler = function() {
+			timeout &amp;&amp; clearTimeout(timeout);
+			timeout = setTimeout(function() {
+				if (Echo.Loader._isInViewport(target)) {
+					onViewportChange(&quot;unsubscribe&quot;, handler);
+					Echo.Loader.initEnvironment(initCanvas);
+				}
+			}, Echo.Loader.config.viewportChangeTimeout);
+		};
+		onViewportChange(&quot;subscribe&quot;, handler);
+	}
+};
+
+// we are changing Comments app script
+// location from Echo CDN to original CDN
+Echo.Loader._prepareCanvasData = function(canvasData) {
+	if (!canvasData.data) return canvasData;
+	var replace = function(script) {
+		return script.replace(/((?:https?:)?\/\/)?cdn\.echoenabled\.com\/apps\/rtb\/comments/, function(match, protocol) {
+			var prefix = protocol === &quot;https://&quot;
+				? &quot;ssl&quot;
+				: (/^https/.test(window.location.protocol) &amp;&amp; protocol !== &quot;http://&quot;
+					? &quot;ssl&quot; : &quot;cdn&quot;);
+			return protocol + prefix + &quot;.realtidbits.com/libs&quot;;
+		});
+	};
+	Echo.Loader._map(canvasData.data.apps || [], function(app) {
+		app.script = replace(Echo.Canvas.prototype._getAppScriptURL(app));
+		app.scripts &amp;&amp; delete app.scripts;
+	});
+	return canvasData;
 };
 
 // we are changing Comments app script
@@ -463,8 +498,8 @@ Echo.Loader._storeCanvasConfig = function(id, config) {
 
 Echo.Loader._isInViewport = function(canvas) {
 	var viewportHeight = document.documentElement.clientHeight || document.body.clientHeight;
-	var scrollTop = document.documentElement.scrollTop || document.body.scrollTop;
-	return scrollTop + viewportHeight &gt;= canvas.offsetTop;
+	var box = canvas.getBoundingClientRect();
+	return box.top &lt;= viewportHeight;
 };
 
 // implementation of the &quot;map&quot; function for the cases when jQuery is not loaded yet
@@ -494,11 +529,12 @@ Echo.Loader._areResourcesReady = function(resources) {
 
 function getEventName(name) {
 	return window.addEventListener ? name : &quot;on&quot; + name;
-};
+}
 
 function onViewportChange(action, handler) {
 	var addEvent = window.addEventListener || window.attachEvent;
 	var removeEvent = window.removeEventListener || window.detachEvent;
+
 	if (action === &quot;subscribe&quot;) {
 		addEvent(getEventName(&quot;scroll&quot;), handler);
 		addEvent(getEventName(&quot;resize&quot;), handler);
@@ -506,7 +542,7 @@ function onViewportChange(action, handler) {
 		removeEvent(getEventName(&quot;scroll&quot;), handler);
 		removeEvent(getEventName(&quot;resize&quot;), handler);
 	}
-};
+}
 
 })();
 </pre>

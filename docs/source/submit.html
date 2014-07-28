@@ -26,14 +26,14 @@ var $ = jQuery;
  * &lt;a href=&quot;http://echoplatform.com/streamserver/docs/rest-api/items-api/submit/&quot; target=&quot;_blank&quot;&gt;Echo Submit API&lt;/a&gt;
  * and provides a simple ‘submit/comment form’ style interaction.
  *
- * 	new Echo.StreamServer.Controls.Submit({
- * 		&quot;target&quot;: document.getElementById(&quot;submit&quot;),
- * 		&quot;targetURL&quot;: &quot;http://example.com/submit&quot;,
- * 		&quot;appkey&quot;: &quot;echo.jssdk.demo.aboutecho.com&quot;,
- * 	});
+ *		new Echo.StreamServer.Controls.Submit({
+ *			&quot;target&quot;: document.getElementById(&quot;submit&quot;),
+ *			&quot;targetURL&quot;: &quot;http://example.com/submit&quot;,
+ *			&quot;appkey&quot;: &quot;echo.jssdk.demo.aboutecho.com&quot;,
+ *		});
  *
  * More information regarding the possible ways of the Control initialization
- * can be found in the [“How to initialize Echo components”](#!/guide/how_to_initialize_components-section-initializing-an-app) guide.
+ * can be found in the [&quot;How to initialize Echo components&quot;](#!/guide/how_to_initialize_components-section-initializing-an-app) guide.
  *
  * @extends Echo.Control
  *
@@ -119,17 +119,24 @@ submit.init = function() {
 	this.ready();
 };
 
+submit.destroy = function() {
+	var self = this;
+	$.each(this.posting.subscriptions, function(id) {
+		self.events.unsubscribe({&quot;handlerId&quot;: id});
+	});
+};
+
 submit.config = {
 <span id='Echo-StreamServer-Controls-Submit-cfg-targetURL'>	/**
 </span>	 * @cfg {String} [targetURL=document.location.href]
 	 * Specifies the URI to which the submitted Echo item is related. 
 	 * This parameter will be used as a activity target value for the item.
 	 *
-	 * 	new Echo.StreamServer.Controls.Submit({
-	 * 		...
-	 * 		&quot;targetURL&quot;: &quot;http://somedomain.com/some_article.html&quot;,
-	 * 		...
-	 * 	});
+	 *		new Echo.StreamServer.Controls.Submit({
+	 *			...
+	 *			&quot;targetURL&quot;: &quot;http://somedomain.com/some_article.html&quot;,
+	 *			...
+	 *		});
 	 */
 	&quot;targetURL&quot;: document.location.href,
 <span id='Echo-StreamServer-Controls-Submit-cfg-markers'>	/**
@@ -141,11 +148,11 @@ submit.config = {
 	 * For non-admin users the markers value will be submitted along with
 	 * other item content when the &quot;Post&quot; button is pressed.
 	 *
-	 * 	new Echo.StreamServer.Controls.Submit({
-	 * 		...
-	 * 		&quot;markers&quot;: [&quot;marker1&quot;, &quot;marker2&quot;, &quot;marker3&quot;],
-	 * 		...
-	 * 	});
+	 *		new Echo.StreamServer.Controls.Submit({
+	 *			...
+	 *			&quot;markers&quot;: [&quot;marker1&quot;, &quot;marker2&quot;, &quot;marker3&quot;],
+	 *			...
+	 *		});
 	 */
 	&quot;markers&quot;: [],
 <span id='Echo-StreamServer-Controls-Submit-cfg-source'>	/**
@@ -162,15 +169,15 @@ submit.config = {
 	 * @cfg {String} source.icon
 	 * Source icon.
 	 *
-	 * 	new Echo.StreamServer.Controls.Submit({
-	 * 		...
-	 * 		&quot;source&quot;: {
-	 * 			&quot;name&quot;: &quot;ExampleSource&quot;,
-	 * 			&quot;uri&quot;: &quot;http://example.com/&quot;,
-	 * 			&quot;icon&quot;: &quot;http://example.com/images/source.png&quot;
-	 * 		},
-	 * 		...
-	 * 	});
+	 *		new Echo.StreamServer.Controls.Submit({
+	 *			...
+	 *			&quot;source&quot;: {
+	 *				&quot;name&quot;: &quot;ExampleSource&quot;,
+	 *				&quot;uri&quot;: &quot;http://example.com/&quot;,
+	 *				&quot;icon&quot;: &quot;http://example.com/images/source.png&quot;
+	 *			},
+	 *			...
+	 *		});
 	 */
 	&quot;source&quot;: {},
 <span id='Echo-StreamServer-Controls-Submit-cfg-tags'>	/**
@@ -182,11 +189,11 @@ submit.config = {
 	 * users the tags value will be submitted along with the other item
 	 * content when the &quot;Post&quot; button is pressed.
 	 *
-	 * 	new Echo.StreamServer.Controls.Submit({
-	 * 		...
-	 * 		&quot;tags&quot;: [&quot;tag1&quot;, &quot;tag2&quot;, &quot;tag3&quot;],
-	 * 		...
-	 * 	});
+	 *		new Echo.StreamServer.Controls.Submit({
+	 *			...
+	 *			&quot;tags&quot;: [&quot;tag1&quot;, &quot;tag2&quot;, &quot;tag3&quot;],
+	 *			...
+	 *		});
 	 */
 	&quot;tags&quot;: [],
 <span id='Echo-StreamServer-Controls-Submit-cfg-requestMethod'>	/**
@@ -196,11 +203,11 @@ submit.config = {
 	 * We can&#39;t handle server response, UI won&#39;t show any waiting for the
 	 * server responses actions.
 	 *
-	 * 	new Echo.StreamServer.Controls.Submit({
-	 * 		...
-	 * 		&quot;requestMethod&quot;: &quot;POST&quot;,
-	 * 		...
-	 * 	});
+	 *		new Echo.StreamServer.Controls.Submit({
+	 *			...
+	 *			&quot;requestMethod&quot;: &quot;POST&quot;,
+	 *			...
+	 *		});
 	 */
 	&quot;requestMethod&quot;: &quot;GET&quot;,
 <span id='Echo-StreamServer-Controls-Submit-cfg-itemURIPattern'>	/**
@@ -210,22 +217,22 @@ submit.config = {
 	 * unique id should be inserted. If this parameter is ommited in
 	 * configuration or the URI is invalid it&#39;ll be ignored.
 	 *
-	 * 	new Echo.StreamServer.Controls.Submit({
-	 * 		...
-	 * 		&quot;itemURIPattern&quot;: &quot;http://your-domain.com/path/{id}&quot;,
-	 * 		...
-	 * 	});
+	 *		new Echo.StreamServer.Controls.Submit({
+	 *			...
+	 *			&quot;itemURIPattern&quot;: &quot;http://your-domain.com/path/{id}&quot;,
+	 *			...
+	 *		});
 	 */
 	&quot;itemURIPattern&quot;: undefined,
 <span id='Echo-StreamServer-Controls-Submit-cfg-actionString'>	/**
 </span>	 * @cfg {String} actionString
 	 * Is used to define the default call to action phrase.
 	 *
-	 *     new Echo.StreamServer.Controls.Submit({
-	 *         ...
-	 *         &quot;actionString&quot;: &quot;Type your comment here...&quot;,
-	 *         ...
-	 *     });
+	 *		new Echo.StreamServer.Controls.Submit({
+	 *			...
+	 *			&quot;actionString&quot;: &quot;Type your comment here...&quot;,
+	 *			...
+	 *		});
 	 */
 	&quot;actionString&quot;: &quot;Type your comment here...&quot;,
 <span id='Echo-StreamServer-Controls-Submit-cfg-postingTimeout'>	/**
@@ -234,22 +241,22 @@ submit.config = {
 	 * the timeout error dialog if the server does not return anything. If the parameter
 	 * value is 0 then the mentioned dialog will never be shown.
 	 *
-	 * 	new Echo.StreamServer.Controls.Submit({
-	 * 		...
-	 * 		&quot;postingTimeout&quot;: 15,
-	 * 		...
-	 * 	});
+	 *		new Echo.StreamServer.Controls.Submit({
+	 *			...
+	 *			&quot;postingTimeout&quot;: 15,
+	 *			...
+	 *		});
 	 */
 	&quot;postingTimeout&quot;: 30,
 <span id='Echo-StreamServer-Controls-Submit-cfg-type'>	/**
 </span>	 * @cfg {String} type
 	 * Allows to define item type. The value of this parameter should be a valid URI.
 	 *
-	 * 	new Echo.StreamServer.Controls.Submit({
-	 * 		...
-	 * 		&quot;type&quot;: &quot;http://echoenabled.com/activitystreams/schema/1.0/category&quot;,
-	 * 		...
-	 * 	});
+	 *		new Echo.StreamServer.Controls.Submit({
+	 *			...
+	 *			&quot;type&quot;: &quot;http://echoenabled.com/activitystreams/schema/1.0/category&quot;,
+	 *			...
+	 *		});
 	 */
 	&quot;type&quot;: undefined,
 <span id='Echo-StreamServer-Controls-Submit-cfg-errorPopup'>	/**
@@ -266,15 +273,15 @@ submit.config = {
 	 * @cfg {Number} errorPopup.width
 	 * The width of error message popup.
 	 *
-	 * 	new Echo.StreamServer.Controls.Submit({
-	 * 		...
-	 * 		&quot;errorPopup&quot;: {
-	 * 			&quot;minHeight&quot;: 70,
-	 * 			&quot;maxHeight&quot;: 150,
-	 * 			&quot;width&quot;: 390
-	 * 		}
-	 * 		...
-	 * 	});
+	 *		new Echo.StreamServer.Controls.Submit({
+	 *			...
+	 *			&quot;errorPopup&quot;: {
+	 *				&quot;minHeight&quot;: 70,
+	 *				&quot;maxHeight&quot;: 150,
+	 *				&quot;width&quot;: 390
+	 *			}
+	 *			...
+	 *		});
 	 */
 	&quot;errorPopup&quot;: {
 		&quot;minHeight&quot;: 70,
@@ -443,7 +450,7 @@ submit.renderers.text = function(element) {
 </span> * @echo_renderer
  */
 submit.renderers.avatar = function(element) {
-	this.placeImage({ 
+	this.placeImage({
 		&quot;container&quot;: element,
 		&quot;image&quot;: this.user.get(&quot;avatar&quot;),
 		&quot;defaultImage&quot;: this.config.get(&quot;defaultAvatar&quot;)
@@ -683,7 +690,6 @@ submit.methods._getASURL = function(postfix) {
 };
 
 submit.methods._showError = function(data) {
-	var self = this;
 	data = data || {};
 	var response = data.request &amp;&amp; data.request.response || {};
 	var message = $.inArray(response.errorCode, [&quot;network_timeout&quot;, &quot;connection_failure&quot;]) &gt;= 0
@@ -722,7 +728,7 @@ submit.methods._assembleErrorPopup = function(message) {
 };
 
 submit.methods._isPostValid = function() {
-	var self = this, valid = true;
+	var valid = true;
 	$.each(this.validators, function(i, handler) {
 		valid = handler();
 		return valid;

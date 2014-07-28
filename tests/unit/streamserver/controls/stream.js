@@ -1,5 +1,5 @@
 (function($) {
-
+"use strict";
 
 Echo.Tests.module("Echo.StreamServer.Controls.Stream", {
 	"meta": {
@@ -58,6 +58,63 @@ Echo.Tests.asyncTest("more button", function() {
 		};
 	}), function() {
 		QUnit.start();
+	});
+});
+
+Echo.Tests.asyncTest("unnecessary item", function() {
+	if (!Echo.Tests.Utils.isServerMocked()) {
+		QUnit.ok(true, "Not going to test with real requests");
+		QUnit.start();
+		return;
+	}
+	new Echo.StreamServer.Controls.Stream({
+		"target": $("#qunit-fixture"),
+		"appkey": "echo.jssdk.tests.aboutecho.com",
+		"liveUpdates": {"enabled": true, "transport": "polling", "polling": {"timeout": 1}},
+		"query": "childrenof:http://example.com/sdk/stream/unecessary-item itemsPerPage:1",
+		"ready": function() {
+			var self = this;
+			var subscriptionLength = Echo.Events._subscriptions["Echo.Control.onDataInvalidate"].global.handlers.length;
+			this.events.subscribe({
+				"topic": "Echo.StreamServer.Controls.Stream.onDataReceive",
+				"once": true,
+				"handler": function() {
+					setTimeout(function() {
+						QUnit.strictEqual(subscriptionLength, Echo.Events._subscriptions["Echo.Control.onDataInvalidate"].global.handlers.length, "Check that unnecessary item didn't add new subscriptions");
+						self.destroy();
+						QUnit.start();
+					}, 1000);
+				}
+			});
+		}
+	});
+});
+
+Echo.Tests.asyncTest("item updates in a single response", function() {
+	if (!Echo.Tests.Utils.isServerMocked()) {
+		QUnit.ok(true, "Not going to test with real requests");
+		QUnit.start();
+		return;
+	}
+	new Echo.StreamServer.Controls.Stream({
+		"target": $("#qunit-fixture"),
+		"appkey": "echo.jssdk.tests.aboutecho.com",
+		"liveUpdates": {"enabled": true, "transport": "polling", "polling": {"timeout": 1}},
+		"query": "childrenof:http://example.com/sdk/stream/item-updates itemsPerPage:1",
+		"ready": function() {
+			var self = this;
+			var subscriptionLength = Echo.Events._subscriptions["Echo.Control.onDataInvalidate"].global.handlers.length;
+			this.events.subscribe({
+				"topic": "Echo.StreamServer.Controls.Stream.Item.onRerender",
+				"handler": function() {
+					// +1 because no items at initial time
+					QUnit.strictEqual(subscriptionLength + 1, Echo.Events._subscriptions["Echo.Control.onDataInvalidate"].global.handlers.length, "Check that unnecessary item didn't add new subscriptions");
+					QUnit.strictEqual(self.threads[0].get("data.object.content"), "new content 2", "Check that item has been updated");
+					self.destroy();
+					QUnit.start();
+				}
+			});
+		}
 	});
 });
 
@@ -144,7 +201,6 @@ suite.prototype.tests.asyncRenderers = {
 			},
 			"query": "childrenof: " + this.config.dataBaseLocation + " -state:ModeratorDeleted itemsPerPage:10",
 			"ready": function() {
-				var target = this.config.get("target");
 				suite.stream = this;
 				self.sequentialAsyncTests([
 					"asyncItemsRendering",
@@ -196,9 +252,7 @@ suite.prototype.cases.addRootItem = function(callback) {
 };
 
 suite.prototype.cases.queueActivityTesting = function(callback) {
-	var self = this;
 	var stream = suite.stream;
-	var target = this.config.target;
 	stream.events.subscribe({
 		"topic": "Echo.StreamServer.Controls.Stream.Item.onRender",
 		"once": true,
@@ -274,7 +328,6 @@ suite.prototype.cases.queueActivityTesting = function(callback) {
 
 suite.prototype.cases.addChildItem = function(callback) {
 	var stream = suite.stream;
-	var target = this.config.target;
 	var parentItem;
 	$.each(stream.items, function(key, item) {
 		if (item.isRoot()) {
@@ -306,7 +359,6 @@ suite.prototype.cases.addChildItem = function(callback) {
 
 suite.prototype.cases.asyncItemsRendering = function(callback) {
 	var stream = suite.stream;
-	var self = this;
 	var oldElement = stream.view.get("body").clone(true, true);
 	stream.config.set("asyncItemsRendering", true);
 	stream.events.subscribe({
@@ -451,10 +503,10 @@ suite.prototype.cases.moreButton = function(callback) {
 		"handler": function(topic, args) {
 			var count = 0;
 			$.each(args.entries, function(key, entry) {
-				if (entry.object.id == entry.targets[0].conversationID) {
+				if (entry.object.id === entry.targets[0].conversationID) {
 					count++;
 				}
-			}); 
+			});
 			QUnit.equal(count, 1,
 				"Checking that new item was received after more button click(onDataReceive event)");
 			callback();
@@ -550,7 +602,6 @@ suite.prototype.cases.predefinedData = function(callback) {
 			]
 			},
 		"ready": function() {
-			var self = this;
 			QUnit.ok(this.request instanceof Echo.API.Request, "Check that stream initializing with the pre-defined data inits a request object as well");
 			QUnit.strictEqual(this.request.config.get("liveUpdates.enabled"), this.config.get("liveUpdates.enabled"), "Check that stream initializing with the pre-defined data inits a request object with the proper options");
 			callback();

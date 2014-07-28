@@ -1,1 +1,1 @@
-SomeForeignClass = function() {};
+window.SomeForeignClass = function() {};

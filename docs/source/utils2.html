@@ -105,21 +105,31 @@ Echo.Tests.Utils.initServer = function() {
 	});
 
 	var ajax = $.ajax;
+	$.ajaxTransport(&quot;mock&quot;, function(options, userOptions, jqXHR) {
+		var matches = options.url &amp;&amp; options.url.match(_URLMocks.canvases.url);
+		return {
+			&quot;send&quot;: function(headers, complete) {
+				// asynchronously respond to request
+				setTimeout(function() {
+					var config = Echo.Tests.Fixtures.canvases[matches[1]];
+					storeCanvasConfig(matches[1], config);
+					if (config) {
+						complete(200, &quot;Complete&quot;, {&quot;mock&quot;: config});
+					} else {
+						complete(500, &quot;Error&quot;, {&quot;mock&quot;: config});
+					}
+				}, 10);
+			},
+			&quot;abort&quot;: function() {
+				jqXHR.abort();
+			}
+		};
+	});
 	sinon.stub($, &quot;ajax&quot;, function(options) {
-		var self = this;
 		var matches = options.url &amp;&amp; options.url.match(_URLMocks.canvases.url);
 		if (matches &amp;&amp; (Echo.Tests.Fixtures.canvases[matches[1]] || /nonexistent/.test(matches[1]))) {
-			var req = ajax.call(this, {&quot;beforeSend&quot;: function() { return false; }});
-			// asynchronously respond to request
-			setTimeout(function() {
-				storeCanvasConfig(matches[1], Echo.Tests.Fixtures.canvases[matches[1]]);
-				if (Echo.Tests.Fixtures.canvases[matches[1]]) {
-					options.success.call(self);
-				} else {
-					options.error.call(self);
-				}
-			}, 10);
-			return req;
+			options.dataType = &quot;mock&quot;;
+			return ajax.call(this, options);
 		}
 		return ajax.apply(this, arguments);
 	});
@@ -182,7 +192,7 @@ var _URLMocks = {
 	// group of URLs http://s3.amazonaws.com/echo-canvases/&lt;canvas-id&gt;
 	&quot;canvases&quot;: {
 		// TODO: (?) mock URLs depending on mode (now it mocks _only_ dev mode)
-		&quot;url&quot;: new RegExp(Echo.Loader.config.storageURL.dev + &quot;(.*?)(?:\\?|$)&quot;),
+		&quot;url&quot;: new RegExp(Echo.Loader.config.storageURL.aws.dev + &quot;(.*?)(?:\\?|$)&quot;),
 		&quot;response&quot;: function(request, canvasId) {
 			var status = 200, text = &quot;&quot;;
 			if (/nonexistent/.test(canvasId)) {
@@ -192,7 +202,19 @@ var _URLMocks = {
 			}
 			request.respond(
 				status,
-				{&quot;Content-Type&quot;: &quot;application/x-javascript; charset=\&quot;utf-8\&quot;&quot;},
+				{&quot;Content-Type&quot;: &quot;application/javascript; charset=\&quot;utf-8\&quot;&quot;},
+				text
+			);
+		}
+	},
+	&quot;canvases-fastly&quot;: {
+		// TODO: (?) mock URLs depending on mode (now it mocks _only_ dev mode)
+		&quot;url&quot;: new RegExp(Echo.Loader.config.storageURL.fastly.dev + &quot;(.*?)(?:\\?|$)&quot;),
+		&quot;response&quot;: function(request, canvasId) {
+			var text = JSON.stringify(Echo.Tests.Fixtures[&quot;canvases-fastly&quot;][canvasId]);
+			request.respond(
+				200,
+				{&quot;Content-Type&quot;: &quot;application/json; charset=\&quot;utf-8\&quot;&quot;},
 				text
 			);
 		}
@@ -210,12 +232,13 @@ var _URLMocks = {
 	},
 	// mocks for /v1/search API
 	&quot;api/search&quot;: {
-		&quot;url&quot;: new RegExp(&quot;//api.echoenabled.com/v1/search\\?q=(.*?)&amp;&quot;),
-		&quot;response&quot;: function(request, query) {
+		&quot;url&quot;: new RegExp(&quot;//api.echoenabled.com/v1/search\\?q=(.*?)(?:&amp;.*?)(&amp;since=.*?)?(?:&amp;|$)&quot;),
+		&quot;response&quot;: function(request, query, since) {
+			since = since || &quot;&quot;;
 			request.respond(
 				200,
 				{&quot;Content-Type&quot;: &quot;application/x-javascript; charset=\&quot;utf-8\&quot;&quot;},
-				JSON.stringify(Echo.Tests.Fixtures.api.search[decodeURIComponent(query)])
+				JSON.stringify(Echo.Tests.Fixtures.api.search[decodeURIComponent(query) + since])
 			);
 		}
 	},

@@ -1,4 +1,5 @@
 (function($) {
+"use strict";
 
 Echo.Tests.module("Echo.Utils", {
 	"meta": {
@@ -6,6 +7,7 @@ Echo.Tests.module("Echo.Utils", {
 		"functions": [
 			"addCSS",
 			"capitalize",
+			"debounce",
 			"foldl",
 			"getComponent",
 			"get",
@@ -24,6 +26,7 @@ Echo.Tests.module("Echo.Utils", {
 			"objectToJSON",
 			"parallelCall",
 			"parseURL",
+			"retry",
 			"remove",
 			"random",
 			"safelyExecute",
@@ -398,13 +401,14 @@ Echo.Tests.test("htmlTextTruncate()", function() {
 });
 
 Echo.Tests.test("getUniqueString()", function() {
-	QUnit.ok(typeof Echo.Utils.getUniqueString() == "string", "returned value is string");
+	QUnit.equal(typeof Echo.Utils.getUniqueString(), "string", "returned value is string");
+	var i, str;
 	var strings = [];
-	for (var i = 0; i < 5; i++) {
+	for (i = 0; i < 5; i++) {
 		strings.push(Echo.Utils.getUniqueString());
 	}
-	for (var i = 0; i < 4; i++) {
-		var str = strings.shift();
+	for (i = 0; i < 4; i++) {
+		str = strings.shift();
 		QUnit.ok(!~$.inArray(str, strings), "string \"" + str + "\" differs from others");
 	}
 });
@@ -431,7 +435,7 @@ Echo.Tests.test("log()", function() {
 		QUnit.ok(true, "Checking if no exceptions were thrown while executing the \"log\" function with valid and invalid params");
 	} catch(e) {
 		QUnit.pushFailure("Execution of the \"log\" function caused exception.");
-	};
+	}
 });
 
 Echo.Tests.test("hyperlink()", function() {
@@ -471,11 +475,11 @@ Echo.Tests.test("hyperlink()", function() {
 		"<a href=\"http://aboutecho.com\" target=\"_blank\"></a>",
 		"target is set to '_blank' value if openInNewWindow is true"
 	);
-	linkParams.data.href = "http://aboutecho.com\?&a=b";
+	linkParams.data.href = "http://aboutecho.com\\?&a=b";
 	linkParams.options.skipEscaping = false;
 	QUnit.equal(
 		Echo.Utils.hyperlink(linkParams.data, linkParams.options),
-		"<a href=\"http://aboutecho.com\?&amp;a=b\" target=\"_blank\"></a>",
+		"<a href=\"http://aboutecho.com\\?&amp;a=b\" target=\"_blank\"></a>",
 		"href attribute is htmlized if skipEscaping is false"
 	);
 });
@@ -489,6 +493,35 @@ Echo.Tests.test("capitalize()", function() {
 	QUnit.strictEqual(Echo.Utils.capitalize("some|long|word|with|no|whitespace|delimiter"), "Some|Long|Word|With|No|Whitespace|Delimiter", "Checking capitalize method if argument string is delimted with no whiespaces word boundary");
 });
 
+Echo.Tests.asyncTest("debounce()", function() {
+	var test = function(immediate, prefix, samples) {
+		return function(callback) {
+			var delay = 20;
+			var spy = sinon.spy();
+			var debounced = Echo.Utils.debounce(spy, delay, immediate);
+			debounced(1);
+			debounced(2);
+			setTimeout(function() {
+				debounced(3);
+				debounced(4);
+			}, delay * 2);
+			setTimeout(function() {
+				QUnit.strictEqual(spy.callCount, 2, "[" + prefix + "] executed exactly twice");
+				QUnit.strictEqual(spy.firstCall.args[0], samples[0], "[" + prefix + "] first call parameter has expected value");
+				QUnit.strictEqual(spy.secondCall.args[0], samples[1], "[" + prefix + "] second call parameter has expected value");
+				callback();
+			}, delay * 4);
+		};
+	};
+	QUnit.expect(6);
+	Echo.Utils.sequentialCall([
+		test(false, "regular", [2, 4]),
+		test(true, "immediate", [1, 3])
+	], function() {
+		QUnit.start();
+	});
+});
+
 Echo.Tests.test("invoke()", function() {
 	var nonCtxSpecificCases = [
 		[10, 10],
@@ -497,7 +530,13 @@ Echo.Tests.test("invoke()", function() {
 		["some string", "some string"],
 		[function() { return "test"; }, "test"],
 		[function() {}, undefined],
-		[function() { return this.a; }, undefined]
+		[function() {
+			// although _this_ is a _window_ object, reading property value
+			// on this object fails in strict mode, so we use try/catch
+			try {
+				return this.a;
+			} catch(e) {}
+		}, undefined]
 	];
 	var ctxSpecificTests = [
 		[function() { return this.a; }, 1],
@@ -547,6 +586,96 @@ Echo.Tests.test("random()", function() {
 	QUnit.ok(isNaN(num2), "Check that if function called with illegal number of parameters, then it returns NaN (one parameter)");
 	QUnit.ok(isNaN(num3), "Check that if function called with illegal number of parameters, then it returns NaN (no parameters)");
 	QUnit.ok(num4 <= 5 && num4 >= 1, "Check that if min greater than max, then function steel returns expected value");
+});
+
+Echo.Tests.asyncTest("retry()", function() {
+	var defaultOptions = function(callback) {
+		var i = 0, def = $.Deferred();
+		var fn = function() {
+			setTimeout(function() {
+				i++;
+				def.reject();
+			}, 100);
+			return def.promise();
+		};
+		Echo.Utils.retry(fn).fail(function() {
+			QUnit.strictEqual(i, 1, "retry only one times");
+			callback();
+		});
+	};
+	var passingContext = function(callback) {
+		var obj = {"a": 0};
+		var def = $.Deferred();
+		Echo.Utils.retry(function() {
+			var self = this;
+			setTimeout(function() {
+				self.a++;
+				def.resolve();
+			}, 100);
+			return def.promise();
+		}, null, obj).done(function() {
+			QUnit.strictEqual(obj.a, 1, "passing context to the input function");
+			callback();
+		});
+	};
+	var passingParamaters = function(callback) {
+		var def = $.Deferred();
+		Echo.Utils.retry(function(i, j) {
+			setTimeout(function() {
+				i++; j++;
+				def.reject(i, j);
+			}, 100);
+			return def.promise();
+		}, null, null, [0, 0]).fail(function(args) {
+			QUnit.deepEqual([1, 1], [args[0], args[1]], "passing arguments to the input function");
+			callback();
+		});
+	};
+	var provideOnlyTimesOption = function(callback) {
+		Echo.Utils.retry(function() {
+			return $.Deferred().reject().promise();
+		}, {"times": 2}).fail(function() {
+			QUnit.ok(true, "provide only \"times\" option");
+			callback();
+		});
+	};
+	var provideOnlyRatioOption = function(callback) {
+		Echo.Utils.retry(function() {
+			return $.Deferred().reject().promise();
+		}, {"ratio": 0.1}).fail(function() {
+			QUnit.ok(true, "provide only \"ratio\" option");
+			callback();
+		});
+	};
+	var provideOptions = function(callback) {
+		var i = 0;
+		Echo.Utils.retry(function() {
+			var def = $.Deferred();
+			if (i < 2) {
+				def.reject();
+			} else {
+				def.resolve();
+			}
+			i++;
+			return def.promise();
+		}, {"times": 3, "ratio": 0.1})
+		.done(function() {
+			QUnit.strictEqual(i, 3, "passing new options");
+			callback();
+		});
+	};
+
+	QUnit.expect(6);
+	Echo.Utils.sequentialCall([
+		defaultOptions,
+		passingContext,
+		passingParamaters,
+		provideOnlyTimesOption,
+		provideOnlyRatioOption,
+		provideOptions
+	], function() {
+		QUnit.start();
+	});
 });
 
 Echo.Tests.asyncTest("loadImage()", function() {
@@ -660,15 +789,6 @@ Echo.Tests.test("testing templateSubstitution regexp", function() {
 });
 
 Echo.Tests.test("_prepareFieldAccessKey()", function() {
-	var data = {
-		"key1": "value1",
-		"key2": {
-			"key2-1": "value2-1",
-			"key2-2": {
-				"key2-2-1": "value2-2-1"
-			}
-		}
-	};
 	var cases = [
 		["", false, "empty string as a value"],
 		[false, false, "boolean 'false' as a value"],

@@ -1,7 +1,7 @@
 (function(jQuery) {
-var $ = jQuery;
-
 "use strict";
+
+var $ = jQuery;
 
 Echo.Tests.Dependencies = Echo.Tests.Dependencies || {};
 Echo.Tests.Dependencies.Control = {};
@@ -50,7 +50,6 @@ suite.prototype.tests.PublicInterfaceTests = {
 		"testTimeout": 20000 // 20 secs
 	},
 	"check": function() {
-		var self = this;
 		var manifest = {
 			"name": suite.getTestControlClassName(),
 			"vars": {},
@@ -96,7 +95,8 @@ suite.prototype.tests.PublicInterfaceTests = {
 			"destroyBroadcasting",
 			"manifestBaseInheritance",
 			"nestedReadyCallbacks",
-			"inheritedEvent"
+			"inheritedEvent",
+			"controlRefreshingOnUserInvalidate"
 		], "cases");
 
 	}
@@ -105,7 +105,6 @@ suite.prototype.tests.PublicInterfaceTests = {
 suite.prototype.cases = {};
 
 suite.prototype.cases.basicOperations = function(callback) {
-	var test = this;
 	var check = function() {
 		var self = this;
 
@@ -257,8 +256,8 @@ suite.prototype.cases.basicOperations = function(callback) {
 			[function() { return this.cssClass; },
 				"echo-streamserver-controls-mytestcontrol"],
 			[function() { return this.fakeKey; }, undefined],
-			[function() { return this.get("data.key1")}, "key1 value"],
-			[function() { return this.get("name")},
+			[function() { return this.get("data.key1"); }, "key1 value"],
+			[function() { return this.get("name"); },
 				"Echo.StreamServer.Controls.MyTestControl"]
 		];
 		$.each(cases, function(id, _case) {
@@ -285,17 +284,17 @@ suite.prototype.cases.basicOperations = function(callback) {
 };
 
 suite.prototype.cases.initializationWithInvalidParams = function(callback) {
-	var result, definition = suite.getTestControlClass();
+	var result, Definition = suite.getTestControlClass();
 
-	result = new definition();
+	result = new Definition();
 	QUnit.ok($.isEmptyObject(result),
 		"Checking if 'false' is returned if no config is passed");
 
-	result = new definition({"appkey": "echo.jssdk.tests.aboutecho.com"});
+	result = new Definition({"appkey": "echo.jssdk.tests.aboutecho.com"});
 	QUnit.ok($.isEmptyObject(result),
 		"Checking if empty object is returned if no target is passed in config");
 
-	result = new definition({"target": $("<div>")});
+	result = new Definition({"target": $("<div>")});
 	var html = result.config.get("target").html();
 	QUnit.ok(/incorrect_appkey/.test(html),
 		"Checking if the error message is produced once the control is initialized without the appkey defined (validating the \"checkAppKey\" function)");
@@ -453,7 +452,7 @@ suite.prototype.cases.controlRendering = function(callback) {
 			"Checking if component was re-rendered and appended elements were wiped out");
 
 		// checking "showMessage" method
-		var target = $('<div></div>');
+		target = $('<div></div>');
 		var data = {
 			"type": "error",
 			"message": "An error occured during the request...",
@@ -476,7 +475,6 @@ suite.prototype.cases.controlRendering = function(callback) {
 			"Checking \"showMessage\" in full mode");
 
 		// checking "showError" method
-		var errorCount = 0;
 		var errorTarget = $("<div></div>");
 		var errorData = {
 			"errorCode": "someUndefinedErrorCode",
@@ -531,7 +529,7 @@ suite.prototype.cases.controlRendering = function(callback) {
 			QUnit.start();
 		}, 3000);
 
-		var template = '<div class="echo-utils-tests-footer">footer content</div>';
+		template = '<div class="echo-utils-tests-footer">footer content</div>';
 		this.render();
 		_suite.jqueryObjectsEqual($(this.view.get("testRenderer").html()), $("<div>Some value</div>"),
 			"Checking control.view.get() function");
@@ -607,7 +605,7 @@ suite.prototype.cases.eventsMechanism = function(callback) {
 		publish("incoming.event.global.test");
 		publish("incoming.event.local.test");
 
-		QUnit.ok(count == 9,
+		QUnit.equal(count, 9,
 			"Checking if expected amount of events were executed and handled");
 
 		var e = this.events;
@@ -713,7 +711,7 @@ suite.prototype.cases.destroyCalled = function(callback) {
 		publish("incoming.event.global.test", this);
 		publish("incoming.event.local.test", this);
 
-		QUnit.ok(count == 2,
+		QUnit.equal(count, 2,
 			"Checking if expected amount of events were executed and handled (checking \"destroy\" function call)");
 
 		this.destroy();
@@ -802,7 +800,7 @@ suite.prototype.cases.nestedReadyCallbacks = function(callback) {
 };
 
 suite.prototype.cases.inheritedEvent = function(callback) {
-	var self = this, s = "";
+	var s = "";
 	var handler = function(topic) { s += this.name; };
 	var initControl = function(manifest, ctx, ready) {
 		var d = $.Deferred();
@@ -879,6 +877,34 @@ suite.prototype.cases.inheritedEvent = function(callback) {
 	});
 };
 
+suite.prototype.cases.controlRefreshingOnUserInvalidate = function(callback) {
+	var invalidateUser = function() {
+		Echo.Events.publish({"topic": "Echo.UserSession.onInvalidate", "data": {}});
+	};
+	Echo.Control.create({
+		"name": "Echo.Tests.Fixtures.RefreshingControl",
+		"templates": {"main": '<div class="{class:container}"></div>'}
+	});
+	$.each([true, false], function(idx, isRefresh) {
+		var refreshCallback = sinon.spy();
+		suite.initTestControl({
+			"refreshOnUserInvalidate": isRefresh,
+			"ready": function() {
+				this.events.subscribe({
+					"topic": "Echo.Tests.Fixtures.RefreshingControl.onRefresh",
+					"handler": refreshCallback
+				});
+				invalidateUser();
+				QUnit.ok(
+					isRefresh ? refreshCallback.calledOnce : !refreshCallback.called,
+					"Check if control is " + (isRefresh ? "refreshed" : "not refreshed") + " when refreshOnUserInvalidate=" + isRefresh.toString()
+				);
+				this.destroy();
+			}
+		}, "Echo.Tests.Fixtures.RefreshingControl");
+	});
+};
+
 suite.prototype.cases.manifestBaseInheritance = function(callback) {
 	var initVar = "",
 		destroyVar = "";
@@ -941,7 +967,7 @@ suite.prototype.cases.manifestBaseInheritance = function(callback) {
 		},
 		"css": ".{class:container} { width: 50px; }.{class:someRenderer} { width: 10px; }"
 	};
-	var control = Echo.Control.create(parentManifest);
+	Echo.Control.create(parentManifest);
 	var child1Manifest = {
 		"name": "Echo.TestControl1_Child1",
 		"inherits": Echo.TestControl1,
@@ -963,10 +989,10 @@ suite.prototype.cases.manifestBaseInheritance = function(callback) {
 		},
 		"methods": {
 			"method1": function() {
-				return this.parent() + " method1_child_1"
+				return this.parent() + " method1_child_1";
 			},
 			"child1Method": function() {
-				return "child1 method"
+				return "child1 method";
 			}
 		},
 		"templates": {
@@ -986,12 +1012,12 @@ suite.prototype.cases.manifestBaseInheritance = function(callback) {
 		},
 		"css": ".{class:someRenderer} { width: 5px; }"
 	};
-	var child = Echo.Control.create(child1Manifest);
-	var child2 = Echo.Control.create({
+	Echo.Control.create(child1Manifest);
+	Echo.Control.create({
 		"name": "Echo.TestControl1_Child2",
 		"inherits": Echo.Utils.getComponent("Echo.TestControl1")
 	});
-	var child2_child3 = Echo.Control.create({
+	Echo.Control.create({
 		"name": "Echo.TestControl1_Child2_Child3",
 		"inherits": Echo.Utils.getComponent("Echo.TestControl1_Child2"),
 		"init": function() {
@@ -1004,7 +1030,7 @@ suite.prototype.cases.manifestBaseInheritance = function(callback) {
 		}
 	});
 	var newEventCounter = function() { eventsChecker.newEvent++; };
-	var child1_child2 = Echo.Control.create({
+	Echo.Control.create({
 		"name": "Echo.TestControl1_Child1_Child2",
 		"methods": {
 			"method2": function() {
@@ -1019,7 +1045,7 @@ suite.prototype.cases.manifestBaseInheritance = function(callback) {
 		"inherits": Echo.Utils.getComponent("Echo.TestControl1_Child1")
 	});
 	var anotherEventCounter = function() { eventsChecker.anotherNewEvent++; };
-	var control2 = Echo.Control.create($.extend(true, {}, parentManifest, {
+	Echo.Control.create($.extend(true, {}, parentManifest, {
 		"name": "Echo.TestControl2",
 		"templates": {
 			"main": '<div class="{inherited.class:container} {class:container}"></div>'
@@ -1206,7 +1232,7 @@ suite.prototype.async.placeImageContainerFillHorizontalTest = function(callback)
 					var self = this;
 					// wait for image size affected in IE
 					setTimeout(function () {
-						QUnit.deepEqual([self.width, self.height], [90, 30], 
+						QUnit.deepEqual([self.width, self.height], [90, 30],
 							"Checking placeImage() method for image area filling by a horizontal image");
 						callback();
 					}, 0);
@@ -1234,7 +1260,7 @@ suite.prototype.async.placeImageContainerFillVerticalTest = function(callback) {
 					var self = this;
 					// wait for image size affected in IE
 					setTimeout(function () {
-						QUnit.deepEqual([self.width, self.height], [30, 90], 
+						QUnit.deepEqual([self.width, self.height], [30, 90],
 							"Checking placeImage() method for image area filling by a vertical image");
 						callback();
 					}, 0);
@@ -1306,7 +1332,7 @@ suite.prototype.tests.TestAsyncMethods = {
 				"placeImageContainerFillVerticalTest"
 			];
 			if (document.compatMode !== "CSS1Compat") {
-				tests = tests.concat(["horizontalImageQuirksModeTest", "verticalImageQuirksModeTest"])
+				tests = tests.concat(["horizontalImageQuirksModeTest", "verticalImageQuirksModeTest"]);
 			}
 			this.sequentialAsyncTests(tests, "async");
 		}
@@ -1484,8 +1510,8 @@ suite.getTestControlClass = function(name) {
 };
 
 suite.initTestControl = function(config, name) {
-	var definition = suite.getTestControlClass(name);
-	new definition($.extend({
+	var Definition = suite.getTestControlClass(name);
+	new Definition($.extend({
 		"target": $("<div></div>"),
 		"appkey": "echo.jssdk.tests.aboutecho.com"
 	}, config));

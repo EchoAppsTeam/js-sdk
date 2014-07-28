@@ -22,20 +22,20 @@ var $ = jQuery;
 
 <span id='Echo-StreamServer-Controls-Stream-Item-Plugins-Reply'>/**
 </span> * @class Echo.StreamServer.Controls.Stream.Item.Plugins.Reply
- * Adds extra “Reply” button to each item in the Echo Stream control.
+ * Adds extra &quot;Reply&quot; button to each item in the Echo Stream control.
  * Integrates Echo Submit control and provides the ability to submit
  * replies to the posted items.
  *
- * 	new Echo.StreamServer.Controls.Stream({
- * 		&quot;target&quot;: document.getElementById(&quot;echo-stream&quot;),
- * 		&quot;appkey&quot;: &quot;echo.jssdk.demo.aboutecho.com&quot;,
- * 		&quot;plugins&quot;: [{
- * 			&quot;name&quot;: &quot;Reply&quot;
- * 		}]
- * 	});
+ *		new Echo.StreamServer.Controls.Stream({
+ *			&quot;target&quot;: document.getElementById(&quot;echo-stream&quot;),
+ *			&quot;appkey&quot;: &quot;echo.jssdk.demo.aboutecho.com&quot;,
+ *			&quot;plugins&quot;: [{
+ *				&quot;name&quot;: &quot;Reply&quot;
+ *			}]
+ *		});
  *
  * More information regarding the plugins installation can be found
- * in the [“How to initialize Echo components”](#!/guide/how_to_initialize_components-section-initializing-plugins) guide.
+ * in the [&quot;How to initialize Echo components&quot;](#!/guide/how_to_initialize_components-section-initializing-plugins) guide.
  *
  * @extends Echo.Plugin
  *
@@ -63,14 +63,14 @@ plugin.config = {
 </span>	 * @cfg {String} actionString
 	 * Specifies the hint placed in the empty text area.
 	 *
-	 * 	new Echo.StreamServer.Controls.Stream({
-	 * 		&quot;target&quot;: document.getElementById(&quot;echo-stream&quot;),
-	 * 		&quot;appkey&quot;: &quot;echo.jssdk.demo.aboutecho.com&quot;,
-	 * 		&quot;plugins&quot;: [{
-	 * 			&quot;name&quot;: &quot;Reply&quot;,
-	 * 			&quot;actionString&quot;: &quot;Type your comment here...&quot;
-	 * 		}]
-	 * 	});
+	 *		new Echo.StreamServer.Controls.Stream({
+	 *			&quot;target&quot;: document.getElementById(&quot;echo-stream&quot;),
+	 *			&quot;appkey&quot;: &quot;echo.jssdk.demo.aboutecho.com&quot;,
+	 *			&quot;plugins&quot;: [{
+	 *				&quot;name&quot;: &quot;Reply&quot;,
+	 *				&quot;actionString&quot;: &quot;Type your comment here...&quot;
+	 *			}]
+	 *		});
 	 */
 	&quot;actionString&quot;: &quot;Write a reply...&quot;
 };
@@ -178,7 +178,7 @@ plugin.renderers.compactForm = function(element) {
 </span> * @echo_renderer
  */
 plugin.renderers.compactField = function(element) {
-	var plugin = this, item = this.component;
+	var plugin = this;
 	return element.focus(function() {
 		plugin._showSubmit();
 	}).val(this.config.get(&quot;actionString&quot;));
@@ -283,7 +283,7 @@ plugin.methods._getClickHandler = function() {
 };
 
 plugin.methods._assembleButton = function() {
-	var plugin = this, item = this.component;
+	var plugin = this;
 	var callback = function() {
 		plugin._showSubmit();
 	};
@@ -322,7 +322,7 @@ plugin.methods._getSubmitData = function() {
 	return data;
 };
 
-plugin.css = 
+plugin.css =
 	&quot;.{plugin.class:compactContent} { padding: 5px 5px 5px 6px; background-color: #fff; }&quot; +
 	&quot;.{plugin.class:compactBorder} { border: 1px solid #d2d2d2; }&quot; +
 	&quot;.{plugin.class:compactContent} input.{plugin.class:compactField}[type=&#39;text&#39;].echo-secondaryColor { color: #C6C6C6 }&quot; +
@@ -337,23 +337,21 @@ Echo.Plugin.create(plugin);
 (function(jQuery) {
 &quot;use strict&quot;;
 
-var $ = jQuery;
-
 <span id='Echo-StreamServer-Controls-Stream-Plugins-Reply'>/**
 </span> * @class Echo.StreamServer.Controls.Stream.Plugins.Reply
  * Proxies the &quot;Echo.StreamServer.Controls.Stream.Item.Plugins.Reply.onExpand&quot;
  * event on the Stream control level.
  *
- * 	new Echo.StreamServer.Controls.Stream({
- * 		&quot;target&quot;: document.getElementById(&quot;echo-stream&quot;),
- * 		&quot;appkey&quot;: &quot;echo.jssdk.demo.aboutecho.com&quot;,
- * 		&quot;plugins&quot;: [{
- * 			&quot;name&quot;: &quot;Reply&quot;
- * 		}]
- * 	});
+ *		new Echo.StreamServer.Controls.Stream({
+ *			&quot;target&quot;: document.getElementById(&quot;echo-stream&quot;),
+ *			&quot;appkey&quot;: &quot;echo.jssdk.demo.aboutecho.com&quot;,
+ *			&quot;plugins&quot;: [{
+ *				&quot;name&quot;: &quot;Reply&quot;
+ *			}]
+ *		});
  *
  * More information regarding the plugins installation can be found
- * in the [“How to initialize Echo components”](#!/guide/how_to_initialize_components-section-initializing-plugins) guide.
+ * in the [&quot;How to initialize Echo components&quot;](#!/guide/how_to_initialize_components-section-initializing-plugins) guide.
  *
  * @extends Echo.Plugin
  *
@@ -393,17 +391,17 @@ var $ = jQuery;
 </span> * @class Echo.StreamServer.Controls.Submit.Plugins.Reply
  * Adds internal data field &quot;inReplyTo&quot; for correct reply workflow.
  *
- * 	new Echo.StreamServer.Controls.Submit({
- * 		&quot;target&quot;: document.getElementById(&quot;echo-submit&quot;),
- * 		&quot;appkey&quot;: &quot;echo.jssdk.demo.aboutecho.com&quot;,
- * 		&quot;plugins&quot;: [{
- * 			&quot;name&quot;: &quot;Reply&quot;,
- * 			&quot;inReplyTo&quot;: data 
- * 		}]
- * 	});
+ *		new Echo.StreamServer.Controls.Submit({
+ *			&quot;target&quot;: document.getElementById(&quot;echo-submit&quot;),
+ *			&quot;appkey&quot;: &quot;echo.jssdk.demo.aboutecho.com&quot;,
+ *			&quot;plugins&quot;: [{
+ *				&quot;name&quot;: &quot;Reply&quot;,
+ *				&quot;inReplyTo&quot;: data 
+ *			}]
+ *		});
  *
  * More information regarding the plugins installation can be found
- * in the [“How to initialize Echo components”](#!/guide/how_to_initialize_components-section-initializing-plugins) guide.
+ * in the [&quot;How to initialize Echo components&quot;](#!/guide/how_to_initialize_components-section-initializing-plugins) guide.
  *
  * @extends Echo.Plugin
  *

@@ -1,4 +1,5 @@
 (function($) {
+"use strict";
 
 Echo.Tests.module("Echo.API", {
 	"meta": {
@@ -63,6 +64,7 @@ if (Echo.API.Transports.WebSockets.available()) {
 		for(var i = 0; i < 4; i++) {
 			deferred.push($.Deferred());
 			closeDef.push($.Deferred());
+			/* jshint loopfunc: true */
 			(function(i) {
 				requests.push(
 					new Echo.API.Request({
@@ -85,6 +87,7 @@ if (Echo.API.Transports.WebSockets.available()) {
 					QUnit.ok(requests[0].transport.connecting(), "Check that WS status is \"connecting\"");
 				}
 			})(i);
+			/* jshint loopfunc: false */
 		}
 		var req = requests[0];
 		$.when.apply($, deferred).done(function() {
@@ -126,22 +129,71 @@ if (Echo.API.Transports.WebSockets.available()) {
 			QUnit.ok($.isEmptyObject(Echo.API.Transports.WebSockets.socketByURI[req.transport.config.get("uri")].subscribers), "Check that all subscription removed in case of all requests abortion");
 			$.when.apply($, closeDef).done(function() {
 				QUnit.strictEqual(closed, 4, "Check that all subscribed connections are closed (\"onClose\" event fired)");
+				// wait for socket closing
+				setTimeout(function() {
+					QUnit.ok($.isEmptyObject(Echo.API.Transports.WebSockets.socketByURI), "Check that WS static instance container is cleared");
+					QUnit.strictEqual(
+						$.grep(requests, function(req) {
+							return req.transport.closed();
+						}).length,
+						4, "Check that each statuses of the requests are \"closed\""
+					);
+					QUnit.strictEqual(
+						$.grep(requests, function(req) {
+							return $.isEmptyObject(req.transport.timers);
+						}).length,
+						4, "Check that all timers are cleared after closing a connection"
+					);
+					QUnit.start();
+				}, 0);
+			});
+		});
+	}, {"timeout": 10000});
+
+	Echo.Tests.asyncTest("WebSocket: immediate close socket", function() {
+		var closeDef = [];
+		var requests = [];
+		for(var i = 0; i < 2; i++) {
+			closeDef.push($.Deferred());
+			/* jshint loopfunc: true */
+			(function(i) {
+				requests.push(
+					new Echo.API.Request({
+						"endpoint": "ws",
+						"apiBaseURL": "live.echoenabled.com/v1/",
+						"transport": "websockets",
+						"onOpen": function() {
+							if (i === 1) {
+								requests[0].transport.transportObject.close();
+							}
+						},
+						"onClose": function() {
+							closeDef[i].resolve();
+						}
+					})
+				);
+			})(i);
+			/* jshint loopfunc: false */
+		}
+		$.when.apply($, closeDef).done(function() {
+			setTimeout(function() {
+				QUnit.ok($.isEmptyObject(Echo.API.Transports.WebSockets.socketByURI), "Check that WS static instance container is cleared");
 				QUnit.strictEqual(
 					$.grep(requests, function(req) {
 						return req.transport.closed();
 					}).length,
-					4, "Check that each statuses of the requests are \"closed\""
+					2, "Check that each statuses of the requests are \"closed\""
 				);
 				QUnit.strictEqual(
 					$.grep(requests, function(req) {
-						return $.isEmptyObject(req.timers);
+						return $.isEmptyObject(req.transport.timers);
 					}).length,
-					4, "Check that all timers are cleared after closing a connection"
+					2, "Check that all timers are cleared after closing a connection"
 				);
 				QUnit.start();
-			});
+			}, 0);
 		});
-	}, {"timeout": 10000});
+	});
 }
 
 Echo.Tests.test("Transports JSONP method POST", function() {

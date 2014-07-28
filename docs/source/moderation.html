@@ -25,16 +25,16 @@ var $ = jQuery;
  * Adds several moderation controls to change item status. Besides
  * it provides the opportunity to ban specific user or change his privileges.
  *
- * 	new Echo.StreamServer.Controls.Stream({
- * 		&quot;target&quot;: document.getElementById(&quot;echo-stream&quot;),
- * 		&quot;appkey&quot;: &quot;echo.jssdk.demo.aboutecho.com&quot;,
- * 		&quot;plugins&quot;: [{
- * 			&quot;name&quot;: &quot;Moderation&quot;
- * 		}]
- * 	});
+ *		new Echo.StreamServer.Controls.Stream({
+ *			&quot;target&quot;: document.getElementById(&quot;echo-stream&quot;),
+ *			&quot;appkey&quot;: &quot;echo.jssdk.demo.aboutecho.com&quot;,
+ *			&quot;plugins&quot;: [{
+ *				&quot;name&quot;: &quot;Moderation&quot;
+ *			}]
+ *		});
  *
  * More information regarding the plugins installation can be found
- * in the [“How to initialize Echo components”](#!/guide/how_to_initialize_components-section-initializing-plugins) guide.
+ * in the [&quot;How to initialize Echo components&quot;](#!/guide/how_to_initialize_components-section-initializing-plugins) guide.
  *
  * @extends Echo.Plugin
  *
@@ -67,14 +67,14 @@ plugin.config = {
 </span>	 * @cfg {Boolean} [removePersonalItemsAllowed=false]
 	 * Specifies whether users are allowed to remove their own items from stream or not.
 	 *
-	 *     new Echo.StreamServer.Controls.Stream({
-	 *         &quot;target&quot;: document.getElementById(&quot;echo-stream&quot;),
-	 *         &quot;appkey&quot;: &quot;echo.jssdk.demo.aboutecho.com&quot;,
-	 *         &quot;plugins&quot;: [{
-	 *             &quot;name&quot;: &quot;Moderation&quot;
-	 *             &quot;removePersonalItemsAllowed&quot;: true
-	 *         }]
-	 *     });
+	 *		new Echo.StreamServer.Controls.Stream({
+	 *			&quot;target&quot;: document.getElementById(&quot;echo-stream&quot;),
+	 *			&quot;appkey&quot;: &quot;echo.jssdk.demo.aboutecho.com&quot;,
+	 *			&quot;plugins&quot;: [{
+	 *				&quot;name&quot;: &quot;Moderation&quot;
+	 *				&quot;removePersonalItemsAllowed&quot;: true
+	 *			}]
+	 *		});
 	 *
 	 * Please note that this parameter affects only client-side interface.
 	 * This feature can be enabled on server side via a kvs/put API call, where:
@@ -95,14 +95,14 @@ plugin.config = {
 	 *
 	 * The following actions are available: `ban`, `permissions`
 	 *
-	 * 	new Echo.StreamServer.Controls.Stream({
-	 * 		&quot;target&quot;: document.getElementById(&quot;echo-stream&quot;),
-	 * 		&quot;appkey&quot;: &quot;echo.jssdk.demo.aboutecho.com&quot;,
-	 * 		&quot;plugins&quot;: [{
-	 * 			&quot;name&quot;: &quot;Moderation&quot;
-	 * 			&quot;userActions&quot;: [&quot;ban&quot;, &quot;permissions&quot;],
-	 * 		}]
-	 * 	});
+	 *		new Echo.StreamServer.Controls.Stream({
+	 *			&quot;target&quot;: document.getElementById(&quot;echo-stream&quot;),
+	 *			&quot;appkey&quot;: &quot;echo.jssdk.demo.aboutecho.com&quot;,
+	 *			&quot;plugins&quot;: [{
+	 *				&quot;name&quot;: &quot;Moderation&quot;
+	 *				&quot;userActions&quot;: [&quot;ban&quot;, &quot;permissions&quot;],
+	 *			}]
+	 *		});
 	 */
 	&quot;userActions&quot;: [&quot;ban&quot;, &quot;permissions&quot;],
 
@@ -112,14 +112,14 @@ plugin.config = {
 	 *
 	 * The following actions are available: `approve`, `spam`, `delete`, `untouch`
 	 *
-	 * 	new Echo.StreamServer.Controls.Stream({
-	 * 		&quot;target&quot;: document.getElementById(&quot;echo-stream&quot;),
-	 * 		&quot;appkey&quot;: &quot;echo.jssdk.demo.aboutecho.com&quot;,
-	 * 		&quot;plugins&quot;: [{
-	 * 			&quot;name&quot;: &quot;Moderation&quot;
-	 * 			&quot;itemActions&quot;: [&quot;approve&quot;, &quot;spam&quot;, &quot;delete&quot;, &quot;untouch&quot;]
-	 * 		}]
-	 * 	});
+	 *		new Echo.StreamServer.Controls.Stream({
+	 *			&quot;target&quot;: document.getElementById(&quot;echo-stream&quot;),
+	 *			&quot;appkey&quot;: &quot;echo.jssdk.demo.aboutecho.com&quot;,
+	 *			&quot;plugins&quot;: [{
+	 *				&quot;name&quot;: &quot;Moderation&quot;
+	 *				&quot;itemActions&quot;: [&quot;approve&quot;, &quot;spam&quot;, &quot;delete&quot;, &quot;untouch&quot;]
+	 *			}]
+	 *		});
 	 */
 	&quot;itemActions&quot;: [&quot;approve&quot;, &quot;spam&quot;, &quot;delete&quot;]
 };
@@ -644,7 +644,7 @@ plugin.methods._getNextRole = function(role) {
 	return plugin.roles[($.inArray(role, plugin.roles) + 1) % plugin.roles.length];
 };
 
-plugin.css = function() {
+plugin.css = (function() {
 	return &#39;.{plugin.class:status} { width: 48px; height: 24px; }&#39; +
 		&#39;.{plugin.class:status-child} { width: 24px; height: 24px; }&#39; +
 		&#39;.{plugin.class:statusIcon} { float: right; margin: 4px; width: 16px; height: 16px; }&#39; +
@@ -664,7 +664,7 @@ plugin.css = function() {
 		$.map(plugin.statuses, function(name) {
 			return &#39;.{plugin.class:status-icon-&#39; + name + &#39;} { background: url({config:cdnBaseURL.sdk-assets}/images/curation/status/&#39; + name.toLowerCase() + &#39;.png) no-repeat; }&#39;;
 		}).join(&quot;&quot;);
-}();
+})();
 
 Echo.Plugin.create(plugin);
 
@@ -672,8 +672,6 @@ Echo.Plugin.create(plugin);
 
 (function(jQuery) {
 &quot;use strict&quot;;
-
-var $ = jQuery;
 
 var plugin = Echo.Plugin.manifest(&quot;Moderation&quot;, &quot;Echo.StreamServer.Controls.Stream&quot;);
 
@@ -689,6 +687,7 @@ plugin.events = {
 };
 
 Echo.Plugin.create(plugin);
+
 })(Echo.jQuery);
 </pre>
 </body>

@@ -22,7 +22,7 @@ var $ = jQuery;
 
 <span id='Echo-StreamServer-Controls-Stream-Item-Plugins-Edit'>/**
 </span> * @class Echo.StreamServer.Controls.Stream.Item.Plugins.Edit
- * Adds extra “Edit” button to each item in the Echo Stream control
+ * Adds extra &quot;Edit&quot; button to each item in the Echo Stream control
  * which allows to edit the content and some metadata of the item.
  * This button will appear either for the users with
  * administrative privileges or for editing of personal comments.
@@ -36,7 +36,7 @@ var $ = jQuery;
  * 	});
  *
  * More information regarding the plugins installation can be found
- * in the [“How to initialize Echo components”](#!/guide/how_to_initialize_components-section-initializing-plugins) guide.
+ * in the [&quot;How to initialize Echo components&quot;](#!/guide/how_to_initialize_components-section-initializing-plugins) guide.
  *
  * @extends Echo.Plugin
  *
@@ -55,7 +55,7 @@ $.map([&quot;Complete&quot;, &quot;Error&quot;], function(action) {
 	plugin.events[&quot;Echo.StreamServer.Controls.Submit.Plugins.Edit.onEdit&quot; + action] =
 		function(topic, args) {
 			this.component.render();
-		}
+		};
 });
 
 plugin.labels = {
@@ -285,7 +285,7 @@ plugin.methods._getMetaDataUpdates = function(verb, type, data) {
 	return updates;
 };
 
-plugin.css = 
+plugin.css =
 	&#39;.{plugin.class:cancelButtonContainer} { float: right; margin: 6px 15px 0px 0px; }&#39;;
 
 Echo.Plugin.create(plugin);

@@ -495,7 +495,6 @@ Echo.Control.prototype.getRelativeTime = function(datetime) {
 	if (!ts) return;
 	var d = new Date(ts * 1000);
 	var now = (new Date()).getTime();
-	var when;
 	var diff = Math.floor((now - d.getTime()) / 1000);
 	var dayDiff = Math.floor(diff / 86400);
 	var getAgo = function(ago, period) {
@@ -507,33 +506,38 @@ Echo.Control.prototype.getRelativeTime = function(datetime) {
 	// less than 10 seconds or if the given date is &quot;from the future&quot; but
 	// within the 60 seconds range
 	if (isNaN(dayDiff) || diff &lt; -60 || dayDiff &gt;= 365) {
-		when = d.toLocaleDateString() + &#39;, &#39; + d.toLocaleTimeString();
-	} else if (diff &lt; 10) {
-		when = this.labels.get(&quot;justNow&quot;);
-	} else if (diff &lt; 60) {
-		when = getAgo(diff, &#39;second&#39;);
-	} else if (diff &lt; 60 * 60) {
-		diff = Math.floor(diff / 60);
-		when = getAgo(diff, &#39;minute&#39;);
-	} else if (diff &lt; 60 * 60 * 24) {
-		diff = Math.floor(diff / (60 * 60));
-		when = getAgo(diff, &#39;hour&#39;);
-	} else if (diff &lt; 60 * 60 * 48) {
-		when = this.labels.get(&quot;yesterday&quot;);
-	} else if (dayDiff &lt; 7) {
-		when = getAgo(dayDiff, &#39;day&#39;);
-	} else if (dayDiff &lt; 14) {
-		when = this.labels.get(&quot;lastWeek&quot;);
-	} else if (dayDiff &lt; 30) {
-		diff =  Math.floor(dayDiff / 7);
-		when = getAgo(diff, &#39;week&#39;);
-	} else if (dayDiff &lt; 60) {
-		when = this.labels.get(&quot;lastMonth&quot;);
-	} else if (dayDiff &lt; 365) {
-		diff =  Math.floor(dayDiff / 31);
-		when = getAgo(diff, &#39;month&#39;);
+		return d.toLocaleDateString() + &quot;, &quot; + d.toLocaleTimeString();
 	}
-	return when;
+	if (diff &lt; 10) {
+		return this.labels.get(&quot;justNow&quot;);
+	}
+	if (diff &lt; 60) {
+		return getAgo(diff, &quot;second&quot;);
+	}
+	if (diff &lt; 60 * 60) {
+		return getAgo(Math.floor(diff / 60), &quot;minute&quot;);
+	}
+	if (diff &lt; 60 * 60 * 24) {
+		return getAgo(Math.floor(diff / (60 * 60)), &quot;hour&quot;);
+	}
+	if (diff &lt; 60 * 60 * 48) {
+		return this.labels.get(&quot;yesterday&quot;);
+	}
+	if (dayDiff &lt; 7) {
+		return getAgo(dayDiff, &quot;day&quot;);
+	}
+	if (dayDiff &lt; 14) {
+		return this.labels.get(&quot;lastWeek&quot;);
+	}
+	if (dayDiff &lt; 30) {
+		return getAgo(Math.floor(dayDiff / 7), &quot;week&quot;);
+	}
+	if (dayDiff &lt; 60) {
+		return this.labels.get(&quot;lastMonth&quot;);
+	}
+	if (dayDiff &lt; 365) {
+		return getAgo(Math.floor(dayDiff / 31), &quot;month&quot;);
+	}
 };
 
 <span id='Echo-Control-method-placeImage'>/**
@@ -581,8 +585,8 @@ Echo.Control.prototype.placeImage = function(args) {
 		&quot;onerror&quot;: args.onerror,
 		&quot;onload&quot;: function () {
 			if (document.compatMode !== &quot;CSS1Compat&quot;) {
-				$(this).addClass(this.width &lt; this.height 
-						? &quot;echo-image-stretched-vertically&quot; 
+				$(this).addClass(this.width &lt; this.height
+						? &quot;echo-image-stretched-vertically&quot;
 						: &quot;echo-image-stretched-horizontally&quot;);
 			}
 			$.isFunction(args.onload) &amp;&amp; args.onload.apply(this, arguments);
@@ -608,24 +612,23 @@ Echo.Control.prototype.checkAppKey = function() {
 };
 
 Echo.Control.prototype._init = function(subsystems) {
-	var control = this;
 	if (!subsystems || !subsystems.length) return;
 	var func = subsystems.shift();
 	var parts = func.split(&quot;:&quot;);
 	var subsystem = {
 		&quot;name&quot;: parts[0],
-		&quot;init&quot;: control._initializers[parts[0]],
+		&quot;init&quot;: this._initializers[parts[0]],
 		&quot;type&quot;: parts[1] || &quot;sync&quot;
 	};
 	if (subsystem.type === &quot;sync&quot;) {
-		var result = subsystem.init.call(control);
+		var result = subsystem.init.call(this);
 		if (typeof result !== &quot;undefined&quot;) {
-			control[subsystem.name] = result;
+			this[subsystem.name] = result;
 		}
-		control._init(subsystems);
+		this._init(subsystems);
 	} else {
-		subsystem.init.call(control, function() {
-			control._init(subsystems);
+		subsystem.init.call(this, function() {
+			this._init(subsystems);
 		});
 	}
 };
@@ -699,13 +702,13 @@ Echo.Control.prototype._initializers.events = function() {
 			// publish events with parents prefixes if appropriate flag provided
 			if (params.inherited) {
 				parent = control.constructor.parent;
-				names = function get(parent, acc) {
+				names = (function get(parent, acc) {
 					if (parent &amp;&amp; parent.name) {
 						acc.unshift(parent.name);
 						get(parent.constructor.parent, acc);
 					}
 					return acc;
-				}(parent, []);
+				})(parent, []);
 				$.map(names, function(name) {
 					Echo.Events.publish(
 						$.extend({}, params, {
@@ -809,7 +812,7 @@ Echo.Control.prototype._initializers.subscriptions = function() {
 
 	// subscribe all root level controls to the user login/logout event
 	// and call the &quot;refresh&quot; control method
-	if (!control.dependent()) {
+	if (!control.dependent() &amp;&amp; this.config.get(&quot;refreshOnUserInvalidate&quot;)) {
 		control.events.subscribe({
 			&quot;topic&quot;: &quot;Echo.UserSession.onInvalidate&quot;,
 			&quot;context&quot;: &quot;global&quot;,
@@ -870,7 +873,7 @@ Echo.Control.prototype._initializers.loading = function() {
 };
 
 Echo.Control.prototype._initializers.dependencies = function(callback) {
-	this._loadScripts(this._manifest(&quot;dependencies&quot;), callback);
+	this._loadScripts(this._manifest(&quot;dependencies&quot;), $.proxy(callback, this));
 };
 
 Echo.Control.prototype._initializers.user = function(callback) {
@@ -904,8 +907,8 @@ Echo.Control.prototype._initializers.user = function(callback) {
 };
 
 Echo.Control.prototype._initializers.plugins = function(callback) {
-	var control = this;
 	this._loadPluginScripts(function() {
+		var control = this;
 		$.map(control.config.get(&quot;pluginsOrder&quot;), function(name) {
 			var Plugin = Echo.Plugin.getClass(name, control.name);
 			if (Plugin) {
@@ -916,7 +919,7 @@ Echo.Control.prototype._initializers.plugins = function(callback) {
 				}
 			}
 		});
-		callback.call(control);
+		callback.call(this);
 	});
 };
 
@@ -1007,13 +1010,13 @@ Echo.Control.prototype._getSubstitutionInstructions = function() {
 			var value, parent;
 			if (key) {
 				parent = control.constructor.parent;
-				value = function get(parent, acc) {
+				value = (function get(parent, acc) {
 					if (parent &amp;&amp; parent.cssPrefix) {
 						acc.unshift(parent.cssPrefix + key);
 						get(parent.constructor.parent, acc);
 					}
 					return acc;
-				}(parent, []).join(&quot; &quot;);
+				})(parent, []).join(&quot; &quot;);
 			} else {
 				value = control.cssClass;
 			}
@@ -1042,12 +1045,16 @@ Echo.Control.prototype._manifest = function(key) {
 };
 
 Echo.Control.prototype._loadScripts = function(resources, callback) {
-	var control = this;
 	if (!resources || !resources.length) {
-		callback.call(control);
+		callback.call(this);
 		return;
 	}
-	resources = $.map(resources, function(resource) {
+	// the &quot;resource.loaded&quot; function (responsible for detecting
+	// if a given resource is loaded or not) is stored globally
+	// thus in order to avoid memory leaks, we need to make sure that
+	// the context captured by that function doesn&#39;t include any references
+	// to any objects which should be garbage-collected later.
+	resources = $.map(resources, $.proxy(function(resource) {
 		if (!resource.loaded) {
 			var key = resource.app &amp;&amp; &quot;App&quot; ||
 				resource.control &amp;&amp; &quot;Control&quot; ||
@@ -1060,13 +1067,13 @@ Echo.Control.prototype._loadScripts = function(resources, callback) {
 			}
 		}
 		return $.extend(resource, {
-			&quot;url&quot;: control.substitute({&quot;template&quot;: resource.url})
+			&quot;url&quot;: this.substitute({&quot;template&quot;: resource.url})
 		});
-	});
-	Echo.Loader.download(resources, function() {
-		callback.call(control);
-	}, {
-		&quot;errorTimeout&quot;: control.config.get(&quot;scriptLoadErrorTimeout&quot;)
+	}, this));
+	Echo.Loader.download(resources, $.proxy(function() {
+		callback.call(this);
+	}, this), {
+		&quot;errorTimeout&quot;: this.config.get(&quot;scriptLoadErrorTimeout&quot;)
 	});
 };
 
@@ -1100,9 +1107,8 @@ Echo.Control.prototype._loadPluginScripts = function(callback) {
 			}
 		});
 	};
-
-	control._loadScripts(get(&quot;plugins&quot;), function() {
-		control._loadScripts(get(&quot;dependencies&quot;), callback);
+	this._loadScripts(get(&quot;plugins&quot;), function() {
+		this._loadScripts(get(&quot;dependencies&quot;), callback);
 	});
 };
 
@@ -1263,6 +1269,12 @@ manifest.config = {
 	&quot;context&quot;: &quot;&quot;,
 	&quot;scriptLoadErrorTimeout&quot;: 5000, // 5 sec
 	&quot;query&quot;: &quot;&quot;,
+
+<span id='Echo-Control-cfg-refreshOnUserInvalidate'>	/**
+</span>	 * @cfg {Boolean} refreshOnUserInvalidate=true
+	 * If true control will be automatically refreshed after user login/logout
+	 */
+	&quot;refreshOnUserInvalidate&quot;: true,
 
 <span id='Echo-Control-cfg-defaultAvatar'>	/**
 </span>	 * @cfg {String} defaultAvatar
@@ -1445,19 +1457,19 @@ manifest.css = &#39;.echo-secondaryBackgroundColor { background-color: #F4F4F4; 
 		&#39;.echo-trinaryBackgroundColor { background-color: #ECEFF5; }&#39; +
 		&#39;.echo-primaryColor { color: #3A3A3A; }&#39; +
 		&#39;.echo-secondaryColor { color: #C6C6C6; }&#39; +
-		&#39;.echo-primaryFont { font-family: Arial, sans-serif; font-size: 12px; font-weight: normal; line-height: 16px; }&#39; +
-		&#39;.echo-secondaryFont { font-family: Arial, sans-serif; font-size: 11px; }&#39; +
+		&#39;.echo-primaryFont { font-family: &quot;Helvetica Neue&quot;, Helvetica, Arial, sans-serif; font-size: 12px; font-weight: normal; line-height: 16px; }&#39; +
+		&#39;.echo-secondaryFont { font-family: &quot;Helvetica Neue&quot;, Helvetica, Arial, sans-serif; font-size: 11px; }&#39; +
 		&#39;.echo-linkColor, .echo-linkColor a { color: #476CB8; }&#39; +
 		&#39;.echo-clickable { cursor: pointer; }&#39; +
 		&#39;.echo-relative { position: relative; }&#39; +
 		&#39;.echo-clear { clear: both; }&#39; +
 		&#39;.echo-image-container.echo-image-position-fill { text-align: center; overflow: hidden; }&#39; +
-		&#39;.echo-image-container.echo-image-position-fill img { max-width: 100%; max-height: 100%; width: auto; height: auto; vertical-align: top; }&#39; + 
+		&#39;.echo-image-container.echo-image-position-fill img { max-width: 100%; max-height: 100%; width: auto; height: auto; vertical-align: top; }&#39; +
 		&#39;.echo-image-container.echo-image-position-fill img.echo-image-stretched-horizontally { width: 100%; height: auto; }&#39; +
 		&#39;.echo-image-container.echo-image-position-fill img.echo-image-stretched-vertically { width: auto; height: 100%; }&#39; +
 
 		// message classes
-		&#39;.echo-control-message { padding: 15px 0px; text-align: center; }&#39; +
+		&#39;.echo-control-message { font-family: &quot;Helvetica Neue&quot;, Helvetica, Arial, sans-serif; padding: 15px 0px; text-align: center; }&#39; +
 		&#39;.echo-control-message-icon { height: 16px; padding-left: 16px; background: no-repeat left center; }&#39; +
 		&#39;.echo-control-message .echo-control-message-icon { padding-left: 21px; height: auto; }&#39; +
 		&#39;.echo-control-message-info { background-image: url({config:cdnBaseURL.sdk-assets}/images/information.png); }&#39; +

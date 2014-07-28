@@ -114,7 +114,7 @@ canvas.init = function() {
 	target.data(&quot;echo-canvas-initialized&quot;, true);
 
 	// extending Canvas config with the parameters defined in the target
-	var overrides = this._getOverrides(target, [&quot;id&quot;, &quot;useSecureAPI&quot;, &quot;mode&quot;]);
+	var overrides = this._getOverrides(target, [&quot;id&quot;, &quot;useSecureAPI&quot;, &quot;mode&quot;, &quot;provider&quot;, &quot;maxConfigFetchingRetries&quot;]);
 	if (!$.isEmptyObject(overrides)) {
 		this.config.extend(overrides);
 	}
@@ -202,7 +202,25 @@ canvas.config = {
 	 * target DOM element attribute.
 	 * More information about HTML attributes of the target DOM element can be found [here](#!/guide/how_to_deploy_an_app_using_a_canvas)
 	 */
-	&quot;mode&quot;: &quot;prod&quot;
+	&quot;mode&quot;: &quot;prod&quot;,
+
+<span id='Echo-Canvas-cfg-maxConfigFetchingRetries'>	/**
+</span>	 * @cfg {Number} [maxConfigFetchingRetries]
+	 * The number of retries attempts to fetch canvas config.
+	 *
+	 * The value of this parameter can be overridden by specifying the &quot;data-canvas-maxConfigFetchingRetries&quot;
+	 * target DOM element attribute.
+	 * More information about HTML attributes of the target DOM element can be found [here](#!/guide/how_to_deploy_an_app_using_a_canvas)
+	 */
+	&quot;maxConfigFetchingRetries&quot;: 2,
+
+	&quot;provider&quot;: &quot;aws&quot;, // &quot;aws&quot; | &quot;fastly&quot;
+
+<span id='Echo-Canvas-cfg-refreshOnUserInvalidate'>	/**
+</span>	 * @cfg {Boolean} refreshOnUserInvalidate=false
+	 * @inheritdoc
+	 */
+	&quot;refreshOnUserInvalidate&quot;: false
 };
 
 canvas.vars = {
@@ -421,10 +439,12 @@ canvas.methods._fetchConfig = function(callback) {
 		return;
 	}
 	var mode = this.config.get(&quot;mode&quot;);
+	var provider = this.config.get(&quot;provider&quot;);
+	var isProviderFastly = provider === &quot;fastly&quot;;
 	var getConfig = function() {
 		return Echo.Loader.canvasesConfigById[self._getIds().unique];
 	};
-	var parts = Echo.Utils.parseURL(Echo.Loader.config.storageURL[mode]);
+	var parts = Echo.Utils.parseURL(Echo.Loader.config.storageURL[provider][mode]);
 	var URL = this.substitute({
 		&quot;template&quot;: &quot;{data:scheme}://{data:domain}{data:path}{data:endpoint}&quot;,
 		&quot;data&quot;: $.extend(parts, {
@@ -434,40 +454,44 @@ canvas.methods._fetchConfig = function(callback) {
 			&quot;endpoint&quot;: this._getIds().main,
 			&quot;scheme&quot;: this.config.get(&quot;useSecureAPI&quot;) ? &quot;https&quot; : parts.scheme || &quot;http&quot;
 		})
-	});
+	}) + (isProviderFastly ? &quot;.json&quot; : &quot;&quot;);
 
 	// We rely on asynchronous behavior of the $.ajax method call
 	// to implement store/fetch mechanics. But it can occasionally
 	// be synchronous while fetching cached response. In order to
 	// avoid this issue, we always make $.ajax call asynchronously.
 	setTimeout(function() {
-		$.ajax({
-			&quot;url&quot;: URL,
-			&quot;crossDomain&quot;: true,
-			&quot;dataType&quot;: &quot;script&quot;,
-			&quot;cache&quot;: mode !== &quot;dev&quot;,
-			&quot;timeout&quot;: Echo.Loader.config.errorTimeout,
-			&quot;success&quot;: function() {
-				var config = getConfig();
-				if (!config || !config.apps || !config.apps.length) {
-					var message = self.labels.get(&quot;error_no_&quot; + (config ? &quot;apps&quot; : &quot;config&quot;));
-					self._error({
-						&quot;args&quot;: {&quot;config&quot;: config, &quot;target&quot;: target},
-						&quot;code&quot;: &quot;invalid_canvas_config&quot;,
-						&quot;message&quot;: message
-					});
-					return;
+		Echo.Utils.retry(function() {
+			return $.ajax({
+				&quot;url&quot;: URL,
+				&quot;crossDomain&quot;: true,
+				&quot;cache&quot;: mode !== &quot;dev&quot;,
+				&quot;dataType&quot;: isProviderFastly ? &quot;json&quot; : &quot;script&quot;,
+				&quot;timeout&quot;: Echo.Loader.config.errorTimeout,
+				&quot;success&quot;: function() {
+					var config = isProviderFastly ? arguments[0] : getConfig();
+					if (!config || !config.apps || !config.apps.length) {
+						var message = self.labels.get(&quot;error_no_&quot; + (config ? &quot;apps&quot; : &quot;config&quot;));
+						// clean up the target element to hide &quot;Loading...&quot; message
+						self.config.get(&quot;target&quot;).empty();
+						self._error({
+							&quot;args&quot;: {&quot;config&quot;: config, &quot;target&quot;: target},
+							&quot;code&quot;: &quot;invalid_canvas_config&quot;,
+							&quot;message&quot;: message
+						});
+						return;
+					}
+					self.set(&quot;data&quot;, config); // store Canvas data into the instance
+					callback.call(self);
 				}
-				self.set(&quot;data&quot;, config); // store Canvas data into the instance
-				callback.call(self);
-			},
-			&quot;error&quot;: function() {
-				self._error({
-					&quot;args&quot;: arguments,
-					&quot;code&quot;: &quot;unable_to_retrieve_app_config&quot;,
-					&quot;renderError&quot;: true
-				});
-			}
+			});
+		}, {&quot;ratio&quot;: 1, &quot;times&quot;: self.config.get(&quot;maxConfigFetchingRetries&quot;)})
+		.fail(function() {
+			self._error({
+				&quot;args&quot;: {&quot;target&quot;: self.config.get(&quot;target&quot;), &quot;network&quot;: arguments},
+				&quot;code&quot;: &quot;unable_to_retrieve_app_config&quot;,
+				&quot;renderError&quot;: true
+			});
 		});
 	}, 0);
 };

@@ -1,4 +1,5 @@
 (function($) {
+"use strict";
 
 var suite = Echo.Tests.Unit.Item = function() {
 	this.constructRenderersTest({
@@ -296,7 +297,7 @@ suite.prototype.cases.order = function(callback) {
 						return false;
 					}
 				});
-				isOrderCorrect = isOrderCorrect && $(element.children().get(index)).html().match(label); 
+				isOrderCorrect = isOrderCorrect && $(element.children().get(index)).html().match(label);
 				return isOrderCorrect;
 			});
 			QUnit.ok(isOrderCorrect, "Checking correct buttons order");
@@ -330,7 +331,7 @@ suite.prototype.cases.click = function(callback) {
 		"handler": function(topic, args) {
 			QUnit.equal(item.get("key"), "value",
 				"Checking callback function after button click");
-			QUnit.equal(args.plugin, button.plugin, 
+			QUnit.equal(args.plugin, button.plugin,
 				"Checking plugin name after button click");
 			callback();
 		}
@@ -655,7 +656,9 @@ suite.prototype._runBodyCases = function(cases) {
 };
 
 function getGenerateItemFunction(checker) {
+	/* jshint validthis: true */
 	var self = this;
+	/* jshint validthis: false */
 	return function(params) {
 		return function(callback) {
 			new Echo.StreamServer.Controls.Stream.Item($.extend({
@@ -678,7 +681,7 @@ function getGenerateItemFunction(checker) {
 			}, params.config));
 		};
 	};
-};
+}
 
 // almost copy of Echo.StreamServer.Controls.Stream.prototype._normalizeEntry()
 var _normalizeEntry = function(entry) {
