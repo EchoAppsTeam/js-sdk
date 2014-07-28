@@ -1,5 +1,9 @@
 # Echo JS SDK CHANGELOG:
 
+##v3.0.22 - July 28, 2014
+
+* We added new **Echo.Utils.sanitize method** that allows to apply different sanitization rules to a passed content string depending of the type of content. These rules modify string **to prevent** various types of **XSS attacks**. This **function was applied** in a few places to strengthen app security.
+
 ##v3.0.21 - June 25, 2014
 
 * **Stream control was updated to avoid memory leaks** in certain situations when Stream Item instance is irrelevant (for example if an item doesn't match a rendering criteria on the client side).
