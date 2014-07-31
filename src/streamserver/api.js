@@ -44,10 +44,6 @@ Echo.StreamServer.API.Request = Echo.Utils.inherit(Echo.API.Request, function(co
 
 	config = $.extend(true, {
 		/**
-		 * @cfg {Number} [liveUpdatesTimeout] Specifies the live updates requests timeout in seconds.
-		 * __Note__: this parameter is deprecated in favor of liveUpdates.polling.timeout.
-		 */
-		/**
 		 * @cfg {Object} [liveUpdates]
 		 * Live updating machinery configuration.
 		 *
@@ -123,12 +119,6 @@ Echo.StreamServer.API.Request = Echo.Utils.inherit(Echo.API.Request, function(co
 				"URL": "{%=baseURLs.api.ws%}/v1/"
 			}
 		},
-
-		/**
-		 * @cfg {Boolean} [recurring] Specifies that the live updates are enabled.
-		 * __Note__: this parameter is deprecated in favor of liveUpdates.enabled
-		 */
-		"recurring": false,
 
 		/**
 		 * @cfg {Boolean} [skipInitialRequest]

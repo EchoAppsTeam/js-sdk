@@ -79,64 +79,6 @@ plugin.config = {
 	 */
 	"sharingWidgetConfig": {},
 
-	/**
-	 * @cfg {String} [xdReceiver]
-	 * Full URL of the "rpx_xdcomm.html" file. This file should be downloaded
-	 * from the Janrain application dashboard (the "Deployment" ->
-	 * "Social Sharing" section) and placed in the root directory of your website.
-	 * @deprecated
-	 * See <a href="http://developers.janrain.com/documentation/widgets/legacy-sign-in-widget/" target="_blank">Janrain notice</a>
-	 */
-	/**
-	 * @cfg {Object} activity
-	 * Configures the sharing dialog.
-	 * @deprecated
-	 * See <a href="http://developers.janrain.com/documentation/widgets/legacy-sign-in-widget/" target="_blank">Janrain notice</a>
-	 *
-	 * @cfg {String} activity.sharePrompt
-	 * Caption of the textarea in the sharing dialog.
-	 * Default value is the value of {@link #echo_label-sharePrompt} label
-	 *
-	 * @cfg {String} activity.shareContent
-	 * Content of the message which will be shared.
-	 * The following pseudo-tags can be used:
-	 *
-	 * + {content} - tag is replaced with the content of the item;
-	 * + {domain} - tag is replaced with the current page domain.
-	 *
-	 * If value of shareContent parameter is not provided then
-	 * the following message will be used:
-	 *
-	 * + "{content}" for ordinary item;
-	 * + "@{author} {content}" if this is reply to tweet.
-	 *
-	 * @cfg {String} activity.itemURL
-	 * The url where the item was posted initially.
-	 *
-	 * @cfg {String} activity.pageTitle
-	 * The page title where this activity is taking place.
-	 * This information will be displayed in the Sharing dialog
-	 * if at least one of the following providers is active: 
-	 * Yahoo!, Facebook or LinkedIn. If this value is not provided
-	 * then the original page title will be used.
-	 *
-	 * @cfg {String} activity.pageDescription
-	 * The page description where this activity is taking place.
-	 * This information will be displayed in the Sharing dialog
-	 * if at least one of the following providers is active:
-	 * Facebook or LinkedIn.
-	 *
-	 * @cfg {Array} activity.pageImages
-	 * The list of up to five images. These images are displayed
-	 * as thumbnails by Facebook and LinkedIn. Facebook uses all 
-	 * five images. LinkedIn uses only the first image.
-	 *
-	 * @cfg {String} activity.pageImages.src
-	 * The absolute URL of the image.
-	 *
-	 * @cfg {String} activity.pageImages.href
-	 * The absolute URL to which the image links.
-	 */
 	// actual limit is 140, reserving some space
 	// for ellipses and shortened link to the page
 	// these parameters are used _only_ in legacy mode (when xdReceiver is provided)
@@ -176,12 +118,7 @@ plugin.labels = {
 	/**
 	 * @echo_label
 	 */
-	"share": "Share this comment",
-	/**
-	 * @echo_label
-	 * @deprecated
-	 */
-	"sharePrompt": "Share your comment:"
+	"share": "Share this comment"
 };
 
 /**
