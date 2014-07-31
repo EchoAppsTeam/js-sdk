@@ -133,6 +133,12 @@ Echo.StreamServer.API.Request = Echo.Utils.inherit(Echo.API.Request, function(co
 		 */
 		"itemURIPattern": undefined,
 
+		// TODO: remove when _wrapTransportEventHandlers is properly executed after parent constructor call
+		"onData": $.noop,
+		"onError": $.noop,
+		"onOpen": $.noop,
+		"onClose": $.noop,
+
 		/**
 		 * @cfg {String} [submissionProxyURL]
 		 * Specifes the URL to the submission proxy service.
