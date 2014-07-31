@@ -43,14 +43,7 @@ Echo.IdentityServer.API.Request = Echo.Utils.inherit(Echo.API.Request, function(
 		/**
 		 * @cfg {String} [endpoint] Specifies the API endpoint. The only "whoami" endpoint is implemented now.
 		 */
-		/**
-		 * @cfg {Function} [onData] Callback called after API request succeded.
-		 */
-		"onData": function() {},
-		/**
-		 * @cfg {Function} [onError] Callback called after API request failed. 
-		 */
-		"onError": function() {},
+
 		/**
 		 * @cfg {String} [submissionProxyURL] Specifes the URL to the submission proxy service.
 		 */

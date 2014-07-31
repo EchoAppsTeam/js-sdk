@@ -134,24 +134,6 @@ Echo.StreamServer.API.Request = Echo.Utils.inherit(Echo.API.Request, function(co
 		"itemURIPattern": undefined,
 
 		/**
-		 * @cfg {Function} [onData]
-		 * Callback called after API request succeded.
-		 */
-		"onData": function() {},
-
-		/**
-		 * @cfg {Function} [onError]
-		 * Callback called after API request failed.
-		 */
-		"onError": function() {},
-
-		/**
-		 * @cfg {Function} [onOpen]
-		 * Callback called before sending an API request.
-		 */
-		"onOpen": function() {},
-
-		/**
 		 * @cfg {String} [submissionProxyURL]
 		 * Specifes the URL to the submission proxy service.
 		 */

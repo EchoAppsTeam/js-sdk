@@ -372,12 +372,6 @@ stream.config = {
 	},
 
 	/**
-	 * @cfg {String} submissionProxyURL
-	 * Location (URL) of the Submission Proxy subsystem.
-	 */
-	"submissionProxyURL": "https:{%=baseURLs.api.submissionproxy%}/v2/esp/activity",
-
-	/**
 	 * @cfg {Object} data
 	 * Specifies predefined items data which should be rendered by the application.
 	 * Stream control works with the data format used by the "search" API endpoint.
