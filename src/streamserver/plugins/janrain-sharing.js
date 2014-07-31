@@ -118,7 +118,8 @@ plugin.labels = {
 	/**
 	 * @echo_label
 	 */
-	"share": "Share this comment"
+	"share": "Share this comment",
+	"sharePrompt": "Share your comment:"
 };
 
 /**
