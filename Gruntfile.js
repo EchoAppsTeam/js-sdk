@@ -599,7 +599,7 @@ module.exports = function(grunt) {
 			"options": {
 				"list": shared.config("environments"),
 				"cleanup": function(cfg, env) {
-					if (env === "ci") {
+					if (env === "ci" || env === "production") {
 						delete cfg.saucelabs;
 					}
 					return cfg;
