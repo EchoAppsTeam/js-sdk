@@ -47,7 +47,7 @@ Echo.IdentityServer.API.Request = Echo.Utils.inherit(Echo.API.Request, function(
 		/**
 		 * @cfg {String} [submissionProxyURL] Specifes the URL to the submission proxy service.
 		 */
-		"submissionProxyURL": "https:{%=baseURLs.api.submissionproxy%}/v2/esp/activity"
+		"submissionProxyURL": "{%=baseURLs.api.submissionproxy%}/v2/esp/activity"
 	}, config);
 	config = this._wrapTransportEventHandlers(config);
 	Echo.IdentityServer.API.Request.parent.constructor.call(this, config);

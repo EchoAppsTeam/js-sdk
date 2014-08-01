@@ -1,5 +1,5 @@
 {
-	"version": 4,
+	"version": 5,
 	"baseURLs": {
 		"cdn": "//cdn.echoenabled.com",
 		"sdk": "//cdn.echoenabled.com/sdk/v{%=packageVersion%}",
@@ -11,10 +11,11 @@
 			"fastly": "//echo-canvases-prod.global.ssl.fastly.net"
 		},
 		"api": {
-			"backplane": "//api.echoenabled.com",
+			"backplane": "{%=authProtocol%}://api.echoenabled.com",
 			"streamserver": "//api.echoenabled.com",
-			"submissionproxy": "//apps.echoenabled.com",
+			"submissionproxy": "{%=authProtocol%}://apps.echoenabled.com",
 			"ws": "//live.echoenabled.com"
 		}
-	}
+	},
+	"authProtocol": "https"
 }

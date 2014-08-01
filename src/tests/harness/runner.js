@@ -34,7 +34,9 @@ var initialized = false;
 Echo.Tests.init = function(config) {
 	if (initialized) return;
 	initialized = true;
-	controlSecureEndpoints();
+	if ("{%=authProtocol%}" === "https") {
+		controlSecureEndpoints();
+	}
 	$(function() {
 		$("#qunit-header").html(config.title);
 

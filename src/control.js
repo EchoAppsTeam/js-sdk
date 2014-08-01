@@ -872,7 +872,7 @@ Echo.Control.prototype._initializers.user = function(callback) {
 		var generateURL = function(baseURL, path) {
 			if (!baseURL) return;
 			var urlInfo = Echo.Utils.parseURL(baseURL);
-			return (urlInfo.scheme || "https") + "://" + urlInfo.domain + path;
+			return (urlInfo.scheme || "{%=authProtocol%}") + "://" + urlInfo.domain + path;
 		};
 		Echo.UserSession({
 			"appkey": this.config.get("appkey"),
@@ -1192,7 +1192,7 @@ manifest.config = {
 	 * @cfg {String} submissionProxyURL
 	 * URL prefix for requests to Echo Submission Proxy
 	 */
-	"submissionProxyURL": "https:{%=baseURLs.api.submissionproxy%}/v2/esp/activity",
+	"submissionProxyURL": "{%=baseURLs.api.submissionproxy%}/v2/esp/activity",
 
 	/**
 	 * @cfg {Boolean} useSecureAPI

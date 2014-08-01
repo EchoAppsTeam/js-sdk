@@ -161,7 +161,7 @@ Backplane.resetCookieChannel = function() {
 
 Backplane.normalizeURL = function(rawURL) {
 	return rawURL.replace(/^\s*(https?:\/\/)?(.*?)[\s\/]*$/, function(match, proto, uri){
-		return (proto || window.location.protocol + "//") + uri;
+		return (proto || "{%=authProtocol%}://") + uri;
 	});
 };
 

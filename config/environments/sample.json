@@ -1,5 +1,5 @@
 {
-	"version": 4,
+	"version": 5,
 	"baseURLs": {
 		"cdn": "",
 		"sdk": "",
@@ -17,6 +17,7 @@
 			"ws": ""
 		}
 	},
+	"authProtocol": "",
 	"saucelabs": {
 		"name": "",
 		"key": ""
