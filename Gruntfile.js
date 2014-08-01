@@ -17,10 +17,11 @@ module.exports = function(grunt) {
 	grunt.loadNpmTasks("grunt-contrib-watch");
 	grunt.loadNpmTasks("grunt-express");
 	grunt.loadNpmTasks("grunt-recess");
+	grunt.loadNpmTasks("grunt-newer");
 	grunt.loadNpmTasks("grunt-saucelabs");
 	grunt.loadNpmTasks("sphere");
 
-	grunt.registerTask("default", ["check-environment:" + shared.config("env"), "jshint", "clean:all", "build:sdk"]);
+	grunt.registerTask("default", ["check-environment:" + shared.config("env"), "newer:jshint", "clean:all", "build:sdk"]);
 
 	grunt.registerTask("test", "Execute tests", function() {
 		grunt.option("test-build", true);
@@ -329,21 +330,27 @@ module.exports = function(grunt) {
 			"options": {
 				"jshintrc": ".jshintrc"
 			},
-			"grunt": [
-				"Gruntfile.js",
-				"tools/grunt/**/*.js"
-			],
-			"sources": [
-				"<%= dirs.src %>/**/*.js",
-				"!<%= dirs.src %>/third-party/**/*.js",
-				"!<%= dirs.src %>/tests/sinon/*.js",
-				"!<%= dirs.src %>/tests/qunit/*.js",
-				"!<%= dirs.src %>/backplane.js",
-				"<%= dirs.src %>/third-party/bootstrap/plugins/*.js"
-			],
-			"tests": [
-				"tests/**/*.js"
-			]
+			"grunt": {
+				"src": [
+					"Gruntfile.js",
+					"tools/grunt/**/*.js"
+				]
+			},
+			"sources": {
+				"src": [
+					"<%= dirs.src %>/**/*.js",
+					"!<%= dirs.src %>/third-party/**/*.js",
+					"!<%= dirs.src %>/tests/sinon/*.js",
+					"!<%= dirs.src %>/tests/qunit/*.js",
+					"!<%= dirs.src %>/backplane.js",
+					"<%= dirs.src %>/third-party/bootstrap/plugins/*.js"
+				]
+			},
+			"tests": {
+				"src": [
+					"tests/**/*.js"
+				]
+			}
 		},
 		"wrap": {
 			"echo-jquery": {

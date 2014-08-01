@@ -42,6 +42,7 @@
   },
   "devDependencies": {
     "grunt-contrib-watch": "~0.6.1",
+    "grunt-newer": "^0.7.0",
     "time-grunt": "0.2.10"
   },
   "private": true
