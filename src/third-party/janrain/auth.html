@@ -24,16 +24,21 @@
 		return;
 	}
 
+	// "echo-studio*" apps are special ones, we handle Backplane messaging ourselves
+	var isClientAuth = /^echo-studio/.test(params.appId);
+
 	if (typeof window.janrain !== "object") window.janrain = {};
 	if (typeof window.janrain.settings !== "object") window.janrain.settings = {};
 
 	var defaults = {
 		"actionText": " ",
 		"borderColor": "transparent",
-		"bpChannel": params.bpChannel,
+		"bpChannel": isClientAuth ? undefined : params.bpChannel,
 		"showAttributionText": false,
 		"tokenAction": "event",
-		"tokenUrl": "{%=authProtocol%}:{%=baseURLs.sdk%}/third-party/janrain/waiting.html",
+		"tokenUrl": isClientAuth
+			? "{%=baseURLs.api.submissionproxy%}/v2/login?sessionID=" + encodeURIComponent(params.bpChannel)
+			: "{%=authProtocol%}:{%=baseURLs.sdk%}/third-party/janrain/waiting.html",
 		"type": "embed"
 	};
 	if (window.JSON && JSON.parse) {
@@ -57,16 +62,28 @@
 		window.attachEvent("onload", isReady);
 	}
 
-	var e = document.createElement("script");
-	e.type = "text/javascript";
-	e.id = "janrainAuthWidget";
-	if (document.location.protocol === "https:") {
-		e.src = "https://rpxnow.com/js/lib/" + params.appId + "/engage.js";
-	} else {
-		e.src = "http://widget-cdn.rpxnow.com/js/lib/" + params.appId + "/engage.js";
+	var thisScript = document.getElementsByTagName("script")[0];
+	function loadScript(url, id) {
+		var s = document.createElement("script");
+		s.type = "text/javascript";
+		if (id) s.id = id;
+		s.src = url;
+		thisScript.parentNode.insertBefore(s, thisScript);
 	}
-	var s = document.getElementsByTagName("script")[0];
-	s.parentNode.insertBefore(e, s);
+	loadScript(
+		document.location.protocol === "https:"
+			? "https://rpxnow.com/js/lib/" + params.appId + "/engage.js"
+			: "http://widget-cdn.rpxnow.com/js/lib/" + params.appId + "/engage.js",
+		"janrainAuthWidget"
+	);
+
+	if (isClientAuth) {
+		window.janrainWidgetOnload = function() {
+			janrain.events.onProviderLoginToken.addHandler(function(response) {
+				loadScript(janrain.settings.tokenUrl + "&token=" + response.token);
+			});
+		};
+	}
 })();
 </script>
 </body>
