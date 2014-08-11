@@ -1,5 +1,11 @@
 # Echo JS SDK CHANGELOG:
 
+##v3.0.23 - August 11, 2014
+
+* We slightly simplified "under-the-hood" mechanics for Janrain auth.
+
+* Some deprecated documentaion was removed.
+
 ##v3.0.22 - July 28, 2014
 
 * We added new **Echo.Utils.sanitize method** that allows to apply different sanitization rules to a passed content string depending of the type of content. These rules modify string **to prevent** various types of **XSS attacks**. This **function was applied** in a few places to strengthen app security.
