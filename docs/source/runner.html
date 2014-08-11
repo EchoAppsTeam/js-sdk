@@ -51,7 +51,9 @@ var initialized = false;
 Echo.Tests.init = function(config) {
 	if (initialized) return;
 	initialized = true;
-	controlSecureEndpoints();
+	if (&quot;https&quot; === &quot;https&quot;) {
+		controlSecureEndpoints();
+	}
 	$(function() {
 		$(&quot;#qunit-header&quot;).html(config.title);
 

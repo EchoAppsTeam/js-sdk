@@ -60,10 +60,6 @@ Echo.StreamServer.API.Request = Echo.Utils.inherit(Echo.API.Request, function(co
 	var liveUpdatesEnabled = config &amp;&amp; config.liveUpdates &amp;&amp; config.liveUpdates.enabled || config.recurring;
 
 	config = $.extend(true, {
-<span id='Echo-StreamServer-API-Request-cfg-liveUpdatesTimeout'>		/**
-</span>		 * @cfg {Number} [liveUpdatesTimeout] Specifies the live updates requests timeout in seconds.
-		 * __Note__: this parameter is deprecated in favor of liveUpdates.polling.timeout.
-		 */
 <span id='Echo-StreamServer-API-Request-cfg-liveUpdates'>		/**
 </span>		 * @cfg {Object} [liveUpdates]
 		 * Live updating machinery configuration.
@@ -141,12 +137,6 @@ Echo.StreamServer.API.Request = Echo.Utils.inherit(Echo.API.Request, function(co
 			}
 		},
 
-<span id='Echo-StreamServer-API-Request-cfg-recurring'>		/**
-</span>		 * @cfg {Boolean} [recurring] Specifies that the live updates are enabled.
-		 * __Note__: this parameter is deprecated in favor of liveUpdates.enabled
-		 */
-		&quot;recurring&quot;: false,
-
 <span id='Echo-StreamServer-API-Request-cfg-skipInitialRequest'>		/**
 </span>		 * @cfg {Boolean} [skipInitialRequest]
 		 * Flag allowing to skip the initial request but continue performing
@@ -160,23 +150,11 @@ Echo.StreamServer.API.Request = Echo.Utils.inherit(Echo.API.Request, function(co
 		 */
 		&quot;itemURIPattern&quot;: undefined,
 
-<span id='Echo-StreamServer-API-Request-cfg-onData'>		/**
-</span>		 * @cfg {Function} [onData]
-		 * Callback called after API request succeded.
-		 */
-		&quot;onData&quot;: function() {},
-
-<span id='Echo-StreamServer-API-Request-cfg-onError'>		/**
-</span>		 * @cfg {Function} [onError]
-		 * Callback called after API request failed.
-		 */
-		&quot;onError&quot;: function() {},
-
-<span id='Echo-StreamServer-API-Request-cfg-onOpen'>		/**
-</span>		 * @cfg {Function} [onOpen]
-		 * Callback called before sending an API request.
-		 */
-		&quot;onOpen&quot;: function() {},
+		// TODO: remove when _wrapTransportEventHandlers is properly executed after parent constructor call
+		&quot;onData&quot;: $.noop,
+		&quot;onError&quot;: $.noop,
+		&quot;onOpen&quot;: $.noop,
+		&quot;onClose&quot;: $.noop,
 
 <span id='Echo-StreamServer-API-Request-cfg-submissionProxyURL'>		/**
 </span>		 * @cfg {String} [submissionProxyURL]

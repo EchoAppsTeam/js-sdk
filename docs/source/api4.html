@@ -630,29 +630,39 @@ Echo.API.Request = function(config) {
 </span>		 * @cfg {Function} [onData]
 		 * Callback called after API request succeded.
 		 */
+		&quot;onData&quot;: $.noop,
+
 <span id='Echo-API-Request-cfg-onError'>		/**
 </span>		 * @cfg {Function} [onError]
 		 * Callback called after API request failed.
 		 */
+		&quot;onError&quot;: $.noop,
+
 <span id='Echo-API-Request-cfg-onOpen'>		/**
 </span>		 * @cfg {Function} [onOpen]
 		 * Callback called before sending an API request.
 		 */
+		&quot;onOpen&quot;: $.noop,
+
 <span id='Echo-API-Request-cfg-onClose'>		/**
 </span>		 * @cfg {Function} [onClose]
 		 * Callback called after API request aborting.
 		 */
+		&quot;onClose&quot;: $.noop,
+
 <span id='Echo-API-Request-cfg-apiBaseURL'>		/**
 </span>		 * @cfg {String} [apiBaseURL]
 		 * Specifies the base URL for API requests
 		 */
 		&quot;apiBaseURL&quot;: &quot;//api.echoenabled.com/v1/&quot;,
+
 <span id='Echo-API-Request-cfg-data'>		/**
 </span>		 * @cfg {Object|String} [data]
 		 * Data to be sent to the server. It is converted to a query string,
 		 * if not already a string. Object must be key/value pairs.
 		 */
 		&quot;data&quot;: {},
+
 <span id='Echo-API-Request-cfg-settings'>		/**
 </span>		 * @cfg {Object} [settings]
 		 * A set of the key/value pairs to configure the transport object.
@@ -662,10 +672,7 @@ Echo.API.Request = function(config) {
 		 * Note: according to the link above, for some transports these settings
 		 * have no effect.
 		 */
-		&quot;onOpen&quot;: $.noop,
-		&quot;onData&quot;: $.noop,
-		&quot;onError&quot;: $.noop,
-		&quot;onClose&quot;: $.noop,
+
 <span id='Echo-API-Request-cfg-transport'>		/**
 </span>		 * @cfg {String} [transport]
 		 * Specifies the transport name. The following transports are available:
@@ -677,6 +684,7 @@ Echo.API.Request = function(config) {
 		 *
 		 */
 		&quot;transport&quot;: &quot;ajax&quot;,
+
 <span id='Echo-API-Request-cfg-method'>		/**
 </span>		 * @cfg {String} [method]
 		 * Specifies the request method. The following methods are available:
@@ -686,12 +694,14 @@ Echo.API.Request = function(config) {
 		 *
 		 */
 		&quot;method&quot;: &quot;GET&quot;,
+
 <span id='Echo-API-Request-cfg-secure'>		/**
 </span>		 * @cfg {Boolean} [secure]
 		 * There is a flag which indicates what protocol will be used in, secure or not.
 		 * If this parameter is not set, internally the lib will decide on the URL scheme.
 		 */
 		&quot;secure&quot;: false,
+
 <span id='Echo-API-Request-cfg-timeout'>		/**
 </span>		 * @cfg {Number} [timeout]
 		 * Specifies the number of seconds after which the onError callback
