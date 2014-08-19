@@ -1325,6 +1325,33 @@ Echo.Utils.retry = function(inputFn, options, ctx, args) {
 	})(0);
 };
 
+/**
+ * @static
+ * Return a function which wraps the original and after invokation
+ * returns a [promise object](http://api.jquery.com/promise/).
+ * To determine how to resolve/reject promise object incoming
+ * function arguments should fit on following pattern: first argument
+ * will describe an error (if it's not falsy value), and if first
+ * argument is falsy or function were called without arguments will
+ * describe succeed result.
+ *
+ *		var counter = 0;
+ *		var promise = Echo.Utils.promisify(function(done) {
+ *			setTimeout(function() {
+ *				counter += 1;
+ *				done(null, counter);
+ *			}, 50);
+ *		});
+ *
+ * @param {Function} fn
+ * Original function which will be wrapped.
+ *
+ * @param {Object} [ctx]
+ * Context in which the function should be executed.
+ *
+ * @return {Function}
+ * Wrapped function.
+ */
 Echo.Utils.promisify = function(fn, ctx) {
 	return function() {
 		var slice = Array.prototype.slice;
@@ -1353,11 +1380,38 @@ var bind = function(input, f) {
 	return output;
 };
 
-Echo.Utils.pipe = function(x, functions) {
+/**
+ * @static
+ * Provides an interface to pipe promises: it takes a [promise object](http://api.jquery.com/promise/)
+ * and pipe it through through the list of promise objects.
+ * If promise object has an async nature, then execution continue after it will succeed.
+ *
+ *		var fn = function(o, callback) {
+ *			o.count++;
+ *			console.log(o.count);
+ *			callback(null, o);
+ *		};
+ *		var promise = Echo.Utils.promisify(fn);
+ *		Echo.Utils.pipe(
+ *			$.Deferred(function(d) { return d.resolve({"count": 0}); }),
+ *			[promise, promise, promise]
+ *		);
+ *		// prints:
+ *		//"1"
+ *		//"2"
+ *		//"3"
+ *
+ * @param {Object} glue
+ * Promise object which can pass a value to the promises through the pipe.
+ *
+ * @param {Array} [functions]
+ * Contains promises objects which can modify glue or generate new values.
+ */
+Echo.Utils.pipe = function(glue, functions) {
 	for (var i = 0, n = functions.length; i < n; i++) {
-		x = bind(x, functions[i]);
+		glue = bind(glue, functions[i]);
 	}
-	return x;
+	return glue;
 };
 
 })();

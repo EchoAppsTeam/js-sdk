@@ -598,6 +598,9 @@ Echo.Control.prototype._init = function(subsystems) {
 	var self = this;
 	if (!subsystems || !subsystems.length) return;
 	Echo.Utils.pipe($.Deferred().resolve(), $.map(subsystems, function(sub) {
+		// BC code
+		sub = sub.split(":")[0];
+		// end of BC code
 		return Echo.Utils.promisify($.proxy(self._initializers[sub], self));
 	}));
 };
@@ -613,10 +616,10 @@ Echo.Control.prototype._initializers.list = [
 	["labels",             ["init"]],
 	["view",               ["init"]],
 	["loading",            ["init", "refresh"]],
-	["dependencies",       ["init"]],
-	["user",               ["init", "refresh"]],
-	["plugins",            ["init", "refresh"]],
-	["init",               ["init", "refresh"]],
+	["dependencies:async", ["init"]],
+	["user:async",         ["init", "refresh"]],
+	["plugins:async",      ["init", "refresh"]],
+	["init:async",         ["init", "refresh"]],
 	["ready",              ["init"]],
 	["refresh",            ["refresh"]]
 ];

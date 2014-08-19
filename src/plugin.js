@@ -365,40 +365,39 @@ Echo.Plugin.prototype._manifest = function(key) {
 
 Echo.Plugin.prototype._initializers = {};
 
-Echo.Plugin.prototype._initializers.css = function(fn) {
+Echo.Plugin.prototype._initializers.css = function(done) {
 	if (!this._manifest("css") || Echo.Utils.hasCSS(this.namespace)) {
-		fn();
-		return;
+		return done();
 	}
 	Echo.Utils.addCSS(this.substitute({"template": this._manifest("css")}), this.namespace);
-	fn();
+	done();
 };
 
-Echo.Plugin.prototype._initializers.labels = function(fn) {
+Echo.Plugin.prototype._initializers.labels = function(done) {
 	this.labels = new Echo.Labels(this.config.get("labels", {}), this.namespace);
-	fn();
+	done();
 };
 
-Echo.Plugin.prototype._initializers.config = function(fn) {
+Echo.Plugin.prototype._initializers.config = function(done) {
 	this.config = new Echo.Plugin.Config({"plugin": this});
-	fn();
+	done();
 };
 
-Echo.Plugin.prototype._initializers.events = function(fn) {
+Echo.Plugin.prototype._initializers.events = function(done) {
 	this.events = new Echo.Plugin.Events({"plugin": this});
-	fn();
+	done();
 };
 
-Echo.Plugin.prototype._initializers.subscriptions = function(fn) {
+Echo.Plugin.prototype._initializers.subscriptions = function(done) {
 	var self = this;
 	$.each(this._manifest("events"), function(topic, data) {
 		data = $.isFunction(data) ? {"handler": data} : data;
 		self.events.subscribe($.extend({"topic": topic}, data));
 	});
-	fn();
+	done();
 };
 
-Echo.Plugin.prototype._initializers.renderers = function(fn) {
+Echo.Plugin.prototype._initializers.renderers = function(done) {
 	var self = this;
 	$.each(this._manifest("renderers"), function(name, renderer) {
 		self.component.extendRenderer.call(self.component, "plugin-" + self.name + "-" + name, $.proxy(renderer, self));
@@ -406,10 +405,10 @@ Echo.Plugin.prototype._initializers.renderers = function(fn) {
 	$.each(this._manifest("component").renderers, function(name, renderer) {
 		self.component.extendRenderer.call(self.component, name, $.proxy(renderer, self));
 	});
-	fn();
+	done();
 };
 
-Echo.Plugin.prototype._initializers.view = function(fn) {
+Echo.Plugin.prototype._initializers.view = function(done) {
 	var plugin = this;
 	var prefix = "plugin-" + this.name + "-";
 	var action = function(name, args) {
@@ -436,12 +435,12 @@ Echo.Plugin.prototype._initializers.view = function(fn) {
 			action("render", [args]);
 		}
 	};
-	fn();
+	done();
 };
 
-Echo.Plugin.prototype._initializers.launcher = function(fn) {
+Echo.Plugin.prototype._initializers.launcher = function(done) {
 	this._manifest("init").call(this);
-	fn();
+	done();
 };
 
 Echo.Plugin.prototype._getSubstitutionInstructions = function() {
