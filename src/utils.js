@@ -1325,6 +1325,43 @@ Echo.Utils.retry = function(inputFn, options, ctx, args) {
 	})(0);
 };
 
+Echo.Utils.promisify = function(fn, ctx) {
+	return function() {
+		var slice = Array.prototype.slice;
+		var args = slice.call(arguments, 0, fn.length - 1);
+		var promise = $.Deferred();
+		args.push(function() {
+			var results = slice.call(arguments);
+			var error = results.shift();
+			if (error) promise.reject(error);
+			else promise.resolve.apply(promise, results);
+		});
+		fn.apply(ctx, args);
+		return promise;
+	};
+};
+
+(function() {
+
+var bind = function(input, f) {
+	var output = $.Deferred();
+	input.then(function(x) {
+		f(x).then(function(y) {
+			output.resolve(y);
+		});
+	});
+	return output;
+};
+
+Echo.Utils.pipe = function(x, functions) {
+	for (var i = 0, n = functions.length; i < n; i++) {
+		x = bind(x, functions[i]);
+	}
+	return x;
+};
+
+})();
+
 // JS SDK can't guarantee proper UI elements rendering in quirks mode
 // because the UI Framework (Twitter Bootstrap) doesn't support this mode.
 // Adding the message about that to the browser console to let the user know.
