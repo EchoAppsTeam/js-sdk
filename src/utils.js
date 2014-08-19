@@ -1329,11 +1329,11 @@ Echo.Utils.retry = function(inputFn, options, ctx, args) {
  * @static
  * Return a function which wraps the original and after invokation
  * returns a [promise object](http://api.jquery.com/promise/).
- * To determine how to resolve/reject promise object incoming
- * function arguments should fit on following pattern: first argument
- * will describe an error (if it's not falsy value), and if first
- * argument is falsy or function were called without arguments will
- * describe succeed result.
+ * To determine how to resolve/reject promise object wrapper pushes
+ * to the arguments of incoming function another function which fit on
+ * the following pattern: first argument will describe an error
+ * (if it's not falsy value), and if first argument is falsy or function
+ * were called without arguments will describe succeed result.
  *
  *		var counter = 0;
  *		var promise = Echo.Utils.promisify(function(done) {
