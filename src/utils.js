@@ -1360,24 +1360,15 @@ Echo.Utils.promisify = function(fn, ctx) {
 		args.push(function() {
 			var results = slice.call(arguments);
 			var error = results.shift();
-			if (error) promise.reject(error);
-			else promise.resolve.apply(promise, results);
+			if (error) {
+				promise.reject(error);
+			} else {
+				promise.resolve.apply(promise, results);
+			}
 		});
 		fn.apply(ctx, args);
 		return promise;
 	};
-};
-
-(function() {
-
-var bind = function(input, f) {
-	var output = $.Deferred();
-	input.then(function(x) {
-		f(x).then(function(y) {
-			output.resolve(y);
-		});
-	});
-	return output;
 };
 
 /**
@@ -1407,7 +1398,7 @@ var bind = function(input, f) {
  * and empty promise object will be passed instead.
  *
  * @param {Array} [functions]
- * Contains promises objects which can modify glue or generate new values.
+ * Contains promisified functions which can modify glue or generate new values.
  */
 Echo.Utils.pipe = function() {
 	var glue, functions;
@@ -1419,12 +1410,10 @@ Echo.Utils.pipe = function() {
 		functions = arguments[1] || [];
 	}
 	for (var i = 0, n = functions.length; i < n; i++) {
-		glue = bind(glue, functions[i]);
+		glue = glue.then(functions[i]);
 	}
 	return glue;
 };
-
-})();
 
 // JS SDK can't guarantee proper UI elements rendering in quirks mode
 // because the UI Framework (Twitter Bootstrap) doesn't support this mode.

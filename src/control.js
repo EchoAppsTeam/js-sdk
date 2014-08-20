@@ -603,18 +603,17 @@ Echo.Control.prototype._init = function(subsystems) {
 		// async initializer
 		if (parts[1]) {
 			return Echo.Utils.promisify(fn);
-		} else {
-			// BC code
-			// sync initializer
-			// wrap it to work with pipe interface
-			return function() {
-				var result = fn();
-				if (typeof result !== "undefined") {
-					self[sub] = result;
-				}
-				return $.Deferred().resolve();
-			};
 		}
+		// BC code
+		// sync initializer
+		// wrap it to work with pipe interface
+		return function() {
+			var result = fn();
+			if (typeof result !== "undefined") {
+				self[sub] = result;
+			}
+			return $.Deferred().resolve();
+		};
 	}));
 };
 

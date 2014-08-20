@@ -603,41 +603,33 @@ Echo.Tests.asyncTest("promisify()", function() {
 		var promise = Echo.Utils.promisify(fn);
 		promise(null).then(function(done) {
 			QUnit.strictEqual(done, "done", "Function executed without error");
-			cb();
 		}, function() {
 			QUnit.ok(false, "Unexpected rejection");
-			cb();
-		});
+		}).always(cb);
 	};
 	var testForceReject = function(cb) {
 		var promise = Echo.Utils.promisify(fn);
 		promise(true).then(function() {
 			QUnit.ok(false, "Unexpected success");
-			cb();
 		}, function(error) {
 			QUnit.strictEqual(error, "error", "Function executed with error");
-			cb();
-		});
+		}).always(cb);
 	};
 	var testBindingContext = function(cb) {
 		var promise = Echo.Utils.promisify(o.fn, o);
 		promise().then(function(val) {
 			QUnit.strictEqual(val, "test value", "Function executed in accurate context");
-			cb();
 		}, function() {
 			QUnit.ok(false, "Unexpected rejection");
-			cb();
-		});
+		}).always(cb);
 	};
 	var testWrongBindingContext = function(cb) {
 		var promise = Echo.Utils.promisify(o.fn, {});
 		promise().then(function(val) {
 			QUnit.ok(typeof val === "undefined", "Function executed in wrong context");
-			cb();
 		}, function() {
 			QUnit.ok(false, "Unexpected rejection");
-			cb();
-		});
+		}).always(cb);
 	};
 	var testPromiseCalledMultipleTimes = function(cb) {
 		var counter = 0;
@@ -670,35 +662,52 @@ Echo.Tests.asyncTest("pipe()", function() {
 		Echo.Utils.pipe([
 			function(done) {
 				var d = $.Deferred();
-				setTimeout(function() { d.resolve(); }, 50);
+				setTimeout(function() { d.resolve(0); }, 50);
 				return d;
 			},
 			function(done) {
-				QUnit.ok(true, "pipe functions without passing arguments");
-				cb();
-				return $.Deferred().resolve();
+				return $.Deferred().resolve(++done);
+			},
+			function(done) {
+				return $.Deferred().resolve(done * 1000);
 			}
-		]);
+		]).done(function(done) {
+			QUnit.strictEqual(done, 1000, "pipe functions without passing arguments (order checking as well)");
+			cb();
+		});
+	};
+	var testReject = function(cb) {
+		Echo.Utils.pipe([
+			function() { return $.Deferred().resolve(1); },
+			function() { return $.Deferred().reject("error"); },
+			function() { return $.Deferred().resolve(3); }
+		]).done(function() {
+			QUnit.ok(false, "unexpected success");
+		}).fail(function(error) {
+			QUnit.strictEqual(error, "error", "rejected function in the pipe");
+		}).always(cb);
 	};
 	var testPassingArguments = function(cb) {
 		var fn = function(o, callback) {
-			o.count++;
-			callback(null, o);
+			setTimeout(function() {
+				o.count++;
+				callback(null, o);
+			}, 50);
 		};
 		var promise = Echo.Utils.promisify(fn);
 		Echo.Utils.pipe(
 			$.Deferred(function(d) { return d.resolve({"count": 0}); }),
-			[promise, promise, promise, function(o) {
-				QUnit.deepEqual(o, {"count": 3}, "pipe functions with passing arguments");
-				cb();
-				return $.Deferred().resolve();
-			}]
-		);
+			[promise, promise, promise]
+		).done(function(o) {
+			QUnit.deepEqual(o, {"count": 3}, "pipe functions with passing arguments");
+			cb();
+		});
 	};
-	QUnit.expect(2);
+	QUnit.expect(3);
 	Echo.Utils.sequentialCall([
 		testDoNotPassArguments,
-		testPassingArguments
+		testPassingArguments,
+		testReject
 	], function() {
 		QUnit.start();
 	});
