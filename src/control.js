@@ -598,10 +598,23 @@ Echo.Control.prototype._init = function(subsystems) {
 	var self = this;
 	if (!subsystems || !subsystems.length) return;
 	Echo.Utils.pipe($.map(subsystems, function(sub) {
-		// BC code
-		sub = sub.split(":")[0];
-		// end of BC code
-		return Echo.Utils.promisify($.proxy(self._initializers[sub], self));
+		var parts = sub.split(":");
+		var fn = $.proxy(self._initializers[parts[0]], self);
+		// async initializer
+		if (parts[1]) {
+			return Echo.Utils.promisify(fn);
+		} else {
+			// BC code
+			// sync initializer
+			// wrap it to work with pipe interface
+			return function() {
+				var result = fn();
+				if (typeof result !== "undefined") {
+					self[sub] = result;
+				}
+				return $.Deferred().resolve();
+			};
+		}
 	}));
 };
 
@@ -632,16 +645,15 @@ Echo.Control.prototype._initializers.get = function(action) {
 	});
 };
 
-Echo.Control.prototype._initializers.vars = function(done) {
+Echo.Control.prototype._initializers.vars = function() {
 	// we need to apply default field values to the control,
 	// but we need to avoid any references to the default var objects,
 	// thus we copy and recursively merge default values separately
 	// and apply default values to the given instance non-recursively
 	$.extend(this, $.extend(true, {}, this._manifest("vars")));
-	done();
 };
 
-Echo.Control.prototype._initializers.config = function(done) {
+Echo.Control.prototype._initializers.config = function() {
 	var control = this;
 	var config = this._manifest("config");
 	var normalizer = function(key, value) {
@@ -649,11 +661,10 @@ Echo.Control.prototype._initializers.config = function(done) {
 			? config.normalizer[key].call(this, value, control)
 			: value;
 	};
-	this.config = new Echo.Configuration(this.config, config, normalizer, {"data": true, "parent": true});
-	done();
+	return new Echo.Configuration(this.config, config, normalizer, {"data": true, "parent": true});
 };
 
-Echo.Control.prototype._initializers.events = function(done) {
+Echo.Control.prototype._initializers.events = function() {
 	var control = this;
 	var prepare = function(params) {
 		params.context = params.context || control.config.get("context");
@@ -662,7 +673,7 @@ Echo.Control.prototype._initializers.events = function(done) {
 		}
 		return params;
 	};
-	this.events = {
+	return {
 		"publish": function(params) {
 			var parent, names;
 
@@ -707,10 +718,9 @@ Echo.Control.prototype._initializers.events = function(done) {
 			Echo.Events.unsubscribe(prepare(params));
 		}
 	};
-	done();
 };
 
-Echo.Control.prototype._initializers.subscriptions = function(done) {
+Echo.Control.prototype._initializers.subscriptions = function() {
 	var control = this;
 	$.each(control._manifest("events"), function subscribe(topic, data) {
 		if ($.isArray(data)) {
@@ -794,15 +804,13 @@ Echo.Control.prototype._initializers.subscriptions = function(done) {
 			"handler": control.refresh
 		});
 	}
-	done();
 };
 
-Echo.Control.prototype._initializers.labels = function(done) {
-	this.labels = new Echo.Labels(this.config.get("labels"), this.name);
-	done();
+Echo.Control.prototype._initializers.labels = function() {
+	return new Echo.Labels(this.config.get("labels"), this.name);
 };
 
-Echo.Control.prototype._initializers.css = function(done) {
+Echo.Control.prototype._initializers.css = function() {
 	var self = this;
 	this.config.get("target").addClass(this.cssClass);
 	$.map(this._manifest("css"), function(spec) {
@@ -824,12 +832,11 @@ Echo.Control.prototype._initializers.css = function(done) {
 			Echo.Utils.addCSS(self.substitute({"template": spec.code}), spec.id);
 		}
 	});
-	done();
 };
 
-Echo.Control.prototype._initializers.view = function(done) {
+Echo.Control.prototype._initializers.view = function() {
 	var control = this;
-	this.view = new Echo.View({
+	return new Echo.View({
 		"data": this.get("data"),
 		"cssPrefix": this.get("cssPrefix"),
 		"renderer": function(args) {
@@ -841,15 +848,13 @@ Echo.Control.prototype._initializers.view = function(done) {
 		},
 		"substitutions": this._getSubstitutionInstructions()
 	});
-	done();
 };
 
-Echo.Control.prototype._initializers.loading = function(done) {
+Echo.Control.prototype._initializers.loading = function() {
 	this.showMessage({
 		"type": "loading",
 		"message": this.labels.get("loading")
 	});
-	done();
 };
 
 Echo.Control.prototype._initializers.dependencies = function(callback) {
@@ -911,19 +916,17 @@ Echo.Control.prototype._initializers.init = function(callback) {
 	this._manifest("init").call(this);
 };
 
-Echo.Control.prototype._initializers.ready = function(fn) {
+Echo.Control.prototype._initializers.ready = function() {
 	if (this.config.get("ready")) {
 		this.config.get("ready").call(this);
 		// "ready" callback must be executed only once
 		this.config.remove("ready");
 	}
 	this.events.publish({"topic": "onReady"});
-	fn();
 };
 
-Echo.Control.prototype._initializers.refresh = function(fn) {
+Echo.Control.prototype._initializers.refresh = function() {
 	this.events.publish({"topic": "onRefresh"});
-	fn();
 };
 
 Echo.Control._merge = function(manifest, parentManifest) {

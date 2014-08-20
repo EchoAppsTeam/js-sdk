@@ -365,39 +365,34 @@ Echo.Plugin.prototype._manifest = function(key) {
 
 Echo.Plugin.prototype._initializers = {};
 
-Echo.Plugin.prototype._initializers.css = function(done) {
+Echo.Plugin.prototype._initializers.css = function() {
 	if (!this._manifest("css") || Echo.Utils.hasCSS(this.namespace)) {
-		return done();
+		return;
 	}
 	Echo.Utils.addCSS(this.substitute({"template": this._manifest("css")}), this.namespace);
-	done();
 };
 
-Echo.Plugin.prototype._initializers.labels = function(done) {
-	this.labels = new Echo.Labels(this.config.get("labels", {}), this.namespace);
-	done();
+Echo.Plugin.prototype._initializers.labels = function() {
+	return new Echo.Labels(this.config.get("labels", {}), this.namespace);
 };
 
-Echo.Plugin.prototype._initializers.config = function(done) {
-	this.config = new Echo.Plugin.Config({"plugin": this});
-	done();
+Echo.Plugin.prototype._initializers.config = function() {
+	return new Echo.Plugin.Config({"plugin": this});
 };
 
-Echo.Plugin.prototype._initializers.events = function(done) {
-	this.events = new Echo.Plugin.Events({"plugin": this});
-	done();
+Echo.Plugin.prototype._initializers.events = function() {
+	return new Echo.Plugin.Events({"plugin": this});
 };
 
-Echo.Plugin.prototype._initializers.subscriptions = function(done) {
+Echo.Plugin.prototype._initializers.subscriptions = function() {
 	var self = this;
 	$.each(this._manifest("events"), function(topic, data) {
 		data = $.isFunction(data) ? {"handler": data} : data;
 		self.events.subscribe($.extend({"topic": topic}, data));
 	});
-	done();
 };
 
-Echo.Plugin.prototype._initializers.renderers = function(done) {
+Echo.Plugin.prototype._initializers.renderers = function() {
 	var self = this;
 	$.each(this._manifest("renderers"), function(name, renderer) {
 		self.component.extendRenderer.call(self.component, "plugin-" + self.name + "-" + name, $.proxy(renderer, self));
@@ -405,17 +400,16 @@ Echo.Plugin.prototype._initializers.renderers = function(done) {
 	$.each(this._manifest("component").renderers, function(name, renderer) {
 		self.component.extendRenderer.call(self.component, name, $.proxy(renderer, self));
 	});
-	done();
 };
 
-Echo.Plugin.prototype._initializers.view = function(done) {
+Echo.Plugin.prototype._initializers.view = function() {
 	var plugin = this;
 	var prefix = "plugin-" + this.name + "-";
 	var action = function(name, args) {
 		var view = plugin.component.get("view");
 		return view[name].apply(view, args);
 	};
-	this.view = {
+	return {
 		"set": function(name, element) {
 			action("set", [prefix + name, element]);
 		},
@@ -435,12 +429,10 @@ Echo.Plugin.prototype._initializers.view = function(done) {
 			action("render", [args]);
 		}
 	};
-	done();
 };
 
-Echo.Plugin.prototype._initializers.launcher = function(done) {
+Echo.Plugin.prototype._initializers.launcher = function() {
 	this._manifest("init").call(this);
-	done();
 };
 
 Echo.Plugin.prototype._getSubstitutionInstructions = function() {
