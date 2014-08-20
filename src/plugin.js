@@ -366,9 +366,7 @@ Echo.Plugin.prototype._manifest = function(key) {
 Echo.Plugin.prototype._initializers = {};
 
 Echo.Plugin.prototype._initializers.css = function() {
-	if (!this._manifest("css") || Echo.Utils.hasCSS(this.namespace)) {
-		return;
-	}
+	if (!this._manifest("css") || Echo.Utils.hasCSS(this.namespace)) return;
 	Echo.Utils.addCSS(this.substitute({"template": this._manifest("css")}), this.namespace);
 };
 
