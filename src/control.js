@@ -597,7 +597,7 @@ Echo.Control.prototype.checkAppKey = function() {
 Echo.Control.prototype._init = function(subsystems) {
 	var self = this;
 	if (!subsystems || !subsystems.length) return;
-	Echo.Utils.pipe($.Deferred().resolve(), $.map(subsystems, function(sub) {
+	Echo.Utils.pipe($.map(subsystems, function(sub) {
 		// BC code
 		sub = sub.split(":")[0];
 		// end of BC code

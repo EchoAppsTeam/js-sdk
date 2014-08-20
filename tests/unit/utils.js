@@ -667,7 +667,7 @@ Echo.Tests.asyncTest("promisify()", function() {
 
 Echo.Tests.asyncTest("pipe()", function() {
 	var testDoNotPassArguments = function(cb) {
-		Echo.Utils.pipe($.Deferred().resolve(), [
+		Echo.Utils.pipe([
 			function(done) {
 				var d = $.Deferred();
 				setTimeout(function() { d.resolve(); }, 50);

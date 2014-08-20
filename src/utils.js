@@ -1401,13 +1401,23 @@ var bind = function(input, f) {
  *		//"2"
  *		//"3"
  *
- * @param {Object} glue
+ * @param {Object} [glue]
  * Promise object which can pass a value to the promises through the pipe.
+ * If there is no nedd to pass a value, then this parameter could be skiped
+ * and empty promise object will be passed instead.
  *
  * @param {Array} [functions]
  * Contains promises objects which can modify glue or generate new values.
  */
-Echo.Utils.pipe = function(glue, functions) {
+Echo.Utils.pipe = function() {
+	var glue, functions;
+	if (arguments.length === 1 && $.isArray(arguments[0])) {
+		glue = $.Deferred().resolve();
+		functions = arguments[0];
+	} else {
+		glue = arguments[0];
+		functions = arguments[1] || [];
+	}
 	for (var i = 0, n = functions.length; i < n; i++) {
 		glue = bind(glue, functions[i]);
 	}
