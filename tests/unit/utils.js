@@ -696,7 +696,7 @@ Echo.Tests.asyncTest("pipe()", function() {
 		};
 		var promise = Echo.Utils.promisify(fn);
 		Echo.Utils.pipe(
-			$.Deferred(function(d) { return d.resolve({"count": 0}); }),
+			$.Deferred().resolve({"count": 0}),
 			[promise, promise, promise]
 		).done(function(o) {
 			QUnit.deepEqual(o, {"count": 3}, "pipe functions with passing arguments");

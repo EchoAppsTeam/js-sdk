@@ -1331,12 +1331,23 @@ Echo.Utils.retry = function(inputFn, options, ctx, args) {
  * [promise object](http://api.jquery.com/promise/) after invocation.
  *
  *		var counter = 0;
- *		var promise = Echo.Utils.promisify(function(done) {
+ *		var promise = Echo.Utils.promisify(function(error, done) {
  *			setTimeout(function() {
  *				counter += 1;
- *				done(null, counter);
+ *				done(error, counter);
  *			}, 50);
  *		});
+ *		// promise resolved
+ *		promise(null).then(function(counter) {
+ *			console.log("counter is:", counter);
+ *		});
+ *		// prints "counter is:1"
+ *
+ *		// promise rejected
+ *		promise("error").fail(function(error) {
+ *			console.log("The error is:", error);
+ *		});
+ *		// prints "The error is:error"
  *
  * @param {Function} fn
  * Original function which will be wrapped.
@@ -1394,7 +1405,7 @@ Echo.Utils.promisify = function(fn, ctx) {
  *		};
  *		var promise = Echo.Utils.promisify(fn);
  *		Echo.Utils.pipe(
- *			$.Deferred(function(d) { return d.resolve({"count": 0}); }),
+ *			$.Deferred().resolve({"count": 0}),
  *			[promise, promise, promise]
  *		);
  *		// prints:
