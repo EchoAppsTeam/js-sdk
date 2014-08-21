@@ -1398,7 +1398,7 @@ Echo.Utils.promisify = function(fn, ctx) {
 /**
  * @static
  * Provides an interface to pipe promises: it takes a [promise object](http://api.jquery.com/promise/)
- * and pipes it through the list of promise objects. If promise object has an async nature,
+ * and pipes it through the list of promisified functions. If promise object has an async nature,
  * then execution continues after the previous promise is either resolved or rejected.
  *
  *		var fn = function(o, callback) {
