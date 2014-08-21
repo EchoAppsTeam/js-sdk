@@ -1327,13 +1327,8 @@ Echo.Utils.retry = function(inputFn, options, ctx, args) {
 
 /**
  * @static
- * Return a function which wraps the original and after invokation
- * returns a [promise object](http://api.jquery.com/promise/).
- * To determine how to resolve/reject promise object wrapper pushes
- * to the arguments of incoming function another function which fit on
- * the following pattern: first argument will describe an error
- * (if it's not falsy value), and if first argument is falsy or function
- * were called without arguments will describe succeed result.
+ * Wraps passed function with another function which returns a
+ * [promise object](http://api.jquery.com/promise/) after invocation.
  *
  *		var counter = 0;
  *		var promise = Echo.Utils.promisify(function(done) {
@@ -1345,6 +1340,21 @@ Echo.Utils.retry = function(inputFn, options, ctx, args) {
  *
  * @param {Function} fn
  * Original function which will be wrapped.
+ *
+ * @param {Mixed} [fn.any_number_of_parameters]
+ * Arbitrary number of parameters of the original function.
+ *
+ * @param {Function} fn.done
+ * Callback function which should be executed as soon as the original function
+ * is considered completed. It must be at the very end of `fn` function
+ * parameter list.
+ *
+ * @param {Mixed} [fn.done.error]
+ * If the value of this parameter is evaluated as `true` value, then promise
+ * is considered resolved. Otherwise promise is rejected.
+ *
+ * @param {Mixed} [fn.done.any_number_of_parameters]
+ * Arbitrary number of parameters which the promise will be resolved with.
  *
  * @param {Object} [ctx]
  * Context in which the function should be executed.
@@ -1374,8 +1384,8 @@ Echo.Utils.promisify = function(fn, ctx) {
 /**
  * @static
  * Provides an interface to pipe promises: it takes a [promise object](http://api.jquery.com/promise/)
- * and pipe it through through the list of promise objects.
- * If promise object has an async nature, then execution continue after it will succeed.
+ * and pipes it through the list of promise objects. If promise object has an async nature,
+ * then execution continues after the previous promise is either resolved or rejected.
  *
  *		var fn = function(o, callback) {
  *			o.count++;
@@ -1394,11 +1404,10 @@ Echo.Utils.promisify = function(fn, ctx) {
  *
  * @param {Object} [glue]
  * Promise object which can pass a value to the promises through the pipe.
- * If there is no nedd to pass a value, then this parameter could be skiped
- * and empty promise object will be passed instead.
+ * This parameter can be omitted if there is no need to pass a specific value.
  *
  * @param {Array} [functions]
- * Contains promisified functions which can modify glue or generate new values.
+ * Contains promisified functions which can modify `glue` or generate new values.
  */
 Echo.Utils.pipe = function() {
 	var glue, functions;
