@@ -1330,7 +1330,7 @@ Echo.Utils.retry = function(inputFn, options, ctx, args) {
  * Wraps passed function with another function which returns a
  * [promise object](http://api.jquery.com/promise/) after invocation.
  *
- *		var promise = Echo.Utils.promisify(function(error, num, done) {
+ *		var promise = Echo.Utils.promisify(function(num, done) {
  *			if (num < 0) {
  *				done({
  *					"code": "negative_number",
@@ -1341,22 +1341,16 @@ Echo.Utils.retry = function(inputFn, options, ctx, args) {
  *			}
  *		});
  *		// promise resolved
- *		promise(null, 16).then(function(original, sqrt) {
+ *		promise(16).then(function(original, sqrt) {
  *			console.log("The square root of the num " + original + " is " + sqrt);
  *		});
  *		// prints "The square root of the num 16 is 4"
  *
  *		// promise rejected
- *		promise(null, -6).fail(function(error) {
+ *		promise(-6).fail(function(error) {
  *			console.log("The error is: " + error.code);
  *		});
  *		// prints "The error is: negative_number"
- *
- *		// promise unexpectedly rejected
- *		promise("Unexpected error", 16).fail(function(error) {
- *			console.log("The rror is: " + error);
- *		});
- *		// prints "The error is: Unexpected error"
  *
  * @param {Function} fn
  * Original function which will be wrapped.
