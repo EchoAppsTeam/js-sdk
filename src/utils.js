@@ -1337,7 +1337,7 @@ Echo.Utils.retry = function(inputFn, options, ctx, args) {
  *					"msg": "The number should be positive."
  *				});
  *			} else {
- *				done(error, num, Math.sqrt(num));
+ *				done(null, num, Math.sqrt(num));
  *			}
  *		});
  *		// promise resolved
