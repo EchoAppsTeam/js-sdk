@@ -612,25 +612,26 @@ Echo.Control.prototype.checkAppKey = function() {
 };
 
 Echo.Control.prototype._init = function(subsystems) {
+	var self = this;
 	if (!subsystems || !subsystems.length) return;
-	var func = subsystems.shift();
-	var parts = func.split(&quot;:&quot;);
-	var subsystem = {
-		&quot;name&quot;: parts[0],
-		&quot;init&quot;: this._initializers[parts[0]],
-		&quot;type&quot;: parts[1] || &quot;sync&quot;
-	};
-	if (subsystem.type === &quot;sync&quot;) {
-		var result = subsystem.init.call(this);
-		if (typeof result !== &quot;undefined&quot;) {
-			this[subsystem.name] = result;
+	Echo.Utils.pipe($.map(subsystems, function(sub) {
+		var parts = sub.split(&quot;:&quot;);
+		var fn = $.proxy(self._initializers[parts[0]], self);
+		// async initializer
+		if (parts[1]) {
+			return Echo.Utils.promisify(fn);
 		}
-		this._init(subsystems);
-	} else {
-		subsystem.init.call(this, function() {
-			this._init(subsystems);
-		});
-	}
+		// BC code
+		// sync initializer
+		// wrap it to work with pipe interface
+		return function() {
+			var result = fn();
+			if (typeof result !== &quot;undefined&quot;) {
+				self[sub] = result;
+			}
+			return $.Deferred().resolve();
+		};
+	}));
 };
 
 Echo.Control.prototype._initializers = {};

@@ -1342,6 +1342,119 @@ Echo.Utils.retry = function(inputFn, options, ctx, args) {
 	})(0);
 };
 
+<span id='Echo-Utils-static-method-promisify'>/**
+</span> * @static
+ * Wraps passed function with another function which returns a
+ * [promise object](http://api.jquery.com/promise/) after invocation.
+ *
+ *		var promise = Echo.Utils.promisify(function(num, done) {
+ *			if (num &lt; 0) {
+ *				done({
+ *					&quot;code&quot;: &quot;negative_number&quot;,
+ *					&quot;msg&quot;: &quot;The number should be positive.&quot;
+ *				});
+ *			} else {
+ *				done(null, num, Math.sqrt(num));
+ *			}
+ *		});
+ *		// promise resolved
+ *		promise(16).then(function(original, sqrt) {
+ *			console.log(&quot;The square root of the num &quot; + original + &quot; is &quot; + sqrt);
+ *		});
+ *		// prints &quot;The square root of the num 16 is 4&quot;
+ *
+ *		// promise rejected
+ *		promise(-6).fail(function(error) {
+ *			console.log(&quot;The error is: &quot; + error.code);
+ *		});
+ *		// prints &quot;The error is: negative_number&quot;
+ *
+ * @param {Function} fn
+ * Original function which will be wrapped.
+ *
+ * @param {Mixed} [fn.any_number_of_parameters]
+ * Arbitrary number of parameters of the original function.
+ *
+ * @param {Function} fn.done
+ * Callback function which should be executed as soon as the original function
+ * is considered completed. It must be at the very end of `fn` function
+ * parameter list.
+ *
+ * @param {Mixed} [fn.done.error]
+ * If the value of this parameter is evaluated as `true` value, then promise
+ * is considered resolved. Otherwise promise is rejected.
+ *
+ * @param {Mixed} [fn.done.any_number_of_parameters]
+ * Arbitrary number of parameters which the promise will be resolved with.
+ *
+ * @param {Object} [ctx]
+ * Context in which the function should be executed.
+ *
+ * @return {Function}
+ * Wrapped function.
+ */
+Echo.Utils.promisify = function(fn, ctx) {
+	return function() {
+		var slice = Array.prototype.slice;
+		var args = slice.call(arguments, 0, fn.length - 1);
+		var promise = $.Deferred();
+		args.push(function() {
+			var results = slice.call(arguments);
+			var error = results.shift();
+			if (error) {
+				promise.reject(error);
+			} else {
+				promise.resolve.apply(promise, results);
+			}
+		});
+		fn.apply(ctx, args);
+		return promise;
+	};
+};
+
+<span id='Echo-Utils-static-method-pipe'>/**
+</span> * @static
+ * Provides an interface to pipe promises: it takes a [promise object](http://api.jquery.com/promise/)
+ * and pipes it through the list of promisified functions. If promise object has an async nature,
+ * then execution continues after the previous promise is either resolved or rejected.
+ *
+ *		var fn = function(o, callback) {
+ *			o.count++;
+ *			console.log(o.count);
+ *			callback(null, o);
+ *		};
+ *		var promise = Echo.Utils.promisify(fn);
+ *		Echo.Utils.pipe(
+ *			$.Deferred().resolve({&quot;count&quot;: 0}),
+ *			[promise, promise, promise]
+ *		);
+ *		// prints:
+ *		//&quot;1&quot;
+ *		//&quot;2&quot;
+ *		//&quot;3&quot;
+ *
+ * @param {Object} [glue]
+ * Promise object which can pass a value to the promises through the pipe.
+ * This parameter can be omitted if there is no need to pass a specific value.
+ *
+ * @param {Array} [functions]
+ * Contains promisified functions which can modify `glue` or generate new values.
+ */
+Echo.Utils.pipe = function() {
+	var glue, functions;
+	if (arguments.length === 1 &amp;&amp; $.isArray(arguments[0])) {
+		glue = $.Deferred().resolve();
+		functions = arguments[0];
+	} else {
+		glue = arguments[0];
+		functions = arguments[1] || [];
+	}
+	for (var i = 0, n = functions.length; i &lt; n; i++) {
+		glue = glue.then(functions[i]);
+	}
+	return glue;
+};
+
 // JS SDK can&#39;t guarantee proper UI elements rendering in quirks mode
 // because the UI Framework (Twitter Bootstrap) doesn&#39;t support this mode.
 // Adding the message about that to the browser console to let the user know.
