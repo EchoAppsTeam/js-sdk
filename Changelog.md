@@ -1,5 +1,9 @@
 # Echo JS SDK CHANGELOG:
 
+##v3.0.24 - August 22, 2014
+
+* Switched from recursive app initialization to promise-based mechanism instead.
+
 ##v3.0.23 - August 11, 2014
 
 * We slightly simplified "under-the-hood" mechanics for Janrain auth.
