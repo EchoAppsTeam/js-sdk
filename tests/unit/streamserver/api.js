@@ -381,9 +381,9 @@ suite.prototype.cases.multipleWebsocketRequests = function(callback) {
 			targetURL: target
 		})
 	});
-	// 21 is a euristic non documented number
-	// The server allows to subscribe to no more than 20 subscriptions per connect.
-	for (var i = 0; i < 21; i++) {
+	// 22 is a euristic non documented number
+	// The server allows to subscribe to no more than 21 subscriptions per connect.
+	for (var i = 0; i < 22; i++) {
 		/* jshint loopfunc: true */
 		(function(i) {
 			def.push($.Deferred());
@@ -415,6 +415,10 @@ suite.prototype.cases.multipleWebsocketRequests = function(callback) {
 		var fallback = $.grep(requests, function(req) {
 			return !req.liveUpdates.subscribed;
 		});
+		var subscribers = $.grep(requests, function(req) {
+			return req.liveUpdates.subscribed;
+		});
+		QUnit.strictEqual(subscribers.length, 21, "Check length of subscribers");
 		QUnit.strictEqual(fallback.length, 1, "Check that quota exceeded requests are fallbacks to the polling (WS cases)");
 		Echo.Events.subscribe({
 			"topic": "Echo.API.Transports.WebSockets.onClose",
