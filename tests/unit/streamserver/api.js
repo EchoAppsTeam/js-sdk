@@ -358,6 +358,7 @@ suite.prototype.cases.multipleWebsocketRequests = function(callback) {
 	item.targets[0].conversationID = target;
 	item.object.id = target;
 	var requests = [], def = [];
+	var spy = sinon.spy(Echo.StreamServer.API.WebSockets.prototype, "subscribe");
 	var getRequest = function(i) {
 		return Echo.StreamServer.API.request({
 			"endpoint": "search",
@@ -381,7 +382,7 @@ suite.prototype.cases.multipleWebsocketRequests = function(callback) {
 			targetURL: target
 		})
 	});
-	// 22 is a euristic non documented number
+	// 22 is a heuristic non documented number
 	// The server allows to subscribe to no more than 21 subscriptions per connect.
 	for (var i = 0; i < 22; i++) {
 		/* jshint loopfunc: true */
@@ -415,16 +416,14 @@ suite.prototype.cases.multipleWebsocketRequests = function(callback) {
 		var fallback = $.grep(requests, function(req) {
 			return !req.liveUpdates.subscribed;
 		});
-		var subscribers = $.grep(requests, function(req) {
-			return req.liveUpdates.subscribed;
-		});
-		QUnit.strictEqual(subscribers.length, 21, "Check length of subscribers");
+		QUnit.strictEqual(spy.callCount, 22, "Check sent subscriptions length");
 		QUnit.strictEqual(fallback.length, 1, "Check that quota exceeded requests are fallbacks to the polling (WS cases)");
 		Echo.Events.subscribe({
 			"topic": "Echo.API.Transports.WebSockets.onClose",
 			"once": true,
 			"context": "live.echoenabled.com-v1-ws",
 			"handler": function() {
+				Echo.StreamServer.API.WebSockets.prototype.subscribe.restore();
 				callback();
 			}
 		});
