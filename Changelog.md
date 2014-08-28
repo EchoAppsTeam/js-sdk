@@ -1,5 +1,9 @@
 # Echo JS SDK CHANGELOG:
 
+##v3.0.25 - August 28, 2014
+
+* This release fixes an issue with inaccurate WebSocket connections handling which could lead to unwanted appearance of live updates for one application in other applications on the same page.
+
 ##v3.0.24 - August 22, 2014
 
 * Switched from recursive app initialization to promise-based mechanism instead.
