@@ -10,6 +10,9 @@ Echo.Tests.module("Echo.API", {
 			"Request.request",
 			"Request.abort",
 			"Transports.WebSockets.available",
+			"Transports.WebSockets.setSocketState",
+			"Transports.WebSockets.getSocketState",
+			"Transports.WebSockets.isSocketReady",
 			"Transports.WebSockets.send",
 			"Transports.WebSockets.abort",
 			"Transports.WebSockets.connected",
@@ -78,6 +81,11 @@ if (Echo.API.Transports.WebSockets.available()) {
 						"onOpen": function() {
 							if (i === 0) {
 								QUnit.ok(requests[0].transport.connected(), "Check if WS was initialized and \"onOpen\" event fired");
+								QUnit.strictEqual(Echo.API.Transports.WebSockets.getSocketState("live.echoenabled.com/v1/ws"), "ready", "Check socket state");
+								QUnit.ok(Echo.API.Transports.WebSockets.isSocketReady("live.echoenabled.com/v1/ws"), "Check socket is ready");
+								Echo.API.Transports.WebSockets.setSocketState("live.echoenabled.com/v1/ws", "some-new-state");
+								QUnit.strictEqual(Echo.API.Transports.WebSockets.getSocketState("live.echoenabled.com/v1/ws"), "some-new-state", "Check setting up socket state");
+								Echo.API.Transports.WebSockets.setSocketState("live.echoenabled.com/v1/ws", "ready");
 							}
 							deferred[i].resolve();
 						}

@@ -112,6 +112,9 @@ Echo.Tests.asyncTest("disabled Like and Reply plugins", function() {
 	new Echo.StreamServer.Controls.Stream({
 		"target": $("<div>"),
 		"appkey": "test.js-kit.com",
+		"liveUpdates": {
+			"enabled": false
+		},
 		"data": _streamData,
 		"plugins": [{
 			"name": "TweetDisplay"

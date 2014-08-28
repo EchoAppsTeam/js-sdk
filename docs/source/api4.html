@@ -99,7 +99,9 @@ Echo.API.Transports.WebSockets.prototype.connecting = function() {
 };
 
 Echo.API.Transports.WebSockets.prototype.connected = function() {
-	return this.transportObject &amp;&amp; this.transportObject.readyState === 1;
+	return this.transportObject
+		&amp;&amp; this.transportObject.readyState === 1
+		&amp;&amp; Echo.API.Transports.WebSockets.isSocketReady(this.config.get(&quot;uri&quot;));
 };
 
 Echo.API.Transports.WebSockets.prototype.closing = function() {
@@ -219,6 +221,7 @@ Echo.API.Transports.WebSockets.prototype._getTransportObject = function() {
 	if (!sockets[uri]) {
 		sockets[uri] = {
 			&quot;socket&quot;: this._prepareTransportObject(),
+			&quot;state&quot;: &quot;in-progress&quot;,
 			&quot;subscribers&quot;: {}
 		};
 	}
@@ -241,6 +244,7 @@ Echo.API.Transports.WebSockets.prototype._prepareTransportObject = function() {
 	socket.onopen = function() {
 		// send ping immediately to make sure the server is responding
 		self._ping(function() {
+			Echo.API.Transports.WebSockets.setSocketState(self.config.get(&quot;uri&quot;), &quot;ready&quot;);
 			self._publish(&quot;onOpen&quot;);
 		});
 		self.keepConnection();
@@ -322,6 +326,19 @@ Echo.API.Transports.WebSockets.prototype._tryReconnect = function() {
 	if (this.attemptsRemaining === 0) {
 		this.abort(true);
 	}
+};
+
+Echo.API.Transports.WebSockets.getSocketState = function(URI) {
+	return this.socketByURI[URI].state;
+};
+
+Echo.API.Transports.WebSockets.setSocketState = function(URI, state) {
+	this.socketByURI[URI].state = state;
+	return this.socketByURI[URI];
+};
+
+Echo.API.Transports.WebSockets.isSocketReady = function(URI) {
+	return this.getSocketState(URI) === &quot;ready&quot;;
 };
 
 Echo.API.Transports.WebSockets.available = function() {
