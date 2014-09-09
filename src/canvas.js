@@ -247,6 +247,12 @@ canvas.labels = {
 canvas.templates.main =
 	'<div class="{class:container}"></div>';
 
+canvas.templates.row =
+	'<div class="echo-canvas-row" data-type="row"></div>';
+
+canvas.templates.column =
+	'<div class="echo-canvas-column" data-type="column"></div>';
+
 /**
  * @echo_template
  */
@@ -268,13 +274,14 @@ canvas.destroy = function() {
  */
 canvas.renderers.container = function(element) {
 	var self = this;
-	$.map(this.get("data.apps"), function(app, id) {
-		self._initApp(app, element, id);
+	var apps = Echo.Utils.foldl({}, this.get("data.apps"), function(app, acc, id) {
+		acc[app.id || id] = self._initApp(app, id);
 	});
+	this._buildGrid(this.get("data.layout"), apps, element);
 	return element;
 };
 
-canvas.methods._initApp = function(app, element, id) {
+canvas.methods._initApp = function(app, id) {
 	var self = this;
 	var Application = Echo.Utils.getComponent(app.component);
 	if (!Application) {
@@ -302,10 +309,10 @@ canvas.methods._initApp = function(app, element, id) {
 			}
 		}
 	});
-	element.append(view.render({
+	var appContainer = view.render({
 		"data": app,
 		"template": this.templates.app
-	}));
+	});
 
 	app.config.target = view.get("appBody");
 
@@ -314,6 +321,91 @@ canvas.methods._initApp = function(app, element, id) {
 		? $.extend(true, app.config, overrides)
 		: app.config;
 	this.apps.push(new Application(config));
+	return appContainer;
+};
+
+canvas.methods._buildGrid = function(grid, apps, container) {
+	var self = this;
+	grid = grid || [];
+	container = container || $("<div>");
+	var totalColumns = Echo.Utils.foldl(0, grid, function(item, acc) {
+		return Math.max(acc, item.col + (item.size_x - 1));
+	});
+	var toMatrix = function(grid) {
+		return Echo.Utils.foldl([], grid, function(item, acc, k) {
+			if (!acc[item.row - 1]) acc[item.row - 1] = [];
+			acc[item.row - 1][item.col - 1] = $.extend({}, item, {
+				"row": item.row - 1,
+				"col": item.col - 1
+			});
+		});
+	};
+
+	var getItemsBelow = function(matrix, column, result) {
+		result = result || [];
+		var columnBelow = matrix[column.row + 1] && matrix[column.row + 1][column.col];
+		if (columnBelow && columnBelow.size_x === column.size_x) {
+			result = result
+				.concat([columnBelow])
+				.concat(getItemsBelow(matrix, columnBelow));
+		}
+		return result;
+	};
+
+	var rows = [];
+	var matrix = toMatrix(grid);
+
+	$.each(matrix, function(rowIndex, row) {
+		var tmpRow = {"type": "row", "items": []};
+		var usedColumns = 0;
+		$.each(row || [], function(columnIndex, column) {
+			if (!column && columnIndex < usedColumns) return;
+			column = column || {"col": columnIndex + 1, "size_x": 1};
+			usedColumns = Math.max(usedColumns, column.col + column.size_x);
+			var tmpColumn = {"type": "column", "items": [], "size_x": column.size_x || 1};
+			if (!column.processed) {
+				var itemsBelow = getItemsBelow(matrix, column);
+				$.each(itemsBelow, function(k, item) { item.processed = true; });
+				tmpColumn.items = tmpColumn.items
+					.concat([column])
+					.concat(itemsBelow);
+			}
+			tmpRow.items.push(tmpColumn);
+		});
+		if (totalColumns > usedColumns) {
+			tmpRow.items.push({
+				"type": "column",
+				"size_x": totalColumns - usedColumns
+			});
+		}
+		rows.push(tmpRow);
+	});
+
+	apps = $.extend({}, apps);
+	(function buildDom(items, container, depth) {
+		depth = depth || 0;
+		$.each(items || [], function(k, item) {
+			if (item.app) {
+				container.append(apps[item.app]);
+				delete apps[item.app];
+			} else {
+				var template = self.templates[item.type];
+				if (!template) return;
+				var element = $(self.substitute({"template": template}));
+				if (item.size_x) {
+					element.css("width", (item.size_x / totalColumns * 100) + "%");
+				}
+				if (item.items) buildDom(item.items, element, depth + 1);
+				container.append(element);
+			}
+		});
+		if (depth === 0 && !$.isEmptyObject(apps)) {
+			$.each(apps, function(k, app) {
+				container.append(app);
+			});
+		}
+	})(rows, container);
+	return container;
 };
 
 canvas.methods._destroyApp = function(app) {
@@ -478,6 +570,10 @@ canvas.methods._fetchConfig = function(callback) {
 		});
 	}, 0);
 };
+
+canvas.css =
+	'.{class:row} { display: table; table-layout: fixed; width: 100%; }' +
+	'.{class:column} { display: table-cell; vertical-align: top; }';
 
 Echo.Control.create(canvas);
 
