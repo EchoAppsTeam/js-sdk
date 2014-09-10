@@ -355,23 +355,30 @@ canvas.methods._buildGrid = function(grid, apps, container) {
 	var rows = [];
 	var matrix = toMatrix(grid);
 
+
 	$.each(matrix, function(rowIndex, row) {
 		var tmpRow = {"type": "row", "items": []};
 		var usedColumns = 0;
 		$.each(row || [], function(columnIndex, column) {
-			if (!column && columnIndex < usedColumns) return;
-			column = column || {"col": columnIndex + 1, "size_x": 1};
-			usedColumns = Math.max(usedColumns, column.col + column.size_x);
-			var tmpColumn = {"type": "column", "items": [], "size_x": column.size_x || 1};
-			if (!column.processed) {
-				var itemsBelow = getItemsBelow(matrix, column);
-				$.each(itemsBelow, function(k, item) { item.processed = true; });
-				tmpColumn.items = tmpColumn.items
-					.concat([column])
-					.concat(itemsBelow);
+			if (!column || column.processed) return true;
+
+			// insert column before current if there is free space
+			if (column.col > usedColumns) {
+				tmpRow.items.push({"type": "column", "size_x": column.col - usedColumns});
+				usedColumns = column.col;
 			}
-			tmpRow.items.push(tmpColumn);
+
+			var itemsBelow = getItemsBelow(matrix, column);
+			$.each(itemsBelow, function(k, item) { item.processed = true; });
+			tmpRow.items.push({
+				"type": "column",
+				"items": [].concat(column).concat(itemsBelow),
+				"size_x": column.size_x
+			});
+
+			usedColumns = Math.max(usedColumns, column.col + column.size_x);
 		});
+		// insert column at the end of row if there is free space left
 		if (totalColumns > usedColumns) {
 			tmpRow.items.push({
 				"type": "column",
