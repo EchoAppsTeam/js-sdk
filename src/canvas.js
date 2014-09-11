@@ -327,10 +327,9 @@ canvas.methods._initApp = function(app, id) {
 canvas.methods._buildGrid = function(grid, apps, container) {
 	var self = this;
 	grid = grid || [];
-	container = container || $("<div>");
-	var totalColumns = Echo.Utils.foldl(0, grid, function(item, acc) {
-		return Math.max(acc, item.col + (item.size_x - 1));
-	});
+	var totalColumns = Math.max.apply(null, grid.map(function(item) {
+		return item.col + item.size_x - 1;
+	}).concat(0));
 	var toMatrix = function(grid) {
 		return Echo.Utils.foldl([], grid, function(item, acc, k) {
 			if (!acc[item.row - 1]) acc[item.row - 1] = [];
@@ -341,13 +340,13 @@ canvas.methods._buildGrid = function(grid, apps, container) {
 		});
 	};
 
-	var getItemsBelow = function(matrix, column, result) {
-		result = result || [];
-		var columnBelow = matrix[column.row + 1] && matrix[column.row + 1][column.col];
-		if (columnBelow && columnBelow.size_x === column.size_x) {
+	var getItemsBelow = function(matrix, cell) {
+		var result = [];
+		var itemBelow = matrix[cell.row + 1] && matrix[cell.row + 1][cell.col];
+		if (itemBelow && itemBelow.size_x === cell.size_x) {
 			result = result
-				.concat([columnBelow])
-				.concat(getItemsBelow(matrix, columnBelow));
+				.concat(itemBelow)
+				.concat(getItemsBelow(matrix, itemBelow));
 		}
 		return result;
 	};
@@ -355,28 +354,29 @@ canvas.methods._buildGrid = function(grid, apps, container) {
 	var rows = [];
 	var matrix = toMatrix(grid);
 
-
 	$.each(matrix, function(rowIndex, row) {
 		var tmpRow = {"type": "row", "items": []};
 		var usedColumns = 0;
-		$.each(row || [], function(columnIndex, column) {
-			if (!column || column.processed) return true;
+		$.each(row || [], function(cellIndex, cell) {
+			if (!cell || cell.processed) return true;
 
 			// insert column before current if there is free space
-			if (column.col > usedColumns) {
-				tmpRow.items.push({"type": "column", "size_x": column.col - usedColumns});
-				usedColumns = column.col;
+			if (cell.col > usedColumns) {
+				tmpRow.items.push({"type": "column", "size_x": cell.col - usedColumns});
+				usedColumns = cell.col;
 			}
 
-			var itemsBelow = getItemsBelow(matrix, column);
-			$.each(itemsBelow, function(k, item) { item.processed = true; });
+			var itemsBelow = getItemsBelow(matrix, cell);
+			$.each(itemsBelow, function(k, item) {
+				item.processed = true;
+			});
 			tmpRow.items.push({
 				"type": "column",
-				"items": [].concat(column).concat(itemsBelow),
-				"size_x": column.size_x
+				"items": [].concat(cell).concat(itemsBelow),
+				"size_x": cell.size_x
 			});
 
-			usedColumns = Math.max(usedColumns, column.col + column.size_x);
+			usedColumns = Math.max(usedColumns, cell.col + cell.size_x);
 		});
 		// insert column at the end of row if there is free space left
 		if (totalColumns > usedColumns) {
@@ -395,24 +395,22 @@ canvas.methods._buildGrid = function(grid, apps, container) {
 			if (item.app) {
 				container.append(apps[item.app]);
 				delete apps[item.app];
-			} else {
+			} else if (item.type) {
 				var template = self.templates[item.type];
-				if (!template) return;
 				var element = $(self.substitute({"template": template}));
-				if (item.size_x) {
-					element.css("width", (item.size_x / totalColumns * 100) + "%");
-				}
+				element.css("width", (item.size_x / totalColumns * 100) + "%");
 				if (item.items) buildDom(item.items, element, depth + 1);
 				container.append(element);
 			}
 		});
-		if (depth === 0 && !$.isEmptyObject(apps)) {
+		if (!depth && !$.isEmptyObject(apps)) {
+			// Put all apps from the canvas that were not mentioned in layout to the very end of container.
+			// Useful for backwards complatibility and apps added to canvas through API call.
 			$.each(apps, function(k, app) {
 				container.append(app);
 			});
 		}
 	})(rows, container);
-	return container;
 };
 
 canvas.methods._destroyApp = function(app) {
