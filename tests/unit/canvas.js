@@ -247,21 +247,26 @@ Echo.Tests.asyncTest("Canvas layout #1", function() {
 		"data": {
 			"apps": [],
 			"layout": [
-				{"row": 2, "col": 1, "size_x": 4},
-				{"row": 1, "col": 1, "size_x": 3},
-				{"row": 1, "col": 4, "size_x": 1}
+				{"row": 2, "col": 1, "size_x": 4}, //  --------- ---
+				{"row": 1, "col": 1, "size_x": 3}, // |         |   |
+				{"row": 1, "col": 4, "size_x": 1}  //  --------- ---
+				                                   // |             |
+				                                   //  -------------
 			]
 		},
 		"ready": function() {
 			var rows = this.view.get("container").children("[data-type='row']");
+			QUnit.equal(rows.length, 2, "There are two rows");
+
 			var firstRow = rows.eq(0).children("[data-type='column']");
+			QUnit.equal(firstRow.length, 2, "[row 1] contains 2 columns");
+			QUnit.equal(firstRow.eq(0).css("width"), "75%", "[row 1] [col 1] 75% width");
+			QUnit.equal(firstRow.eq(1).css("width"), "25%", "[row 1] [col 2] 25% width");
+
 			var secondRow = rows.eq(1).children("[data-type='column']");
-			QUnit.ok(rows.length === 2, "There are two rows");
-			QUnit.ok(firstRow.length === 2
-				&& firstRow.eq(0).css("width") === "75%"
-				&& firstRow.eq(1).css("width") === "25%", "There are two columns in first row. First is 75% width and second is 25%");
-			QUnit.ok(secondRow.length === 1
-				&& secondRow.eq(0).css("width") === "100%", "There are one column in second row (100% width)");
+			QUnit.equal(secondRow.length, 1, "[row 2] contains 1 col");
+			QUnit.equal(secondRow.eq(0).css("width"), "100%", "[row 2] [col 1] 100% width");
+
 			QUnit.start();
 			this.destroy();
 		}
@@ -276,51 +281,53 @@ Echo.Tests.asyncTest("Canvas layout #2", function() {
 				return {"id": id + 1, "component": "Echo.Variables.SampleApp", "config": {"appId": id + 1}};
 			}),
 			"layout": [
-				{"row": 1, "col": 1, "size_x": 1, "app": "1"},
-				{"row": 1, "col": 3, "size_x": 2, "app": "2"},
-				{"row": 2, "col": 1, "size_x": 1, "app": "3"},
-				{"row": 2, "col": 3, "size_x": 1, "app": "4"},
-				{"row": 3, "col": 1, "size_x": 2, "app": "5"},
-				{"row": 3, "col": 3, "size_x": 2, "app": "6"}
+				{"row": 1, "col": 1, "size_x": 1, "app": "1"}, //  ---     -------
+				{"row": 1, "col": 3, "size_x": 2, "app": "2"}, // | 1 |   |   2   |
+				{"row": 2, "col": 1, "size_x": 1, "app": "3"}, //  ---     -------
+				{"row": 2, "col": 3, "size_x": 1, "app": "4"}, // | 3 |   | 4 |
+				{"row": 3, "col": 1, "size_x": 2, "app": "5"}, //  ------- -------
+				{"row": 3, "col": 3, "size_x": 2, "app": "6"}  // |   5   |   6   |
+				                                               //  ------- -------
 			]
 		},
 		"ready": function() {
 			var rows = this.view.get("container").children("[data-type='row']");
 
+			QUnit.equal(rows.length, 3, "There are three rows");
+
 			// first row
 			var firstRow = rows.eq(0).children("[data-type='column']");
-			QUnit.ok(rows.length === 3, "There are three rows");
-			QUnit.ok(firstRow.length === 3, "There are three columns in first row");
-			QUnit.ok(firstRow.eq(0).css("width") === "25%", "First column is 25% width");
-			QUnit.ok(firstRow.eq(0).find("[data-sample-app-id='1']").length
-				&& firstRow.eq(0).find("[data-sample-app-id='3']").length, "There are two apps in first column (#1 and #3)");
-			QUnit.ok(firstRow.eq(1).is(":empty")
-				&& firstRow.eq(1).css("width") === "25%", "Second column is empty and 25% width");
-			QUnit.ok(firstRow.eq(2).css("width") === "50%"
-				&& firstRow.eq(2).find("[data-sample-app-id='2']").length, "Third column is 50% and contains app #2");
+			QUnit.equal(firstRow.length, 3, "[row 1] contains 3 columns");
+			QUnit.equal(firstRow.eq(0).css("width"), "25%", "[row 1] [col 1] 25% width");
+			QUnit.ok(firstRow.eq(0).find("[data-sample-app-id='1']").length, "[row 1] [col 1] contains app #1");
+			QUnit.ok(firstRow.eq(0).find("[data-sample-app-id='3']").length, "[row 1] [col 1] contains app #3");
+			QUnit.ok(firstRow.eq(1).is(":empty"), "[row 1] [col 2] empty");
+			QUnit.equal(firstRow.eq(1).css("width"), "25%", "[row 1] [col 2] 25% width");
+			QUnit.ok(firstRow.eq(2).find("[data-sample-app-id='2']").length, "[row 1] [col 3] contains app #2");
+			QUnit.equal(firstRow.eq(2).css("width"), "50%", "[row 1] [col 3] 50% width");
 
 			// second row
 			var secondRow = rows.eq(1).children("[data-type='column']");
-			QUnit.ok(secondRow.length === 3, "Second row contains three cols");
-			QUnit.ok(secondRow.eq(0).is(":empty")
-				&& secondRow.eq(2).is(":empty")
-				&& secondRow.eq(0).css("width") === "50%"
-				&& secondRow.eq(2).css("width") === "25%", "First (50% width) and last (25% width) columns are empty");
-			QUnit.ok(firstRow.eq(1).css("width")
-				&& secondRow.eq(1).find("[data-sample-app-id='4']").length, "Second colunm contains app #4");
+			QUnit.equal(secondRow.length, 3, "[row 2] contains 3 cols");
+			QUnit.ok(secondRow.eq(0).is(":empty"), "[row 2] [col 1] empty");
+			QUnit.equal(secondRow.eq(0).css("width"), "50%", "[row 2] [col 1] 50% width");
+			QUnit.ok(secondRow.eq(1).find("[data-sample-app-id='4']").length, "[row 2] [col 2] contains app #4");
+			QUnit.equal(firstRow.eq(1).css("width"), "25%", "[row 2] [col 2] 25% width");
+			QUnit.ok(secondRow.eq(2).is(":empty"), "[row 2] [col 3] empty");
+			QUnit.equal(secondRow.eq(2).css("width"), "25%", "[row 2] [col 3] 25% width");
 
 			// third row
 			var thirdRow = rows.eq(2).children("[data-type='column']");
-			QUnit.ok(thirdRow.length, "Third row contans two columns");
-			QUnit.ok(thirdRow.eq(0).css("width") === "50%"
-				&& thirdRow.eq(0).find("[data-sample-app-id='5']").length, "First column contains app #5");
-			QUnit.ok(thirdRow.eq(1).css("width") === "50%"
-				&& thirdRow.eq(1).find("[data-sample-app-id='6']").length, "Second column contains app #6");
+			QUnit.equal(thirdRow.length, 2, "[row 3] contains 2 cols");
+			QUnit.ok(thirdRow.eq(0).find("[data-sample-app-id='5']").length, "[row 3] [col 1] contains app #5");
+			QUnit.equal(thirdRow.eq(0).css("width"), "50%", "[row 3] [col 1] 50% width");
+			QUnit.ok(thirdRow.eq(1).find("[data-sample-app-id='6']").length, "[row 3] [col 2] contains app #6");
+			QUnit.equal(thirdRow.eq(1).css("width"), "50%", "[row 2] [col 2] 50% width");
 
 			var appsWithoutLayout = this.view.get("container").children(".echo-canvas-appContainer");
-			QUnit.ok(appsWithoutLayout.length === 2
-				&& appsWithoutLayout.eq(0).find("[data-sample-app-id='7']").length
-				&& appsWithoutLayout.eq(1).find("[data-sample-app-id='8']").length, "There are two apps declared in 'apps' but not mentioned in 'laoyut'");
+			QUnit.equal(appsWithoutLayout.length, 2, "2 apps are declared in 'apps' but not mentioned in 'layout'");
+			QUnit.ok(appsWithoutLayout.eq(0).find("[data-sample-app-id='7']").length, "App #7 added at the bottom");
+			QUnit.ok(appsWithoutLayout.eq(1).find("[data-sample-app-id='8']").length, "App #8 added at the bottom");
 
 			QUnit.start();
 			this.destroy();
