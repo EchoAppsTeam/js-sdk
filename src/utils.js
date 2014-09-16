@@ -554,8 +554,13 @@ Echo.Utils.htmlTextTruncate = function(text, limit, postfix, forceClosingTags) {
  */
 Echo.Utils.stripTags = function(text) {
 	if (typeof text !== "string") return text;
-	text = Echo.Utils.sanitize(text, "html");
-	return $("<div>").html(text).text();
+	var re = /<!--[\s\S]*?-->|<\/?[a-z][a-z0-9]*\b[^>]*>/gi;
+	var old = "";
+	while (text !== old) {
+		old = text;
+		text = text.replace(re, "");
+	}
+	return text;
 };
 
 /**

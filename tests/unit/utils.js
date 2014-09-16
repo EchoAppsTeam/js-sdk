@@ -230,27 +230,41 @@ Echo.Tests.asyncTest("sanitize()", function() {
 	QUnit.start();
 });
 
-Echo.Tests.asyncTest("stripTags()", function() {
-	QUnit.strictEqual(Echo.Utils.stripTags(), undefined,
-		"Checking with undefined param");
-	QUnit.strictEqual(Echo.Utils.stripTags(""), "",
-		"Checking with empty string param");
-	QUnit.strictEqual(Echo.Utils.stripTags(20), 20,
-		"Checking with integer param (expecting the same integer to be returned)");
-	QUnit.strictEqual(Echo.Utils.stripTags("<div>Content</div>"), "Content",
-		"Checking with simple HTML");
-	QUnit.strictEqual(Echo.Utils.stripTags("<div>Outer<div><!-- Comment -->Inner</div></div>"), "OuterInner",
-		"Checking with complex HTML");
-
-	Echo.Tests.Fixtures.stripTagsHacked = false;
-	var actual = Echo.Utils.stripTags('1<img/src="1"/onerror="Echo.Tests.Fixtures.stripTagsHacked=true">2');
-	// wait some time for hack to onerror handler to work
-	setTimeout(function() {
-		QUnit.equal(actual, "12", "Checking with hackish HTML");
-		QUnit.strictEqual(Echo.Tests.Fixtures.stripTagsHacked, false, "Checking if hack worked");
-		delete Echo.Tests.Fixtures.stripTagsHacked;
-		QUnit.start();
-	}, 150);
+Echo.Tests.test("stripTags()", function() {
+	[
+		[undefined, undefined, "undefined param"],
+		["", "", "empty string param"],
+		[20, 20, "integer param (no changes)"],
+		["<div>Content</div>", "Content", "simple HTML"],
+		["<div/Content</div", "<div/Content</div", "broken HTML"],
+		[
+			"<div>Outer<div><!-- Comment -->Inner</div></div>",
+			"OuterInner",
+			"complex HTML"
+		],
+		[
+			"&lt;b&gt;Sweet&nbsp;<u>!</u>&#60;/b&gt;</div>",
+			"&lt;b&gt;Sweet&nbsp;!&#60;/b&gt;",
+			"escaped HTML"
+		],
+		[
+			"\u003Ci\u003Ex\u003c/i\u003E\u003Cy",
+			"x<y",
+			"unicode encoded HTML"
+		],
+		[
+			"<<div title=\"<s>script>alert(1)",
+			"alert(1)",
+			"recursively wrapped HTML"
+		],
+		[
+			"<<!---->script>alert(1)",
+			"alert(1)",
+			"recursively wrapped HTML with comment"
+		]
+	].forEach(function(_case) {
+		QUnit.strictEqual(Echo.Utils.stripTags(_case[0]), _case[1], _case[2]);
+	});
 });
 
 Echo.Tests.test("objectToJSON()", function() {
