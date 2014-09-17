@@ -243,7 +243,7 @@ Echo.Tests.asyncTest("Canvas initialization without layout", function() {
 
 Echo.Tests.asyncTest("Canvas layout #1", function() {
 	new Echo.Canvas({
-		"target": $("<div>"),
+		"target": $("<div>").css("width", "100px").appendTo("#qunit-fixture"),
 		"data": {
 			"apps": [],
 			"layout": [
@@ -260,12 +260,12 @@ Echo.Tests.asyncTest("Canvas layout #1", function() {
 
 			var firstRow = rows.eq(0).children("[data-type='column']");
 			QUnit.equal(firstRow.length, 2, "[row 1] contains 2 columns");
-			QUnit.equal(firstRow.eq(0).css("width"), "75%", "[row 1] [col 1] 75% width");
-			QUnit.equal(firstRow.eq(1).css("width"), "25%", "[row 1] [col 2] 25% width");
+			QUnit.equal(firstRow.eq(0).css("width"), "75px", "[row 1] [col 1] 75% width");
+			QUnit.equal(firstRow.eq(1).css("width"), "25px", "[row 1] [col 2] 25% width");
 
 			var secondRow = rows.eq(1).children("[data-type='column']");
 			QUnit.equal(secondRow.length, 1, "[row 2] contains 1 col");
-			QUnit.equal(secondRow.eq(0).css("width"), "100%", "[row 2] [col 1] 100% width");
+			QUnit.equal(secondRow.eq(0).css("width"), "100px", "[row 2] [col 1] 100% width");
 
 			QUnit.start();
 			this.destroy();
@@ -275,7 +275,7 @@ Echo.Tests.asyncTest("Canvas layout #1", function() {
 
 Echo.Tests.asyncTest("Canvas layout #2", function() {
 	new Echo.Canvas({
-		"target": $("<div>"),
+		"target": $("<div>").css("width", "100px").appendTo("#qunit-fixture"),
 		"data": {
 			"apps": $.map(new Array(8), function(_, id) {
 				return {"id": id + 1, "component": "Echo.Variables.SampleApp", "config": {"appId": id + 1}};
@@ -298,31 +298,31 @@ Echo.Tests.asyncTest("Canvas layout #2", function() {
 			// first row
 			var firstRow = rows.eq(0).children("[data-type='column']");
 			QUnit.equal(firstRow.length, 3, "[row 1] contains 3 columns");
-			QUnit.equal(firstRow.eq(0).css("width"), "25%", "[row 1] [col 1] 25% width");
+			QUnit.equal(firstRow.eq(0).css("width"), "25px", "[row 1] [col 1] 25% width");
 			QUnit.ok(firstRow.eq(0).find("[data-sample-app-id='1']").length, "[row 1] [col 1] contains app #1");
 			QUnit.ok(firstRow.eq(0).find("[data-sample-app-id='3']").length, "[row 1] [col 1] contains app #3");
 			QUnit.ok(firstRow.eq(1).is(":empty"), "[row 1] [col 2] empty");
-			QUnit.equal(firstRow.eq(1).css("width"), "25%", "[row 1] [col 2] 25% width");
+			QUnit.equal(firstRow.eq(1).css("width"), "25px", "[row 1] [col 2] 25% width");
 			QUnit.ok(firstRow.eq(2).find("[data-sample-app-id='2']").length, "[row 1] [col 3] contains app #2");
-			QUnit.equal(firstRow.eq(2).css("width"), "50%", "[row 1] [col 3] 50% width");
+			QUnit.equal(firstRow.eq(2).css("width"), "50px", "[row 1] [col 3] 50% width");
 
 			// second row
 			var secondRow = rows.eq(1).children("[data-type='column']");
 			QUnit.equal(secondRow.length, 3, "[row 2] contains 3 cols");
 			QUnit.ok(secondRow.eq(0).is(":empty"), "[row 2] [col 1] empty");
-			QUnit.equal(secondRow.eq(0).css("width"), "50%", "[row 2] [col 1] 50% width");
+			QUnit.equal(secondRow.eq(0).css("width"), "50px", "[row 2] [col 1] 50% width");
 			QUnit.ok(secondRow.eq(1).find("[data-sample-app-id='4']").length, "[row 2] [col 2] contains app #4");
-			QUnit.equal(firstRow.eq(1).css("width"), "25%", "[row 2] [col 2] 25% width");
+			QUnit.equal(firstRow.eq(1).css("width"), "25px", "[row 2] [col 2] 25% width");
 			QUnit.ok(secondRow.eq(2).is(":empty"), "[row 2] [col 3] empty");
-			QUnit.equal(secondRow.eq(2).css("width"), "25%", "[row 2] [col 3] 25% width");
+			QUnit.equal(secondRow.eq(2).css("width"), "25px", "[row 2] [col 3] 25% width");
 
 			// third row
 			var thirdRow = rows.eq(2).children("[data-type='column']");
 			QUnit.equal(thirdRow.length, 2, "[row 3] contains 2 cols");
 			QUnit.ok(thirdRow.eq(0).find("[data-sample-app-id='5']").length, "[row 3] [col 1] contains app #5");
-			QUnit.equal(thirdRow.eq(0).css("width"), "50%", "[row 3] [col 1] 50% width");
+			QUnit.equal(thirdRow.eq(0).css("width"), "50px", "[row 3] [col 1] 50% width");
 			QUnit.ok(thirdRow.eq(1).find("[data-sample-app-id='6']").length, "[row 3] [col 2] contains app #6");
-			QUnit.equal(thirdRow.eq(1).css("width"), "50%", "[row 2] [col 2] 50% width");
+			QUnit.equal(thirdRow.eq(1).css("width"), "50px", "[row 2] [col 2] 50% width");
 
 			var appsWithoutLayout = this.view.get("container").children(".echo-canvas-appContainer");
 			QUnit.equal(appsWithoutLayout.length, 2, "2 apps are declared in 'apps' but not mentioned in 'layout'");

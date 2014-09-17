@@ -398,7 +398,7 @@ canvas.methods._buildGrid = function(grid, apps, container) {
 			} else if (item.type) {
 				var template = self.templates[item.type];
 				var element = $(self.substitute({"template": template}));
-				element.css("width", (item.size_x / totalColumns * 100) + "%");
+				if (item.size_x) element.addClass(self.cssPrefix + "column-" + item.size_x + "-" + totalColumns);
 				if (item.items) buildDom(item.items, element, depth + 1);
 				container.append(element);
 			}
@@ -576,9 +576,19 @@ canvas.methods._fetchConfig = function(callback) {
 	}, 0);
 };
 
+var columnWidth = [];
+for (var totalColumns = 1; totalColumns <= 8; totalColumns++) {
+	for (var columnSize = 1; columnSize <= totalColumns; columnSize++ ) {
+		columnWidth.push('.{class:column-' + columnSize + '-' + totalColumns + '} { width: ' + columnSize/totalColumns*100 + '%; }');
+	}
+}
+
 canvas.css =
-	'.{class:row} { display: table; table-layout: fixed; width: 100%; }' +
-	'.{class:column} { display: table-cell; vertical-align: top; }';
+	'@media (min-width: 400px) {' +
+		'.{class:row} { display: table; table-layout: fixed; width: 100%; }' +
+		'.{class:column} { display: table-cell; vertical-align: top; }' +
+		columnWidth.join(" ") +
+	'}';
 
 Echo.Control.create(canvas);
 
