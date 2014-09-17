@@ -231,7 +231,7 @@ Echo.Tests.asyncTest("sanitize()", function() {
 });
 
 Echo.Tests.test("stripTags()", function() {
-	[
+	var cases = [
 		[undefined, undefined, "undefined param"],
 		["", "", "empty string param"],
 		[20, 20, "integer param (no changes)"],
@@ -262,7 +262,8 @@ Echo.Tests.test("stripTags()", function() {
 			"alert(1)",
 			"recursively wrapped HTML with comment"
 		]
-	].forEach(function(_case) {
+	];
+	$.each(cases, function(i, _case) {
 		QUnit.strictEqual(Echo.Utils.stripTags(_case[0]), _case[1], _case[2]);
 	});
 });
