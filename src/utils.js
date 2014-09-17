@@ -24,7 +24,8 @@ Echo.Utils.regexps = {
 	"templateSubstitution": "{([0-9a-z\\.]+)(?:\\:((?:[0-9a-z_-]+\\.)*[0-9a-z_-]+))?}",
 	"mobileUA": /mobile|midp-|opera mini|iphone|ipad|blackberry|nokia|samsung|docomo|symbian|windows ce|windows phone|android|up\.browser|ipod|netfront|skyfire|palm|webos|audiovox/i,
 	"w3cdtf": /^(\d{4})(?:-(\d\d)(?:-(\d\d))?(?:(?:T(\d\d):(\d\d):(\d\d))(?:\.(\d{1,3}))?(?:Z|(?:(\+|-)(\d\d):(\d\d))))?)?$/,
-	"parseURL": /^(?:(?:([^:\/\?#]+):)?\/\/)?([^:\/\?#]*)?(?::(\d+))?([^\?#]*)(?:\?([^#]*))?(?:#(.*))?/
+	"parseURL": /^(?:(?:([^:\/\?#]+):)?\/\/)?([^:\/\?#]*)?(?::(\d+))?([^\?#]*)(?:\?([^#]*))?(?:#(.*))?/,
+	"stripTags": /<!--[\s\S]*?-->|<\/?[a-z][a-z0-9]*\b[^>]*>/gi
 };
 
 /**
@@ -554,11 +555,10 @@ Echo.Utils.htmlTextTruncate = function(text, limit, postfix, forceClosingTags) {
  */
 Echo.Utils.stripTags = function(text) {
 	if (typeof text !== "string") return text;
-	var re = /<!--[\s\S]*?-->|<\/?[a-z][a-z0-9]*\b[^>]*>/gi;
 	var old = "";
 	while (text !== old) {
 		old = text;
-		text = text.replace(re, "");
+		text = text.replace(Echo.Utils.regexps.stripTags, "");
 	}
 	return text;
 };
