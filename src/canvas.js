@@ -327,7 +327,7 @@ canvas.methods._initApp = function(app, id) {
 canvas.methods._buildGrid = function(grid, apps, container) {
 	var self = this;
 	grid = grid || [];
-	var totalColumns = Math.max.apply(null, grid.map(function(item) {
+	var totalColumns = Math.max.apply(null, $.map(grid, function(item) {
 		return item.col + item.size_x - 1;
 	}).concat(0));
 	var toMatrix = function(grid) {
