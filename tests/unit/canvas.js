@@ -242,6 +242,11 @@ Echo.Tests.asyncTest("Canvas initialization without layout", function() {
 });
 
 Echo.Tests.asyncTest("Canvas layout #1", function() {
+	if (screen.width < 400) {
+		QUnit.ok(true, "Screen width < 400, skip test");
+		QUnit.start();
+		return;
+	}
 	new Echo.Canvas({
 		"target": $("<div>").css("width", "100px").appendTo("#qunit-fixture"),
 		"data": {
@@ -274,6 +279,11 @@ Echo.Tests.asyncTest("Canvas layout #1", function() {
 });
 
 Echo.Tests.asyncTest("Canvas layout #2", function() {
+	if (screen.width < 400) {
+		QUnit.ok(true, "Screen width < 400, skip test");
+		QUnit.start();
+		return;
+	}
 	new Echo.Canvas({
 		"target": $("<div>").css("width", "100px").appendTo("#qunit-fixture"),
 		"data": {
@@ -334,5 +344,7 @@ Echo.Tests.asyncTest("Canvas layout #2", function() {
 		}
 	});
 });
+
+// TODO test canvas layout with small window width (< 400px)
 
 })(Echo.jQuery);
