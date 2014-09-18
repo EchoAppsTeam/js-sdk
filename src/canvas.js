@@ -247,6 +247,12 @@ canvas.labels = {
 canvas.templates.main =
 	'<div class="{class:container}"></div>';
 
+canvas.templates.row =
+	'<div class="echo-canvas-row" data-type="row"></div>';
+
+canvas.templates.column =
+	'<div class="echo-canvas-column" data-type="column"></div>';
+
 /**
  * @echo_template
  */
@@ -268,13 +274,14 @@ canvas.destroy = function() {
  */
 canvas.renderers.container = function(element) {
 	var self = this;
-	$.map(this.get("data.apps"), function(app, id) {
-		self._initApp(app, element, id);
+	var apps = Echo.Utils.foldl({}, this.get("data.apps"), function(app, acc, id) {
+		acc[app.id || id] = self._initApp(app, id);
 	});
+	this._buildGrid(this.get("data.layout"), apps, element);
 	return element;
 };
 
-canvas.methods._initApp = function(app, element, id) {
+canvas.methods._initApp = function(app, id) {
 	var self = this;
 	var Application = Echo.Utils.getComponent(app.component);
 	if (!Application) {
@@ -302,10 +309,10 @@ canvas.methods._initApp = function(app, element, id) {
 			}
 		}
 	});
-	element.append(view.render({
+	var appContainer = view.render({
 		"data": app,
 		"template": this.templates.app
-	}));
+	});
 
 	app.config.target = view.get("appBody");
 
@@ -314,6 +321,96 @@ canvas.methods._initApp = function(app, element, id) {
 		? $.extend(true, app.config, overrides)
 		: app.config;
 	this.apps.push(new Application(config));
+	return appContainer;
+};
+
+canvas.methods._buildGrid = function(grid, apps, container) {
+	var self = this;
+	grid = grid || [];
+	var totalColumns = Math.max.apply(null, grid.map(function(item) {
+		return item.col + item.size_x - 1;
+	}).concat(0));
+	var toMatrix = function(grid) {
+		return Echo.Utils.foldl([], grid, function(item, acc, k) {
+			if (!acc[item.row - 1]) acc[item.row - 1] = [];
+			acc[item.row - 1][item.col - 1] = $.extend({}, item, {
+				"row": item.row - 1,
+				"col": item.col - 1
+			});
+		});
+	};
+
+	var getItemsBelow = function(matrix, cell) {
+		var result = [];
+		var itemBelow = matrix[cell.row + 1] && matrix[cell.row + 1][cell.col];
+		if (itemBelow && itemBelow.size_x === cell.size_x) {
+			result = result
+				.concat(itemBelow)
+				.concat(getItemsBelow(matrix, itemBelow));
+		}
+		return result;
+	};
+
+	var rows = [];
+	var matrix = toMatrix(grid);
+
+	$.each(matrix, function(rowIndex, row) {
+		var tmpRow = {"type": "row", "items": []};
+		var usedColumns = 0;
+		$.each(row || [], function(cellIndex, cell) {
+			if (!cell || cell.processed) return true;
+
+			// insert column before current if there is free space
+			if (cell.col > usedColumns) {
+				tmpRow.items.push({"type": "column", "size_x": cell.col - usedColumns});
+				usedColumns = cell.col;
+			}
+
+			var itemsBelow = getItemsBelow(matrix, cell);
+			$.each(itemsBelow, function(k, item) {
+				item.processed = true;
+			});
+			tmpRow.items.push({
+				"type": "column",
+				"items": [].concat(cell).concat(itemsBelow),
+				"size_x": cell.size_x
+			});
+
+			usedColumns = Math.max(usedColumns, cell.col + cell.size_x);
+		});
+		// insert column at the end of row if there is free space left
+		if (totalColumns > usedColumns) {
+			tmpRow.items.push({
+				"type": "column",
+				"size_x": totalColumns - usedColumns
+			});
+		}
+		rows.push(tmpRow);
+	});
+
+	apps = $.extend({}, apps);
+	(function buildDom(items, container, depth) {
+		depth = depth || 0;
+		$.each(items || [], function(k, item) {
+			if (item.app) {
+				container.append(apps[item.app]);
+				delete apps[item.app];
+			} else if (item.type) {
+				var template = self.templates[item.type];
+				var element = $(self.substitute({"template": template}));
+				if (item.size_x) element.addClass(self.cssPrefix + "column-" + item.size_x + "-" + totalColumns);
+				if (item.items) buildDom(item.items, element, depth + 1);
+				container.append(element);
+			}
+		});
+		if (!depth && !$.isEmptyObject(apps)) {
+			// Put all apps from the canvas that were not mentioned in layout to the very end of container.
+			// Useful for backwards complatibility and apps added to canvas through API call.
+			$.each(apps, function(k, app) {
+				container.append(app);
+			});
+		}
+	})(rows, container);
 };
 
 canvas.methods._destroyApp = function(app) {
@@ -478,6 +575,20 @@ canvas.methods._fetchConfig = function(callback) {
 		});
 	}, 0);
 };
+
+var columnWidth = [];
+for (var totalColumns = 1; totalColumns <= 8; totalColumns++) {
+	for (var columnSize = 1; columnSize <= totalColumns; columnSize++ ) {
+		columnWidth.push('.{class:column-' + columnSize + '-' + totalColumns + '} { width: ' + columnSize/totalColumns*100 + '%; }');
+	}
+}
+
+canvas.css =
+	'@media (min-width: 400px) {' +
+		'.{class:row} { display: table; table-layout: fixed; width: 100%; }' +
+		'.{class:column} { display: table-cell; vertical-align: top; }' +
+		columnWidth.join(" ") +
+	'}';
 
 Echo.Control.create(canvas);
 
