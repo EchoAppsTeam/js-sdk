@@ -744,7 +744,10 @@ Echo.StreamServer.API.WebSockets.prototype.getRequestObject = function() {
 				if (response.data.nextSince) {
 					self.config.set("request.data.since", response.data.nextSince);
 				}
-				config.onData(response.data);
+				// FIXME
+				// in some cases WS returns an update without subscription ID
+				// need to investigate
+				if (response.subscription) config.onData(response.data);
 			}
 		},
 		"onOpen": function() {
