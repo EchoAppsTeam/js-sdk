@@ -1259,6 +1259,58 @@ Echo.Utils.random = function(min, max) {
 	return min + Math.floor(Math.random() * (max - min + 1));
 };
 
+Echo.Utils.deepEqual = function(a, b) {
+	var aParents = [], bParents = [];
+	var areEqual = function(a, b) {
+		var aType = $.type(a);
+		var bType = $.type(b);
+		var aCircular = ~$.inArray(a, aParents);
+		var bCircular = ~$.inArray(b, bParents);
+		if (aType !== bType) return false;
+		if (aCircular || bCircular) {
+			return a === b || aCircular && bCircular;
+		}
+		if (this[aType] && !this[aType](a, b)) return false;
+		return true;
+	};
+	var strictEqual = function(a, b) {
+		return a === b;
+	};
+	var comparators = {
+		"number": strictEqual,
+		"string": strictEqual,
+		"boolean": strictEqual,
+		"array": function(a, b) {
+			var l = a.length;
+			if (l !== b.length) return false;
+			aParents.push(a);
+			bParents.push(b);
+			for (var i = 0; i < l; i++) {
+				if (!areEqual.call(this, a[i], b[i])) return false;
+			}
+			return true;
+		},
+		"object": function(a, b) {
+			var i, aProps = [], bProps = [];
+			aParents.push(a);
+			bParents.push(b);
+			for (i in a) {
+				if (a.hasOwnProperty(i)) {
+					aProps.push(i);
+					if (!areEqual.call(this, a[i], b[i])) return false;
+				}
+			}
+			for (i in b) {
+				if (b.hasOwnProperty(i)) {
+					bProps.push(i);
+				}
+			}
+			return this.array(aProps.sort(), bProps.sort());
+		}
+	};
+	return areEqual.call(comparators, a, b);
+};
+
 /**
  * @static
  * Function which executes another function passed as an argument
