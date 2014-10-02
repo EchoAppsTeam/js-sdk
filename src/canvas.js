@@ -79,9 +79,6 @@ if (Echo.Control.isDefined(canvas)) return;
 canvas.init = function() {
 	var ids, cssClass;
 	var self = this, target = this.config.get("target");
-	// parent init function takes care about init finalization (rendering
-	// and the "onReady" event firing)
-	var parent = $.proxy(this.parent, this);
 
 	// check if the canvas was already initialized
 	if (target.data("echo-canvas-initialized")) {
@@ -131,7 +128,9 @@ canvas.init = function() {
 		if (backplane) {
 			Backplane.init(backplane);
 		}
-		self._loadAppResources(parent);
+		self.updateLayout(this.get("data.apps"), this.get("data.layout"), function() {
+			self.ready();
+		});
 	});
 };
 
@@ -207,7 +206,7 @@ canvas.config = {
 };
 
 canvas.vars = {
-	"apps": []
+	"apps": {}
 };
 
 canvas.labels = {
@@ -273,28 +272,61 @@ canvas.destroy = function() {
  * @echo_renderer
  */
 canvas.renderers.container = function(element) {
-	var self = this;
-	var apps = Echo.Utils.foldl({}, this.get("data.apps"), function(app, acc, id) {
-		acc[app.id || id] = self._initApp(app, id);
-	});
-	this._buildGrid(this.get("data.layout"), apps, element);
+	this._buildGrid(this.get("data.layout"), this.apps, element.empty());
 	return element;
 };
 
-canvas.methods._initApp = function(app, id) {
+canvas.methods.updateLayout = function(apps, layout, callback) {
 	var self = this;
-	var Application = Echo.Utils.getComponent(app.component);
+	this._loadAppResources(apps, function() {
+		self._initApps(apps);
+		self.set("data.apps", apps);
+		self.set("data.layout", layout);
+		self.render();
+		callback && callback();
+	});
+};
+
+canvas.methods._initApps = function(apps) {
+	var self = this;
+
+	// destroy apps which are initialized but not specified in apps.
+	$.each(this.apps, function(appId, app) {
+		var found = $.grep(apps, function(a) {
+			return a.id === appId;
+		}).length;
+		if (!found) self._destroyApp(app);
+	});
+	this.apps = Echo.Utils.foldl({}, apps, function(app, acc, id) {
+		var appId = app.id || id;
+		if (!self.apps[appId]) {
+			acc[appId] = self._initApp(app, appId);
+		} else if (!Echo.Utils.deepEqual(app.config, self.apps[appId].data.config)) {
+			self._destroyApp(self.apps[appId]);
+			acc[appId] = self._initApp(app, appId);
+		} else {
+			acc[appId] = self.apps[appId];
+		}
+	});
+};
+
+canvas.methods._initApp = function(data, id) {
+	var self = this;
+	var Application = Echo.Utils.getComponent(data.component);
 	if (!Application) {
 		this._error({
-			"args": {"app": app},
+			"args": {"app": data},
 			"code": "no_suitable_app_class"
 		});
 		return;
 	}
 
-	app.id = app.id || id;  // define app position in array as id if not specified
-	app.config = app.config || {};
-	app.config.canvasId = this.config.get('id');
+	var app = $.extend(true, {
+		"id": id,
+		"config": {
+			"canvasId": this.config.get("id")
+		}
+	}, data);
 
 	var view = this.view.fork({
 		"renderer": null,
@@ -320,8 +352,11 @@ canvas.methods._initApp = function(app, id) {
 	var config = overrides
 		? $.extend(true, app.config, overrides)
 		: app.config;
-	this.apps.push(new Application(config));
-	return appContainer;
+	return {
+		"container": appContainer,
+		"data": data,
+		"instance": new Application(config)
+	};
 };
 
 canvas.methods._buildGrid = function(grid, apps, container) {
@@ -392,8 +427,8 @@ canvas.methods._buildGrid = function(grid, apps, container) {
 	(function buildDom(items, container, depth) {
 		depth = depth || 0;
 		$.each(items || [], function(k, item) {
-			if (item.app) {
-				container.append(apps[item.app]);
+			if (item.app && apps[item.app]) {
+				container.append(apps[item.app].container);
 				delete apps[item.app];
 			} else if (item.type) {
 				var template = self.templates[item.type];
@@ -407,14 +442,14 @@ canvas.methods._buildGrid = function(grid, apps, container) {
 			// Put all apps from the canvas that were not mentioned in layout to the very end of container.
 			// Useful for backwards complatibility and apps added to canvas through API call.
 			$.each(apps, function(k, app) {
-				container.append(app);
+				container.append(app.container);
 			});
 		}
 	})(rows, container);
 };
 
 canvas.methods._destroyApp = function(app) {
-	if (app && $.isFunction(app.destroy)) app.destroy();
+	if (app && app.instance && $.isFunction(app.instance.destroy)) app.instance.destroy();
 };
 
 canvas.methods._isManuallyConfigured = function() {
@@ -432,9 +467,9 @@ canvas.methods._getAppScriptURL = function(config) {
 	return script[isSecure ? "secure" : "regular"];
 };
 
-canvas.methods._loadAppResources = function(callback) {
+canvas.methods._loadAppResources = function(apps, callback) {
 	var self = this, resources = [], isManual = this._isManuallyConfigured();
-	$.map(this.get("data.apps"), function(app) {
+	$.map(apps, function(app) {
 		var script = self._getAppScriptURL(app);
 		if (!app.component || !script || !(isManual || app.id)) {
 			self._error({
