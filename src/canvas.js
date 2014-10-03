@@ -301,7 +301,7 @@ canvas.methods._initApps = function(apps) {
 		var appId = app.id || id;
 		if (!self.apps[appId]) {
 			acc[appId] = self._initApp(app, appId);
-		} else if (!Echo.Utils.deepEqual(app.config, self.apps[appId].data.config)) {
+		} else if (!Echo.Utils.deepEqual(app, self.apps[appId].data)) {
 			self._destroyApp(self.apps[appId]);
 			acc[appId] = self._initApp(app, appId);
 		} else {
