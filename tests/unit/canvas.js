@@ -430,6 +430,20 @@ Echo.Tests.asyncTest("updateLayout method", function() {
 						QUnit.equal(SampleApp.apps["third"].initialized, 1, "third app hasn't been re-initialized.");
 						callback();
 					});
+				},
+				function(callback) {
+					// app list is empty, all the apps should be destroyed
+					canvas.updateLayout([], layout).then(function() {
+						QUnit.equal(SampleApp.apps["first"].destroyed, 1, "first app has been destroyed");
+						QUnit.equal(SampleApp.apps["first"].initialized, 1, "first app hasn't been re-initialized.");
+
+						QUnit.equal(SampleApp.apps["second"].destroyed, 2, "second app has been destroyed");
+						QUnit.equal(SampleApp.apps["second"].initialized, 2, "second app hasn't been re-initialized.");
+
+						QUnit.equal(SampleApp.apps["third"].initialized, 1, "third app hasn't been re-initialized.");
+						callback();
+
+					});
 				}
 			], function() {
 					QUnit.start();
