@@ -3,7 +3,8 @@
 
 Echo.Tests.module("Echo.Canvas", {
 	"meta": {
-		"className": "Echo.Canvas"
+		"className": "Echo.Canvas",
+		"functions": ["updateLayout"]
 	}
 });
 
@@ -33,7 +34,8 @@ Echo.Tests.asyncTest("common workflow", function() {
 			$.when.apply($, deferred).then($.proxy(function() {
 				QUnit.ok(true, "Check that component is initialized");
 				Echo.Loader.canvases.pop();
-				QUnit.ok(this.apps.length === 2, "Check that all apps are initialized");
+				QUnit.ok(this.apps["stream"], "Check that Stream is initialized");
+				QUnit.ok(this.apps["submit"], "Check thet Submit is initialized");
 				QUnit.ok(
 					this.config.get("target").is(".echo-canvas-js-sdk-tests-test-canvas-001"),
 					"Check that target is marked with CSS class based on canvas ID"
@@ -43,14 +45,14 @@ Echo.Tests.asyncTest("common workflow", function() {
 					"Check that target is marked with CSS class based on canvas ID and additional ID separated with #"
 				);
 				QUnit.ok(
-					$.grep(this.apps, function(app) {
-						return app.config.get("canvasId") === "js-sdk-tests/test-canvas-001#some-id_001";
+					$.map(this.apps, function(app) {
+						return app.instance.config.get("canvasId") === "js-sdk-tests/test-canvas-001#some-id_001" ? app : undefined;
 					}).length === 2,
 					"Check that all apps received the canvas ID"
 				);
 				QUnit.ok(
-					$.grep(this.apps, function(app) {
-						return !!~app.config.get("target").attr("class").indexOf("echo-canvas-appId-");
+					$.map(this.apps, function(app) {
+						return !!~app.instance.config.get("target").attr("class").indexOf("echo-canvas-appId-") ? app : undefined;
 					}).length === 2,
 					"Check that all apps marked with appId"
 				);
@@ -64,8 +66,8 @@ Echo.Tests.asyncTest("common workflow", function() {
 					"Check that target is not marked as initialized canvas"
 				);
 				QUnit.ok(
-					$.grep(this.apps, function(app) {
-						return $.isEmptyObject(app.subscriptionIDs);
+					$.map(this.apps, function(app) {
+						return $.isEmptyObject(app.instance.subscriptionIDs) ? app : undefined;
 					}).length === 2,
 					"Check all apps unsubscribed from all events after destroy canvas"
 				);
@@ -210,10 +212,19 @@ Echo.Tests.test("canvas destroy", function() {
 	}
 });
 
-Echo.Variables.SampleApp = function(config) {
+var SampleApp = function(config) {
 	var content = $("<div>").attr("data-sample-app-id", config.appId);
 	config.target.append(content);
+	this.config = config;
+	SampleApp.apps[config.appId] = SampleApp.apps[config.appId] || {"initialized": 0, "destroyed": 0};
+	SampleApp.apps[config.appId].initialized += 1;
 };
+SampleApp.apps = {};
+
+SampleApp.prototype.destroy = function() {
+	SampleApp.apps[this.config.appId].destroyed += 1;
+};
+Echo.Variables.SampleApp = SampleApp;
 
 Echo.Tests.asyncTest("Canvas initialization without layout", function() {
 	var target = $("<div>");
@@ -346,5 +357,86 @@ Echo.Tests.asyncTest("Canvas layout #2", function() {
 });
 
 // TODO test canvas layout with small window width (< 400px)
+
+Echo.Tests.asyncTest("updateLayout method", function() {
+	var apps = $.map(new Array(3), function(_, id) {
+		var appId = ["first", "second", "third"][id];
+		return {"id": appId, "component": "Echo.Variables.SampleApp", "config": {"appId": appId}};
+	});
+	var layout = [
+		{"row": 2, "col": 1, "size_x": 4, "app": "first"},  //  --------- ---
+		{"row": 1, "col": 1, "size_x": 3, "app": "second"}, // |         |   |
+		{"row": 1, "col": 4, "size_x": 1, "app": "third"}   //  --------- ---
+		                                                    // |             |
+		                                                    //  -------------
+	];
+	new Echo.Canvas({
+		"target": $("<div>").appendTo("#qunit-fixture"),
+		"data": {
+			"apps": apps,
+			"layout": layout
+		},
+		"ready": function() {
+			var canvas = this;
+			Echo.Utils.sequentialCall([
+				function(callback) {
+					$.map(["first", "second", "third"], function(appId) {
+						QUnit.equal(SampleApp.apps[appId].initialized, 1, appId + " app initialized once.");
+					});
+					QUnit.equal(
+						canvas.config.get("target").find(".echo-canvas-container").children(".echo-canvas-row").length,
+						2, "There are two rows in canvas");
+					callback();
+				},
+				function(callback) {
+					layout = $.extend(true, [], layout);
+					layout[2]["row"] = 3; // move one of app from first column to third. So, we have three row.
+					canvas.updateLayout(apps, layout).then(function() {
+						QUnit.ok(true, "updateLayout method callback called");
+						QUnit.equal(
+							canvas.config.get("target").find(".echo-canvas-container").children(".echo-canvas-row").length,
+							3, "Layout changed (there are three rows now)"
+						);
+						$.map(["first", "second", "third"], function(appId) {
+							QUnit.equal(SampleApp.apps[appId].initialized, 1, appId + " nasn'nasn't been re-initializedd.");
+						});
+						callback();
+					});
+				},
+				function(callback) {
+					apps = $.extend(true, [], apps);
+					apps[1].config["newKey"] = "newValue"; // add some key for second app config, so it should be re-initialized
+					canvas.updateLayout(apps, layout).then(function() {
+						QUnit.ok(true, "updateLayout method callback called");
+						QUnit.equal(SampleApp.apps["first"].initialized, 1, "first app hasn't been re-initialized.");
+						QUnit.equal(SampleApp.apps["second"].destroyed, 1, "second app has been destroyed.");
+						QUnit.equal(SampleApp.apps["second"].initialized, 2, "second app has been re-initialized.");
+						QUnit.equal(SampleApp.apps["third"].initialized, 1, "third app hasn't been re-initialized.");
+						callback();
+					});
+				},
+				function(callback) {
+					apps = $.extend(true, [], apps);
+					apps.splice(2); // remove third app, it should be destroyed
+					canvas.updateLayout(apps, layout).then(function() {
+						QUnit.ok(true, "updateLayout method callback called");
+						QUnit.equal(SampleApp.apps["first"].destroyed, 0, "first app hasn't been destroyed");
+						QUnit.equal(SampleApp.apps["first"].initialized, 1, "first app hasn't been re-initialized.");
+
+						QUnit.equal(SampleApp.apps["second"].destroyed, 1, "second app hasn't been destroyed");
+						QUnit.equal(SampleApp.apps["second"].initialized, 2, "second app hasn't been re-initialized.");
+
+						QUnit.equal(SampleApp.apps["third"].destroyed, 1, "third app has been destroyed.");
+						QUnit.equal(SampleApp.apps["third"].initialized, 1, "third app hasn't been re-initialized.");
+						callback();
+					});
+				}
+			], function() {
+					QUnit.start();
+					canvas.destroy();
+			});
+		}
+	});
+});
 
 })(Echo.jQuery);
