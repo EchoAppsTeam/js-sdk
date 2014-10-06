@@ -321,17 +321,14 @@ canvas.renderers.container = function(element) {
  */
 canvas.methods.updateLayout = function(apps, layout) {
 	var self = this;
-	var deferred = $.Deferred();
-	Echo.Utils.pipe($.Deferred().resolve(apps), [
+	return Echo.Utils.pipe($.Deferred().resolve(apps), [
 		$.proxy(this._loadAppResources, this),
 		$.proxy(this._initApps, this)
 	]).then(function() {
 		self.set("data.apps", apps);
 		self.set("data.layout", layout);
 		self.render();
-		deferred.resolve();
 	});
-	return deferred.promise();
 };
 
 canvas.methods._initApps = function(apps) {
@@ -356,7 +353,7 @@ canvas.methods._initApps = function(apps) {
 			acc[appId] = self.apps[appId];
 		}
 	});
-	return deferred.resolve().promise();
+	return deferred.resolve(apps).promise();
 };
 
 canvas.methods._initApp = function(data, id) {
@@ -518,7 +515,10 @@ canvas.methods._getAppScriptURL = function(config) {
 };
 
 canvas.methods._loadAppResources = function(apps) {
-	var self = this, resources = [], isManual = this._isManuallyConfigured(), deferred = $.Deferred();
+	var self = this;
+	var resources = [];
+	var isManual = this._isManuallyConfigured();
+	var deferred = $.Deferred();
 	$.map(apps, function(app) {
 		var script = self._getAppScriptURL(app);
 		if (!app.component || !script || !(isManual || app.id)) {
