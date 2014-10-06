@@ -275,6 +275,50 @@ canvas.renderers.container = function(element) {
 	return this._buildGrid(this.get("data.layout"), this.apps, element.empty());
 };
 
+/**
+ * Method to update applications and re-build layout.
+ *
+ * This method initializes apps if its wasn't initialized before,
+ * re-initializes if app config were changed and destroys apps which
+ * are not presented in `apps` parameter anymore.
+ *
+ * After apps updated it re-build layout and
+ * re-arrange apps according new layout.
+ *
+ * @param {Array} apps
+ * App list in the format used in Canvas storage.
+ *
+ * For example:
+ *
+ * 	[{
+ * 		"id": "appId",
+ * 		"script": "http://appurl/app.js",
+ * 		"component": "App.Class",
+ * 		"config": {
+ * 			"key1": "value1"
+ * 		}
+ * 	}, {
+ * 		"id": "anotherAppId",
+ * 		"script": "http://anotherappurl/app.js",
+ * 		"component": "AnotherApp.Class",
+ * 		"config": {
+ * 			"key2": "value2"
+ * 		}
+ * 	}]
+ *
+ * @param {Array} layout
+ * Information about layout in the format used in Canvas storage.
+ *
+ * For example:
+ *
+ * 	[
+ * 		{"col": 1, "row": 1, "size_x": 4, "app": "appId"},
+ * 		{"col": 2, "row": 1, "size_x": 8, "app": "anotherAppId"}
+ * 	]
+ *
+ * @return {jQuery Deferred's promise}
+ * Resolves when all apps are initialized and new layout built
+ */
 canvas.methods.updateLayout = function(apps, layout) {
 	var self = this;
 	var deferred = $.Deferred();
