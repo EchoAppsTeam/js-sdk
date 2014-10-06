@@ -128,7 +128,7 @@ canvas.init = function() {
 		if (backplane) {
 			Backplane.init(backplane);
 		}
-		self.updateLayout(this.get("data.apps"), this.get("data.layout"), function() {
+		self.updateLayout(this.get("data.apps"), this.get("data.layout")).then(function() {
 			self.ready();
 		});
 	});
@@ -272,23 +272,27 @@ canvas.destroy = function() {
  * @echo_renderer
  */
 canvas.renderers.container = function(element) {
-	this._buildGrid(this.get("data.layout"), this.apps, element.empty());
-	return element;
+	return this._buildGrid(this.get("data.layout"), this.apps, element.empty());
 };
 
-canvas.methods.updateLayout = function(apps, layout, callback) {
+canvas.methods.updateLayout = function(apps, layout) {
 	var self = this;
-	this._loadAppResources(apps, function() {
-		self._initApps(apps);
+	var deferred = $.Deferred();
+	Echo.Utils.pipe($.Deferred().resolve(apps), [
+		$.proxy(this._loadAppResources, this),
+		$.proxy(this._initApps, this)
+	]).then(function() {
 		self.set("data.apps", apps);
 		self.set("data.layout", layout);
 		self.render();
-		callback && callback();
+		deferred.resolve();
 	});
+	return deferred.promise();
 };
 
 canvas.methods._initApps = function(apps) {
 	var self = this;
+	var deferred = $.Deferred();
 
 	// destroy apps which are initialized but not specified in apps.
 	$.each(this.apps, function(appId, app) {
@@ -308,6 +312,7 @@ canvas.methods._initApps = function(apps) {
 			acc[appId] = self.apps[appId];
 		}
 	});
+	return deferred.resolve().promise();
 };
 
 canvas.methods._initApp = function(data, id) {
@@ -446,6 +451,7 @@ canvas.methods._buildGrid = function(grid, apps, container) {
 			});
 		}
 	})(rows, container);
+	return container;
 };
 
 canvas.methods._destroyApp = function(app) {
@@ -467,8 +473,8 @@ canvas.methods._getAppScriptURL = function(config) {
 	return script[isSecure ? "secure" : "regular"];
 };
 
-canvas.methods._loadAppResources = function(apps, callback) {
-	var self = this, resources = [], isManual = this._isManuallyConfigured();
+canvas.methods._loadAppResources = function(apps) {
+	var self = this, resources = [], isManual = this._isManuallyConfigured(), deferred = $.Deferred();
 	$.map(apps, function(app) {
 		var script = self._getAppScriptURL(app);
 		if (!app.component || !script || !(isManual || app.id)) {
@@ -485,7 +491,8 @@ canvas.methods._loadAppResources = function(apps, callback) {
 			}
 		});
 	});
-	Echo.Loader.download(resources, callback);
+	Echo.Loader.download(resources, function() { deferred.resolve(apps); });
+	return deferred.promise();
 };
 
 canvas.methods._getOverrides = function(target, spec) {
