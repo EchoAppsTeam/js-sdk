@@ -1259,6 +1259,32 @@ Echo.Utils.random = function(min, max) {
 	return min + Math.floor(Math.random() * (max - min + 1));
 };
 
+/**
+ * @static
+ * Performs an deep comparison between the two objects
+ * to determine if they equivalent to each other.
+ *
+ *		var a = {"a": undefined, "b": 1, "c": {"d": true}, "e": ["f", "h"]};
+ *		var b = {"a": undefined, "b": 1, "c": {"d": true}, "e": ["f", "h"]};
+ *		Echo.Utils.deepEqual(a, b); // returns true
+ *
+ *		var a = {"a": undefined, "b": 1, "c": {"d": false}, "e": ["f", "h"]};
+ *		var b = {"a": undefined, "b": 1, "c": {"d": true}, "e": ["f", "h"]};
+ *		Echo.Utils.deepEqual(a, b); // returns false
+ *
+ *		var a = {"a": undefined, "b": 1, "c": {"d": true}, "e": {"f": "h"}};
+ *		var b = {"a": undefined, "b": 1, "c": {"d": true}, "e": ["f", "h"]};
+ *		Echo.Utils.deepEqual(a, b); // returns false
+ *
+ * @param {Object} object1
+ * Object to compare
+ *
+ * @param {Object} object2
+ * Other object to compare
+ *
+ * @return {Boolean}
+ * Return true if objects are equal.
+ */
 Echo.Utils.deepEqual = function(a, b) {
 	var aParents = [], bParents = [];
 	var areEqual = function(a, b) {
