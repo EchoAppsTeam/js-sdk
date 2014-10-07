@@ -1261,8 +1261,7 @@ Echo.Utils.random = function(min, max) {
 
 /**
  * @static
- * Performs an deep comparison between the two objects
- * to determine if they equivalent to each other.
+ * Performs deep comparison between two objects.
  *
  *		var a = {"a": undefined, "b": 1, "c": {"d": true}, "e": ["f", "h"]};
  *		var b = {"a": undefined, "b": 1, "c": {"d": true}, "e": ["f", "h"]};
@@ -1283,7 +1282,7 @@ Echo.Utils.random = function(min, max) {
  * Other object to compare
  *
  * @return {Boolean}
- * Return true if objects are equal.
+ * Returns true if objects are equal.
  */
 Echo.Utils.deepEqual = function(a, b) {
 	var aParents = [], bParents = [];

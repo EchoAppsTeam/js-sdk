@@ -276,17 +276,18 @@ canvas.renderers.container = function(element) {
 };
 
 /**
- * Method to update applications and re-build layout.
+ * Canvas layout granular update logic without full refresh.
  *
- * This method initializes apps if its wasn't initialized before,
- * re-initializes if app config were changed and destroys apps which
- * are not presented in `apps` parameter anymore.
+ * This function performs the following actions:
  *
- * After apps updated it re-build layout and
- * re-arrange apps according new layout.
+ * - inits an app if it was added to the Canvas
+ * - re-inits an app if the config of that app was changed
+ * - destroys an app in case it was deleted from a Canvas
+ * - re-arranges target elements in a Canvas if app locations/sizes
+ *   were changed
  *
  * @param {Array} apps
- * App list in the format used in Canvas storage.
+ * App list in the format used within the Canvas storage
  *
  * For example:
  *
@@ -307,7 +308,7 @@ canvas.renderers.container = function(element) {
  * 	}]
  *
  * @param {Array} layout
- * Information about layout in the format used in Canvas storage.
+ * Layout configuration in the format used within the Canvas storage.
  *
  * For example:
  *
@@ -317,7 +318,8 @@ canvas.renderers.container = function(element) {
  * 	]
  *
  * @return {jQuery Deferred's promise}
- * Resolves when all apps are initialized and new layout built
+ * The Promise object resolves when all apps are initialized and new
+ * layout is built
  */
 canvas.methods.updateLayout = function(apps, layout) {
 	var self = this;
