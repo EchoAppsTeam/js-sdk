@@ -1,5 +1,13 @@
 # Echo JS SDK CHANGELOG:
 
+##v3.0.27 - October 8, 2014
+
+* We have added a new method called “updateLayout” to the Echo.Canvas
+  class. This method allows to perform granular layout updates, i.e.
+  update apps that were changed. The rest of apps remains untouched. This
+  function allows us to increase the performance of layout update
+  operation.
+
 ##v3.0.26 - September 18, 2014
 
 * Echo.Canvas can now arrange apps in columns/rows to display apps using
