@@ -1276,6 +1276,83 @@ Echo.Utils.random = function(min, max) {
 	return min + Math.floor(Math.random() * (max - min + 1));
 };
 
+<span id='Echo-Utils-static-method-deepEqual'>/**
+</span> * @static
+ * Performs deep comparison between two objects.
+ *
+ *		var a = {&quot;a&quot;: undefined, &quot;b&quot;: 1, &quot;c&quot;: {&quot;d&quot;: true}, &quot;e&quot;: [&quot;f&quot;, &quot;h&quot;]};
+ *		var b = {&quot;a&quot;: undefined, &quot;b&quot;: 1, &quot;c&quot;: {&quot;d&quot;: true}, &quot;e&quot;: [&quot;f&quot;, &quot;h&quot;]};
+ *		Echo.Utils.deepEqual(a, b); // returns true
+ *
+ *		var a = {&quot;a&quot;: undefined, &quot;b&quot;: 1, &quot;c&quot;: {&quot;d&quot;: false}, &quot;e&quot;: [&quot;f&quot;, &quot;h&quot;]};
+ *		var b = {&quot;a&quot;: undefined, &quot;b&quot;: 1, &quot;c&quot;: {&quot;d&quot;: true}, &quot;e&quot;: [&quot;f&quot;, &quot;h&quot;]};
+ *		Echo.Utils.deepEqual(a, b); // returns false
+ *
+ *		var a = {&quot;a&quot;: undefined, &quot;b&quot;: 1, &quot;c&quot;: {&quot;d&quot;: true}, &quot;e&quot;: {&quot;f&quot;: &quot;h&quot;}};
+ *		var b = {&quot;a&quot;: undefined, &quot;b&quot;: 1, &quot;c&quot;: {&quot;d&quot;: true}, &quot;e&quot;: [&quot;f&quot;, &quot;h&quot;]};
+ *		Echo.Utils.deepEqual(a, b); // returns false
+ *
+ * @param {Object} object1
+ * Object to compare
+ *
+ * @param {Object} object2
+ * Other object to compare
+ *
+ * @return {Boolean}
+ * Returns true if objects are equal.
+ */
+Echo.Utils.deepEqual = function(a, b) {
+	var aParents = [], bParents = [];
+	var areEqual = function(a, b) {
+		var aType = $.type(a);
+		var bType = $.type(b);
+		var aCircular = ~$.inArray(a, aParents);
+		var bCircular = ~$.inArray(b, bParents);
+		if (aType !== bType) return false;
+		if (aCircular || bCircular) {
+			return a === b || aCircular &amp;&amp; bCircular;
+		}
+		if (this[aType] &amp;&amp; !this[aType](a, b)) return false;
+		return true;
+	};
+	var strictEqual = function(a, b) {
+		return a === b;
+	};
+	var comparators = {
+		&quot;number&quot;: strictEqual,
+		&quot;string&quot;: strictEqual,
+		&quot;boolean&quot;: strictEqual,
+		&quot;array&quot;: function(a, b) {
+			var l = a.length;
+			if (l !== b.length) return false;
+			aParents.push(a);
+			bParents.push(b);
+			for (var i = 0; i &lt; l; i++) {
+				if (!areEqual.call(this, a[i], b[i])) return false;
+			}
+			return true;
+		},
+		&quot;object&quot;: function(a, b) {
+			var i, aProps = [], bProps = [];
+			aParents.push(a);
+			bParents.push(b);
+			for (i in a) {
+				if (a.hasOwnProperty(i)) {
+					aProps.push(i);
+					if (!areEqual.call(this, a[i], b[i])) return false;
+				}
+			}
+			for (i in b) {
+				if (b.hasOwnProperty(i)) {
+					bProps.push(i);
+				}
+			}
+			return this.array(aProps.sort(), bProps.sort());
+		}
+	};
+	return areEqual.call(comparators, a, b);
+};
+
 <span id='Echo-Utils-static-method-retry'>/**
 </span> * @static
  * Function which executes another function passed as an argument

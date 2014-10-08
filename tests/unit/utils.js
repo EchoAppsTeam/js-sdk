@@ -37,7 +37,8 @@ Echo.Tests.module("Echo.Utils", {
 			"set",
 			"stripTags",
 			"substitute", // covered within the Control and Plugin tests
-			"timestampFromW3CDTF"
+			"timestampFromW3CDTF",
+			"deepEqual"
 		]
 	}
 });
@@ -992,6 +993,107 @@ Echo.Tests.test("testing templateSubstitution regexp", function() {
 		["{key1:value1}", "key1", "value1", "{key2:value2}", "key2", "value2"],
 		"Checking templateSubstitution regexp with multiple key-value pairs"
 	);
+});
+
+Echo.Tests.test("deepEqual()", function() {
+	var deepEqual = Echo.Utils.deepEqual;
+	var a, b, c, d;
+
+	// same types and same structure
+	QUnit.ok(deepEqual(5, 5), "Numbers: 5 === 5");
+	QUnit.ok(!deepEqual(5, 6), "Numbers: 5 !== 6");
+	QUnit.ok(deepEqual("5", "5"), "Strings: '5' === '5'");
+	QUnit.ok(!deepEqual("5", "6"), "Strings: '5' !== '6'");
+	QUnit.ok(deepEqual(true, true), "Booleans: true === true");
+	QUnit.ok(!deepEqual(true, false), "Booleans: true !== false");
+	QUnit.ok(deepEqual(null, null), "null === null");
+	QUnit.ok(deepEqual(undefined, undefined), "undefined === undefined");
+	QUnit.ok(deepEqual(function() { return 1; }, function() { return 2; }), "Functions are always considered equal");
+
+	a = {
+	  "a": 5,
+	  "b": "b",
+	  "c": [{"k": 1}, {"k": 2}]
+	};
+	b = {
+	  "a": 5,
+	  "b": "b",
+	  "c": [{"k": 1}, {"k": 2}]
+	};
+	QUnit.ok(deepEqual(a, b), "Complex equal objects are reported as equal");
+	QUnit.deepEqual(a, b, "Checking the same using QUnit methods => equal");
+
+	// different types and/or different structure
+	QUnit.ok(!deepEqual("5", 5), "String !== Number");
+	QUnit.ok(!deepEqual(true, 1), "Boolean !== Number");
+	QUnit.ok(!deepEqual(true, null), "Boolean !== null");
+	QUnit.ok(!deepEqual(true, undefined), "Boolean !== undefined");
+	QUnit.ok(!deepEqual(null, undefined), "null !== undefined");
+	QUnit.ok(!deepEqual(function() { return 1; }, undefined), "Function !== undefined");
+
+	a = {
+	  "a": 5,
+	  "b": [1, 2, 3]
+	};
+	b = {
+	  "a": 5,
+	  "b": ["1", "2", "3"]
+	};
+	QUnit.ok(!deepEqual(a, b), "Complex objects with the different types are reported as unequal");
+	QUnit.notDeepEqual(a, b, "Checking the same using QUnit methods => unequal");
+
+	c = {
+	  "a": 5,
+	  "b": [{"k": 1}, {"k": 2}]
+	};
+	d = {
+	  "a": 5,
+	  "b": [{"z": 1}, {"z": 2}]
+	};
+	QUnit.ok(!deepEqual(c, d), "Complex objects with the different structure are reported as unequal");
+	QUnit.notDeepEqual(c, d, "Checking the same using QUnit methods => unequal");
+
+	// circular references
+	var x1, y1, z1, x2, y2, z2;
+	x1 = { "a": 1 };
+	y1 = { "x": [x1] };
+	z1 = { "y": y1 };
+	x1.z = z1;
+	x2 = { "a": 1 };
+	y2 = { "x": [x2] };
+	z2 = { "y": y2 };
+	x2.z = z1;
+	QUnit.ok(deepEqual(x1, x2), "Echo deepEqual 1");
+	QUnit.ok(deepEqual(y1, y2), "Echo deepEqual 2");
+	QUnit.ok(deepEqual(z1, z2), "Echo deepEqual 3");
+	QUnit.deepEqual(x1, x2, "QUnit deepEqual 1");
+	QUnit.deepEqual(y1, y2, "QUnit deepEqual 2");
+	QUnit.deepEqual(z1, z2, "QUnit deepEqual 3");
+
+	a = {
+	  "k1": ["v1", "v2", "v3"],
+	  "k2": {
+		"k21": 2
+	  }
+	};
+	a.k2.k22 = a;
+	a.k1.push(a);
+	b = {
+	  "k1": ["v1", "v2", "v3"],
+	  "k2": {
+		"k21": 2
+	  }
+	};
+	b.k2.k22 = a;
+	b.k1.push(a);
+	QUnit.ok(deepEqual(a, b), "References to the same object => equal");
+	QUnit.deepEqual(a, b, "Checking the same using QUnit methods => equal");
+	b.k2.k22 = b;
+	// replace _a_ object with the _b_ object
+	b.k1.pop();
+	b.k1.push(b);
+	QUnit.ok(deepEqual(a, b), "References to the different but equal objects => equal");
+	QUnit.deepEqual(a, b, "Checking the same using QUnit methods => equal");
 });
 
 Echo.Tests.test("_prepareFieldAccessKey()", function() {
