@@ -488,8 +488,7 @@ module.exports = function(grunt) {
 				"environment": shared.config("env"),
 				"debug": shared.config("debug"),
 				"configFile": "config/release.json",
-				"location": shared.config("env") === "staging" ? "sandbox" : "cdn",
-				"remoteRoot": shared.config("env") === "staging" ? "/staging" : ""
+				"location": shared.config("env")
 			},
 			"regular": {
 				"options": {
