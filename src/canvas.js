@@ -672,6 +672,7 @@ for (var totalColumns = 1; totalColumns <= 8; totalColumns++) {
 }
 
 canvas.css =
+	'.{class:appHeader} { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }' +
 	'@media (min-width: 400px) {' +
 		'.{class:row} { display: table; table-layout: fixed; width: 100%; }' +
 		'.{class:column} { display: table-cell; vertical-align: top; }' +
