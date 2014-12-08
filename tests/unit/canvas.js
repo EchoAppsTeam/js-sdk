@@ -417,7 +417,7 @@ Echo.Tests.asyncTest("updateLayout method", function() {
 				},
 				function(callback) {
 					apps = $.extend(true, [], apps);
-					apps.splice(2); // remove third app, it should be destroyed
+					apps.splice(2, 1); // remove third app, it should be destroyed
 					canvas.updateLayout(apps, layout).then(function() {
 						QUnit.ok(true, "updateLayout method callback called");
 						QUnit.equal(SampleApp.apps["first"].destroyed, 0, "first app hasn't been destroyed");
