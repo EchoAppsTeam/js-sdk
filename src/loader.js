@@ -63,7 +63,8 @@ Echo.Loader = {
  */
 Echo.Loader.getURL = function(url, devVersion) {
 	if (typeof devVersion === "undefined") devVersion = true;
-	return (/^https?:\/\/|^\/\//).test(url)
+	if (/^\/\//.test(url)) return protocol + url;
+	return (/^https?:\/\//).test(url)
 		? url
 		: Echo.Loader.config.cdnBaseURL + "sdk/v" + Echo.Loader.version +
 			(devVersion && Echo.Loader.isDebug() ? "/dev" : "") +

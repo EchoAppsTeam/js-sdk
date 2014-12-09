@@ -34,7 +34,9 @@ Echo.Tests.test("URL conversion", function() {
 	var urls = {
 		"absolute": [{
 			"data": "//cdn.echoenabled.com/image.png",
-			"expect": "//cdn.echoenabled.com/image.png"
+			"expect": window.location.protocol === "https:"
+				? "https://cdn.echoenabled.com/image.png"
+				: "http://cdn.echoenabled.com/image.png"
 		}, {
 			"data": "http://echoenabled.com/image.png",
 			"expect": "http://echoenabled.com/image.png"
