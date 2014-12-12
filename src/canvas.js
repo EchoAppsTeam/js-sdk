@@ -143,6 +143,20 @@ canvas.init = function() {
 
 canvas.config = {
 	/**
+	 * @cfg {String} [appsInitialization]
+	 * This parameter specifies the mode in which applications will be initialized.
+	 * There are two possible values for this parameter:
+	 *
+	 * + "async" - in this case applications initializes simultaneously
+	 * + "sync" - in this case applications initializes synchronously one-by-one
+	 *
+	 * The value of this parameter can be overridden by specifying the "data-canvas-appsInitialization"
+	 * target DOM element attribute.
+	 * More information about HTML attributes of the target DOM element can be found [here](#!/guide/how_to_deploy_an_app_using_a_canvas)
+	 */
+	"appsInitialization": "async",
+
+	/**
 	 * @cfg {String} [id]
 	 * Unique ID of the Canvas, used by the Echo.Canvas instance
 	 * to retrieve the data from the Canvases data storage.
