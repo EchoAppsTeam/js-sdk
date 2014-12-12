@@ -94,7 +94,14 @@ canvas.init = function() {
 	target.data("echo-canvas-initialized", true);
 
 	// extending Canvas config with the parameters defined in the target
-	var overrides = this._getOverrides(target, ["id", "useSecureAPI", "mode", "provider", "maxConfigFetchingRetries"]);
+	var overrides = this._getOverrides(target, [
+		"id",
+		"mode",
+		"provider",
+		"useSecureAPI",
+		"appsInitialization",
+		"maxConfigFetchingRetries"
+	]);
 	if (!$.isEmptyObject(overrides)) {
 		this.config.extend(overrides);
 	}
@@ -323,8 +330,10 @@ canvas.renderers.container = function(element) {
  */
 canvas.methods.updateLayout = function(apps, layout) {
 	var self = this;
-	return Echo.Utils.pipe($.Deferred().resolve(apps), [
-		$.proxy(this._loadAppResources, this),
+	return Echo.Utils.pipe([
+		$.proxy(this._loadAppResources, this, apps),
+		$.proxy(this._destroyAppsIfNotSpecifiedIn, this),
+		$.proxy(this._filterAppsByGeneration, this),
 		$.proxy(this._initApps, this)
 	]).then(function() {
 		self.set("data.apps", apps);
@@ -333,49 +342,79 @@ canvas.methods.updateLayout = function(apps, layout) {
 	});
 };
 
-canvas.methods._initApps = function(apps) {
+canvas.methods._filterAppsByGeneration = function(apps) {
 	var self = this;
-	var deferred = $.Deferred();
+	return Echo.Utils.foldl([[], []], apps, function(app, acc, id) {
+		var appId = app.id || id;
+		if (!self.apps[appId]) acc[0].push(app);
+		else if (!Echo.Utils.deepEqual(app, self.apps[appId].data)) {
+			acc[1].push(app);
+		}
+		return acc;
+	});
+};
 
-	// destroy apps which are initialized but not specified in apps.
+// destroy apps which are initialized but not specified in apps.
+canvas.methods._destroyAppsIfNotSpecifiedIn = function(apps) {
+	var self = this;
 	$.each(this.apps, function(appId, app) {
 		var found = $.grep(apps, function(a) {
 			return a.id === appId;
 		}).length;
 		if (!found) self._destroyApp(app);
 	});
-	this.apps = Echo.Utils.foldl({}, apps, function(app, acc, id) {
-		var appId = app.id || id;
-		if (!self.apps[appId]) {
-			acc[appId] = self._initApp(app, appId);
-		} else if (!Echo.Utils.deepEqual(app, self.apps[appId].data)) {
-			self._destroyApp(self.apps[appId]);
-			acc[appId] = self._initApp(app, appId);
-		} else {
-			acc[appId] = self.apps[appId];
-		}
-	});
-	return deferred.resolve(apps).promise();
+	return apps;
 };
 
-canvas.methods._initApp = function(data, id) {
+canvas.methods._initApps = function(generations) {
 	var self = this;
+	var initApp = $.proxy(this._initApp, this);
+	var reInitApp = $.proxy(this._reInitApp, this);
+	var isSyncAppsInitialization = this.config.get("appsInitialization") === "sync";
+
+	var done = function(app) {
+		var id = app.data.id || Echo.Utils.getUniqueString();
+		self.apps[id] = app;
+		return app;
+	};
+	var iterator = function(init, app) {
+		return isSyncAppsInitialization
+			? function() {
+				return init(app).done(done);
+			}
+			: init(app).done(done);
+	};
+	var promises = $.map(generations[0], $.proxy(iterator, null, initApp))
+		.concat($.map(generations[1], $.proxy(iterator, null, reInitApp)));
+	return isSyncAppsInitialization
+		? Echo.Utils.pipe(promises)
+		: $.when.apply($, promises);
+};
+
+canvas.methods._reInitApp = function(app) {
+	this._destroyApp(this.apps[app.id]);
+	return this._initApp(app);
+};
+
+canvas.methods._initApp = function(data) {
+	var deferred = $.Deferred();
 	var Application = Echo.Utils.getComponent(data.component);
 	if (!Application) {
 		this._error({
 			"args": {"app": data},
 			"code": "no_suitable_app_class"
 		});
-		return;
+		deferred.reject(data);
+		return deferred.promise();
 	}
 
 	var app = $.extend(true, {
-		"id": id,
 		"config": {
 			"canvasId": this.config.get("id")
 		}
 	}, data);
 
+	var appClassName = this.get("cssPrefix") + "appId-" + app.id;
 	var view = this.view.fork({
 		"renderer": null,
 		"renderers": {
@@ -384,8 +423,7 @@ canvas.methods._initApp = function(data, id) {
 				return element[app.caption ? "show" : "hide"]();
 			},
 			"appBody": function(element) {
-				var className = self.get("cssPrefix") + "appId-" + app.id;
-				return element.addClass(className);
+				return element.addClass(appClassName);
 			}
 		}
 	});
@@ -400,11 +438,30 @@ canvas.methods._initApp = function(data, id) {
 	var config = overrides
 		? $.extend(true, app.config, overrides)
 		: app.config;
-	return {
-		"container": appContainer,
-		"data": data,
-		"instance": new Application(config)
+	var ready = config.ready || $.noop;
+	var resolve = function(instance) {
+		return deferred.resolve({
+			"container": appContainer,
+			"data": data,
+			"instance": instance
+		});
 	};
+
+	// determine if Application is the Echo specific
+	if (Application._manifest) {
+		new Application(
+			$.extend(config, {
+				"ready": function() {
+					ready.apply(this, arguments);
+					resolve(this);
+				}
+			})
+		);
+	} else {
+		resolve(new Application(config));
+	}
+
+	return deferred.promise();
 };
 
 canvas.methods._buildGrid = function(grid, apps, container) {
@@ -499,6 +556,7 @@ canvas.methods._buildGrid = function(grid, apps, container) {
 
 canvas.methods._destroyApp = function(app) {
 	if (app && app.instance && $.isFunction(app.instance.destroy)) app.instance.destroy();
+	delete this.apps[app.data.id];
 };
 
 canvas.methods._isManuallyConfigured = function() {
