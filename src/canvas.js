@@ -346,7 +346,7 @@ canvas.methods.updateLayout = function(apps, layout) {
 	var self = this;
 	return Echo.Utils.pipe([
 		$.proxy(this._loadAppResources, this, apps),
-		$.proxy(this._destroyAppsIfNotSpecifiedIn, this),
+		$.proxy(this._destroyOutdatedApps, this),
 		$.proxy(this._filterAppsByGeneration, this),
 		$.proxy(this._initApps, this)
 	]).then(function() {
@@ -369,7 +369,7 @@ canvas.methods._filterAppsByGeneration = function(apps) {
 };
 
 // destroy apps which are initialized but not specified in apps.
-canvas.methods._destroyAppsIfNotSpecifiedIn = function(apps) {
+canvas.methods._destroyOutdatedApps = function(apps) {
 	var self = this;
 	$.each(this.apps, function(appId, app) {
 		var found = $.grep(apps, function(a) {
