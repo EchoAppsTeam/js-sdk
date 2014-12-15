@@ -157,6 +157,17 @@ canvas.config = {
 	"appsInitialization": "async",
 
 	/**
+	 * @cfg {Number} [appInitializationTimeout]
+	 * This parameter specifies the interval in milliseconds in which
+	 * each application can be executed during initialization process.
+	 *
+	 * The value of this parameter can be overridden by specifying the "data-canvas-appInitializationTimeout"
+	 * target DOM element attribute.
+	 * More information about HTML attributes of the target DOM element can be found [here](#!/guide/how_to_deploy_an_app_using_a_canvas)
+	 */
+	"appInitializationTimeout": 5000,
+
+	/**
 	 * @cfg {String} [id]
 	 * Unique ID of the Canvas, used by the Echo.Canvas instance
 	 * to retrieve the data from the Canvases data storage.
@@ -453,7 +464,9 @@ canvas.methods._initApp = function(data) {
 		? $.extend(true, app.config, overrides)
 		: app.config;
 	var ready = config.ready || $.noop;
+	var timeoutId;
 	var resolve = function(instance) {
+		clearTimeout(timeoutId);
 		return deferred.resolve({
 			"container": appContainer,
 			"data": data,
@@ -463,7 +476,7 @@ canvas.methods._initApp = function(data) {
 
 	// determine if Application is the Echo specific
 	if (Application._manifest) {
-		new Application(
+		var instance = new Application(
 			$.extend(config, {
 				"ready": function() {
 					ready.apply(this, arguments);
@@ -471,6 +484,9 @@ canvas.methods._initApp = function(data) {
 				}
 			})
 		);
+		timeoutId = setTimeout(function() {
+			resolve(instance);
+		}, this.config.get("appInitializationTimeout"));
 	} else {
 		resolve(new Application(config));
 	}
