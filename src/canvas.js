@@ -147,8 +147,8 @@ canvas.config = {
 	 * This parameter specifies the mode in which applications will be initialized.
 	 * There are two possible values for this parameter:
 	 *
-	 * + "async" - in this case applications initializes simultaneously
-	 * + "sync" - in this case applications initializes synchronously one-by-one
+	 * + "async" - in this case applications initialize simultaneously
+	 * + "sync" - in this case applications initialize synchronously one-by-one
 	 *
 	 * The value of this parameter can be overridden by specifying the "data-canvas-appsInitialization"
 	 * target DOM element attribute.
