@@ -84,6 +84,65 @@ Echo.Tests.asyncTest("common workflow (async apps initialization)", getCommonWor
 
 Echo.Tests.asyncTest("common workflow (sync apps initialization)", getCommonWorkflowTest("sync"));
 
+(function() {
+
+var TestApp = Echo.Control.manifest("TestApp");
+
+TestApp.init = function() { this.ready(); };
+
+Echo.Control.create(TestApp);
+
+var LongInitializingApp = Echo.Control.manifest("LongInitializingApp");
+
+LongInitializingApp.init = function() {
+	var self = this;
+	setTimeout(function() {
+		self.ready();
+	}, 1000);
+};
+
+Echo.Control.create(LongInitializingApp);
+
+})();
+
+Echo.Tests.asyncTest("apps initialization (corner cases)", function() {
+	var layout = [
+		{"row": 1, "col": 1, "size_x": 1, "app": "TestApp"},
+		{"row": 2, "col": 1, "size_x": 1, "app": "LongInitializingApp"},
+		{"row": 3, "col": 1, "size_x": 1, "app": "LongInitializingApp"}
+	];
+	var init = function(type, timeout) {
+		var deferred = $.Deferred();
+		new Echo.Canvas({
+			"target": $("<div>").appendTo("#qunit-fixture"),
+			"appsInitialization": type,
+			"appInitializationTimeout": timeout || 5000,
+			"data": {
+				"apps": [
+					{"component": "TestApp"},
+					{"component": "LongInitializingApp"},
+					{"component": "LongInitializingApp"}
+				],
+				"layout": layout
+			},
+			"ready": deferred.resolve.bind(null, (new Date()).getTime())
+		});
+		return deferred.promise();
+	};
+
+	init("async").done(function(time) {
+		QUnit.ok((new Date()).getTime() - time < 2000, "Check that async apps initialization works as expected (simultenously)");
+	}).done(function() {
+		init("sync").done(function(time) {
+			QUnit.ok((new Date()).getTime() - time >= 2000, "Check that async apps initialization works as expected (one-by-one)");
+			init("sync", 500).done(function(time) {
+				QUnit.ok((new Date()).getTime() - time < 1500, "Check that async apps initialization works as expected in case of long running app initialization");
+				QUnit.start();
+			});
+		});
+	});
+});
+
 Echo.Tests.asyncTest("select app script url", function() {
 	var target = $("#qunit-fixture");
 	target.append($('<div id="echo-canvas" data-canvas-id="js-sdk-tests/test-canvas-001"></div>'));
@@ -231,6 +290,7 @@ SampleApp.apps = {};
 SampleApp.prototype.destroy = function() {
 	SampleApp.apps[this.config.appId].destroyed += 1;
 };
+
 Echo.Variables.SampleApp = SampleApp;
 
 Echo.Tests.asyncTest("Canvas initialization without layout", function() {
