@@ -8,12 +8,6 @@ Echo.Tests.module("Echo.Canvas", {
 	}
 });
 
-Echo.Tests.renderersTest("Echo.Canvas", {
-	"data": {
-		"apps": []
-	}
-});
-
 var getCommonWorkflowTest = function(appsInitialization) {
 	return function() {
 		var target = $("#qunit-fixture");
@@ -119,9 +113,9 @@ Echo.Tests.asyncTest("apps initialization (corner cases)", function() {
 			"appInitializationTimeout": timeout || 5000,
 			"data": {
 				"apps": [
-					{"component": "TestApp"},
-					{"component": "LongInitializingApp"},
-					{"component": "LongInitializingApp"}
+					{"component": "TestApp", "id": "TestApp"},
+					{"component": "LongInitializingApp", "id": "LongInitializingApp"},
+					{"component": "LongInitializingApp", "id": "LongInitializingApp"}
 				],
 				"layout": layout
 			},
@@ -366,7 +360,7 @@ Echo.Tests.asyncTest("Canvas layout #2", function() {
 		"target": $("<div>").css("width", "100px").appendTo("#qunit-fixture"),
 		"data": {
 			"apps": $.map(new Array(8), function(_, id) {
-				return {"id": id + 1, "component": "Echo.Variables.SampleApp", "config": {"appId": id + 1}};
+				return {"id": "" + (id + 1), "component": "Echo.Variables.SampleApp", "config": {"appId": id + 1}};
 			}),
 			"layout": [
 				{"row": 1, "col": 1, "size_x": 1, "app": "1"}, //  ---     -------
@@ -465,7 +459,7 @@ Echo.Tests.asyncTest("updateLayout method", function() {
 							3, "Layout changed (there are three rows now)"
 						);
 						$.map(["first", "second", "third"], function(appId) {
-							QUnit.equal(SampleApp.apps[appId].initialized, 1, appId + " nasn'nasn't been re-initializedd.");
+							QUnit.equal(SampleApp.apps[appId].initialized, 1, appId + " hasn't been re-initialized.");
 						});
 						callback();
 					});
