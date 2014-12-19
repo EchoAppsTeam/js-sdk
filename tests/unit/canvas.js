@@ -138,7 +138,7 @@ Echo.Tests.asyncTest("apps initialization (corner cases)", function() {
 			QUnit.ok((new Date()).getTime() - time >= 1000, "Check that async apps initialization works as expected (one-by-one)");
 			Echo.Variables.appsInitialization = "";
 			init("sync", 250).done(function(time) {
-				QUnit.ok((new Date()).getTime() - time < 600, "Check that async apps initialization works as expected in case of long running app initialization");
+				QUnit.ok((new Date()).getTime() - time < 750, "Check that async apps initialization works as expected in case of long running app initialization");
 				Echo.Variables.appsInitialization = "";
 				layout.unshift({"row": 2, "col": 2, "size_x": 1, "app": "LongInitializingApp"});
 				apps.unshift({"component": "LongInitializingApp", "id": "LongInitializingApp"});
