@@ -80,9 +80,14 @@ Echo.Tests.asyncTest("common workflow (sync apps initialization)", getCommonWork
 
 (function() {
 
+Echo.Variables.appsInitialization = "";
+
 var TestApp = Echo.Control.manifest("TestApp");
 
-TestApp.init = function() { this.ready(); };
+TestApp.init = function() {
+	this.ready();
+	Echo.Variables.appsInitialization += this.name;
+};
 
 Echo.Control.create(TestApp);
 
@@ -92,7 +97,8 @@ LongInitializingApp.init = function() {
 	var self = this;
 	setTimeout(function() {
 		self.ready();
-	}, 1000);
+		Echo.Variables.appsInitialization += self.name;
+	}, 500);
 };
 
 Echo.Control.create(LongInitializingApp);
@@ -105,6 +111,11 @@ Echo.Tests.asyncTest("apps initialization (corner cases)", function() {
 		{"row": 2, "col": 1, "size_x": 1, "app": "LongInitializingApp"},
 		{"row": 3, "col": 1, "size_x": 1, "app": "LongInitializingApp"}
 	];
+	var apps = [
+		{"component": "TestApp", "id": "TestApp"},
+		{"component": "LongInitializingApp", "id": "LongInitializingApp"},
+		{"component": "LongInitializingApp", "id": "LongInitializingApp"}
+	];
 	var init = function(type, timeout) {
 		var deferred = $.Deferred();
 		new Echo.Canvas({
@@ -112,11 +123,7 @@ Echo.Tests.asyncTest("apps initialization (corner cases)", function() {
 			"appsInitialization": type,
 			"appInitializationTimeout": timeout || 5000,
 			"data": {
-				"apps": [
-					{"component": "TestApp", "id": "TestApp"},
-					{"component": "LongInitializingApp", "id": "LongInitializingApp"},
-					{"component": "LongInitializingApp", "id": "LongInitializingApp"}
-				],
+				"apps": apps,
 				"layout": layout
 			},
 			"ready": deferred.resolve.bind(null, (new Date()).getTime())
@@ -125,13 +132,20 @@ Echo.Tests.asyncTest("apps initialization (corner cases)", function() {
 	};
 
 	init("async").done(function(time) {
-		QUnit.ok((new Date()).getTime() - time < 2000, "Check that async apps initialization works as expected (simultenously)");
+		QUnit.ok((new Date()).getTime() - time < 1000, "Check that async apps initialization works as expected (simultenously)");
 	}).done(function() {
 		init("sync").done(function(time) {
-			QUnit.ok((new Date()).getTime() - time >= 2000, "Check that async apps initialization works as expected (one-by-one)");
-			init("sync", 500).done(function(time) {
-				QUnit.ok((new Date()).getTime() - time < 1500, "Check that async apps initialization works as expected in case of long running app initialization");
-				QUnit.start();
+			QUnit.ok((new Date()).getTime() - time >= 1000, "Check that async apps initialization works as expected (one-by-one)");
+			Echo.Variables.appsInitialization = "";
+			init("sync", 250).done(function(time) {
+				QUnit.ok((new Date()).getTime() - time < 600, "Check that async apps initialization works as expected in case of long running app initialization");
+				Echo.Variables.appsInitialization = "";
+				layout.unshift({"row": 2, "col": 2, "size_x": 1, "app": "LongInitializingApp"});
+				apps.unshift({"component": "LongInitializingApp", "id": "LongInitializingApp"});
+				init("sync").done(function() {
+					QUnit.strictEqual(Echo.Variables.appsInitialization, "TestAppLongInitializingAppLongInitializingAppLongInitializingApp", "Check apps initialization order");
+					QUnit.start();
+				});
 			});
 		});
 	});

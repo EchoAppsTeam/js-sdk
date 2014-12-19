@@ -379,7 +379,8 @@ canvas.methods._destroyOutdatedApps = function(apps) {
 };
 
 canvas.methods._sortAppsByLayout = function(apps) {
-	var layout = this.get("data.layout", []);
+	var layout = this.get("data.layout", [])
+		.sort(function(a, b) { return a.row - b.row || a.col - b.col; });
 	if (!layout.length) return apps;
 	var sorted = Echo.Utils.foldl([], layout, function(item, acc, i) {
 		var index;
