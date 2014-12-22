@@ -370,28 +370,32 @@ canvas.methods.updateLayout = function(apps, layout) {
 canvas.methods._destroyOutdatedApps = function(apps) {
 	var self = this;
 	$.each(this.apps, function(appId, app) {
-		var found = $.grep(apps, function(a) {
-			return a.id === appId;
-		}).length;
+		var found = self._indexOfApp(appId, apps) > -1;
 		if (!found) self._destroyApp(app);
 	});
 	return apps;
 };
 
+canvas.methods._indexOfApp = function(id, apps) {
+	var index = -1;
+	$.each(apps, function(i, app) {
+		if (id === app.id) {
+			index = i;
+			return false;
+		}
+	});
+	return index;
+};
+
 canvas.methods._sortAppsByLayout = function(apps) {
+	var self = this;
 	var layout = this.get("data.layout", [])
 		.sort(function(a, b) { return a.row - b.row || a.col - b.col; });
 	if (!layout.length) return apps;
 	var sorted = Echo.Utils.foldl([], layout, function(item, acc, i) {
-		var index;
 		var appId = item.app;
-		$.each(apps, function(i, app) {
-			if (appId === app.id) {
-				index = i;
-				return false;
-			}
-		});
-		if (typeof index === "undefined") return acc;
+		var index = self._indexOfApp(appId, apps);
+		if (index === -1) return acc;
 		if (i > 0 && acc[i - 1]) {
 			acc[i] = apps[index];
 		} else {
