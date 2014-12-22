@@ -407,55 +407,55 @@ canvas.methods._sortAppsByLayout = function(apps) {
 	return sorted.concat(apps);
 };
 
-canvas.methods._whetherInitApp = function(app) {
+canvas.methods._isAppInitRequired = function(app) {
 	return !this.apps[app.id] || !this.apps[app.id].instance;
 };
 
-canvas.methods._whetherReInitApp = function(app) {
+canvas.methods._isAppReInitRequired = function(app) {
 	return !Echo.Utils.deepEqual(app, this.apps[app.id].data);
 };
 
 canvas.methods._initApps = function(apps) {
 	var self = this;
+	var appsObject = this.apps;
 	var initApp = $.proxy(this._initApp, this);
 	var reInitApp = $.proxy(this._reInitApp, this);
-	var isSyncAppsInitialization = this.config.get("appsInitialization") === "sync";
+	var isSyncAppsInit = this.config.get("appsInit") === "sync";
 
 	var iterator = function(init, app) {
-		self.apps[app.id].data = $.extend(true, {}, app);
-		var done = function(instance) {
-			self.apps[app.id].instance = instance;
-			return instance;
+		appsObject[app.id].data = $.extend(true, {}, app);
+		var wrapper = function() {
+			return init(app).done(function(instance) {
+				appsObject[app.id].instance = instance;
+				return instance;
+			});
 		};
-		return isSyncAppsInitialization
-			? function() {
-				return init(app).done(done);
-			}
-			: init(app).done(done);
+		return isSyncAppsInit ? wrapper : wrapper();
 	};
-	var promises = Echo.Utils.foldl([], apps, function(app, acc) {
-		if (self._whetherInitApp(app)) {
-			acc.push(iterator(initApp, app));
-		} else if (self._whetherReInitApp(app)) {
-			acc.push(iterator(reInitApp, app));
-		} else {
-			acc.push(
-				iterator(function() {
-					return $.Deferred()
-						.resolve(self.apps[app.id].instance)
-						.promise();
-				}, app)
-			);
+	var promises = $.map(apps, function(app) {
+		if (self._isAppInitRequired(app)) {
+			return iterator(initApp, app);
+		} else if (self._isAppReInitRequired(app)) {
+			return iterator(reInitApp, app);
 		}
-		return acc;
+		return iterator(function() {
+			return $.Deferred()
+				.resolve(appsObject[app.id].instance)
+				.promise();
+		}, app);
 	});
-	return isSyncAppsInitialization
+	return isSyncAppsInit
 		? Echo.Utils.pipe(promises)
 		: $.when.apply($, promises);
 };
 
 canvas.methods._reInitApp = function(app) {
-	this._destroyApp(this.apps[app.id], true);
+	var obj = {};
+	var appContainer = this.apps[app.id];
+	obj.view = appContainer.view;
+	obj.data = appContainer.data;
+	this._destroyApp(this.apps[app.id]);
+	this.apps[app.id] = obj;
 	return this._initApp(app);
 };
 
@@ -518,7 +518,7 @@ canvas.methods._prepareAppsView = function(apps) {
 	var self = this;
 	return $.map(apps, function(app) {
 		app = self._normalizeApp(app);
-		if (self._whetherInitApp(app) || self._whetherReInitApp(app)) {
+		if (self._isAppInitRequired(app) || self._isAppReInitRequired(app)) {
 			var appClassName = self.get("cssPrefix") + "appId-" + app.id;
 			var view = self.view.fork({
 				"renderer": null,
@@ -637,11 +637,9 @@ canvas.methods._buildGrid = function(apps, grid) {
 	return container;
 };
 
-canvas.methods._destroyApp = function(app, keepRef) {
+canvas.methods._destroyApp = function(app) {
 	if (app && app.instance && $.isFunction(app.instance.destroy)) app.instance.destroy();
-	if (!keepRef) {
-		delete this.apps[app.data.id];
-	}
+	return (delete this.apps[app.data.id]);
 };
 
 canvas.methods._isManuallyConfigured = function() {
