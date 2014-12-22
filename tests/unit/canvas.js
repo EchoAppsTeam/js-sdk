@@ -8,10 +8,10 @@ Echo.Tests.module("Echo.Canvas", {
 	}
 });
 
-var getCommonWorkflowTest = function(appsInitialization) {
+var getCommonWorkflowTest = function(appsInit) {
 	return function() {
 		var target = $("#qunit-fixture");
-		target.append('<div id="echo-canvas" data-canvas-id="js-sdk-tests/test-canvas-001#some-id_001" data-canvas-appsInitialization="' + appsInitialization + '"></div>');
+		target.append('<div id="echo-canvas" data-canvas-id="js-sdk-tests/test-canvas-001#some-id_001" data-canvas-appsInit="' + appsInit + '"></div>');
 		var deferred = $.map(["Stream", "Submit"], function(name) {
 			var def = $.Deferred();
 			Echo.Events.subscribe({
@@ -120,7 +120,7 @@ Echo.Tests.asyncTest("apps initialization (corner cases)", function() {
 		var deferred = $.Deferred();
 		new Echo.Canvas({
 			"target": $("<div>").appendTo("#qunit-fixture"),
-			"appsInitialization": type,
+			"appsInit": type,
 			"appInitializationTimeout": timeout || 5000,
 			"data": {
 				"apps": apps,

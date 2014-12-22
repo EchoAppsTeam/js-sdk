@@ -99,7 +99,7 @@ canvas.init = function() {
 		"mode",
 		"provider",
 		"useSecureAPI",
-		"appsInitialization",
+		"appsInit",
 		"maxConfigFetchingRetries"
 	]);
 	if (!$.isEmptyObject(overrides)) {
@@ -143,18 +143,18 @@ canvas.init = function() {
 
 canvas.config = {
 	/**
-	 * @cfg {String} [appsInitialization]
+	 * @cfg {String} [appsInit]
 	 * This parameter specifies the mode in which applications will be initialized.
 	 * There are two possible values for this parameter:
 	 *
 	 * + "async" - in this case applications initialize simultaneously
 	 * + "sync" - in this case applications initialize synchronously one-by-one
 	 *
-	 * The value of this parameter can be overridden by specifying the "data-canvas-appsInitialization"
+	 * The value of this parameter can be overridden by specifying the "data-canvas-appsInit"
 	 * target DOM element attribute.
 	 * More information about HTML attributes of the target DOM element can be found [here](#!/guide/how_to_deploy_an_app_using_a_canvas)
 	 */
-	"appsInitialization": "async",
+	"appsInit": "async",
 
 	/**
 	 * @cfg {Number} [appInitializationTimeout]
