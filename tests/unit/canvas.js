@@ -121,7 +121,7 @@ Echo.Tests.asyncTest("apps initialization (corner cases)", function() {
 		new Echo.Canvas({
 			"target": $("<div>").appendTo("#qunit-fixture"),
 			"appsInit": type,
-			"appInitializationTimeout": timeout || 5000,
+			"appInitTimeout": timeout || 5000,
 			"data": {
 				"apps": apps,
 				"layout": layout
