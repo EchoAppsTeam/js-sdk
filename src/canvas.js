@@ -391,11 +391,13 @@ canvas.methods._indexOfApp = function(id, apps) {
 	return index;
 };
 
+// since applications can be placed in a row, we want to sort them
+// in the order they need to be initialized and visually displayed,
+// i.e. left -> right, top -> bottom
 canvas.methods._sortAppsByLayout = function(apps) {
 	var self = this;
 	var layout = this.get("data.layout", [])
 		.sort(function(a, b) { return a.row - b.row || a.col - b.col; });
-	if (!layout.length) return apps;
 	var sorted = Echo.Utils.foldl([], layout, function(item, acc, i) {
 		var appId = item.app;
 		var index = self._indexOfApp(appId, apps);
