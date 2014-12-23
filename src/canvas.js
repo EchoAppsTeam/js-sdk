@@ -157,15 +157,15 @@ canvas.config = {
 	"appsInit": "async",
 
 	/**
-	 * @cfg {Number} [appInitializationTimeout]
+	 * @cfg {Number} [appInitTimeout]
 	 * This parameter specifies the interval in milliseconds in which
 	 * each application can be executed during initialization process.
 	 *
-	 * The value of this parameter can be overridden by specifying the "data-canvas-appInitializationTimeout"
+	 * The value of this parameter can be overridden by specifying the "data-canvas-appInitTimeout"
 	 * target DOM element attribute.
 	 * More information about HTML attributes of the target DOM element can be found [here](#!/guide/how_to_deploy_an_app_using_a_canvas)
 	 */
-	"appInitializationTimeout": 5000,
+	"appInitTimeout": 5000,
 
 	/**
 	 * @cfg {String} [id]
@@ -497,7 +497,7 @@ canvas.methods._initApp = function(app) {
 		);
 		timeoutId = setTimeout(function() {
 			resolve(instance);
-		}, this.config.get("appInitializationTimeout"));
+		}, this.config.get("appInitTimeout"));
 	} else {
 		resolve(new Application(config));
 	}
