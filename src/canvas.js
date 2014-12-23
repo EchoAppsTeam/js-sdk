@@ -301,6 +301,13 @@ canvas.destroy = function() {
 };
 
 /**
+ * @echo_renderer
+ */
+canvas.renderers.container = function(element) {
+	return this._buildGrid(this.get("data.apps", []), this.get("data.layout", []), element);
+};
+
+/**
  * Canvas layout granular update logic without full refresh.
  *
  * This function performs the following actions:
@@ -347,12 +354,12 @@ canvas.destroy = function() {
  * layout is built
  */
 canvas.methods.updateLayout = function(apps, layout) {
-	var self = this;
 	var render = function(apps) {
 		this.render();
-		this._buildGrid(apps, layout);
 		return apps;
 	};
+	this.set("data.apps", apps);
+	this.set("data.layout", layout);
 	return Echo.Utils.pipe([
 		$.proxy(this._loadAppResources, this, apps),
 		$.proxy(this._destroyOutdatedApps, this),
@@ -360,10 +367,7 @@ canvas.methods.updateLayout = function(apps, layout) {
 		$.proxy(render, this),
 		$.proxy(this._sortAppsByLayout, this),
 		$.proxy(this._initApps, this)
-	]).then(function() {
-		self.set("data.apps", apps);
-		self.set("data.layout", layout);
-	});
+	]);
 };
 
 // destroy apps which are initialized but not specified in apps.
@@ -545,10 +549,8 @@ canvas.methods._prepareAppsView = function(apps) {
 	});
 };
 
-canvas.methods._buildGrid = function(apps, grid) {
+canvas.methods._buildGrid = function(apps, grid, container) {
 	var self = this;
-	var container = this.view.get("container");
-	grid = grid || this.get("data.layout", []);
 	var totalColumns = Math.max.apply(null, $.map(grid, function(item) {
 		return item.col + item.size_x - 1;
 	}).concat(0));
