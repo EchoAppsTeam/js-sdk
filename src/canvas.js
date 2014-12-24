@@ -289,7 +289,7 @@ canvas.templates.column =
  */
 canvas.templates.app =
 	'<div class="{class:appContainer}">' +
-		'<div class="{class:appHeader}">{data:caption}</div>' +
+		'<div class="{class:appHeader}"></div>' +
 		'<div class="{class:appBody}"></div>' +
 	'</div>';
 
@@ -530,8 +530,9 @@ canvas.methods._prepareAppsView = function(apps) {
 				"renderer": null,
 				"renderers": {
 					"appHeader": function(element) {
-						// show|hide app header depending on the caption existance
-						return element[app.caption ? "show" : "hide"]();
+						return app.caption
+							? element.text(Echo.Utils.sanitize(app.caption, "plainText")).show()
+							: element.hide();
 					},
 					"appBody": function(element) {
 						return element.addClass(appClassName);
