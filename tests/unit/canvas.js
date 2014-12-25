@@ -82,7 +82,7 @@ Echo.Tests.asyncTest("common workflow (sync apps initialization)", getCommonWork
 
 Echo.Variables.appsInitialization = "";
 
-var TestApp = Echo.Control.manifest("TestApp");
+var TestApp = Echo.Control.manifest("TestCanvasApp");
 
 TestApp.init = function() {
 	this.ready();
@@ -107,12 +107,12 @@ Echo.Control.create(LongInitializingApp);
 
 Echo.Tests.asyncTest("apps initialization (corner cases)", function() {
 	var layout = [
-		{"row": 1, "col": 1, "size_x": 1, "app": "TestApp"},
+		{"row": 1, "col": 1, "size_x": 1, "app": "TestCanvasApp"},
 		{"row": 2, "col": 1, "size_x": 1, "app": "LongInitializingApp"},
 		{"row": 3, "col": 1, "size_x": 1, "app": "LongInitializingApp"}
 	];
 	var apps = [
-		{"component": "TestApp", "id": "TestApp"},
+		{"component": "TestCanvasApp", "id": "TestCanvasApp"},
 		{"component": "LongInitializingApp", "id": "LongInitializingApp"},
 		{"component": "LongInitializingApp", "id": "LongInitializingApp"}
 	];
@@ -143,7 +143,7 @@ Echo.Tests.asyncTest("apps initialization (corner cases)", function() {
 				layout.unshift({"row": 2, "col": 2, "size_x": 1, "app": "LongInitializingApp"});
 				apps.unshift({"component": "LongInitializingApp", "id": "LongInitializingApp"});
 				init("sync").done(function() {
-					QUnit.strictEqual(Echo.Variables.appsInitialization, "TestAppLongInitializingAppLongInitializingAppLongInitializingApp", "Check apps initialization order");
+					QUnit.strictEqual(Echo.Variables.appsInitialization, "TestCanvasAppLongInitializingAppLongInitializingAppLongInitializingApp", "Check apps initialization order");
 					QUnit.start();
 				});
 			});
