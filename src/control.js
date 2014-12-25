@@ -247,6 +247,9 @@ Echo.Control.prototype.substitute = function(args) {
 	args.instructions = args.instructions
 		? $.extend(instructions, args.instructions)
 		: instructions;
+	args.normalizer = args.normalizer || function(v) {
+		return v.toString().replace(/"/g, "&quot;");
+	};
 	return Echo.Utils.substitute(args);
 };
 
