@@ -8,6 +8,12 @@ Echo.Tests.module("Echo.Canvas", {
 	}
 });
 
+Echo.Tests.renderersTest("Echo.Canvas", {
+	"data": {
+		"apps": []
+	}
+});
+
 var getCommonWorkflowTest = function(appsInit) {
 	return function() {
 		var target = $("#qunit-fixture");
