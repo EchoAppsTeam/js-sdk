@@ -1,5 +1,19 @@
 # Echo JS SDK CHANGELOG:
 
+##v3.0.28 - December 29, 2014
+
+* We updated [Echo Loader](http://echoappsteam.github.io/js-sdk/docs/#!/api/Echo.Loader) library which is responsible for dependency management and resource loading across all Echo JS SDK based applications and components. Sometimes third-party JavaScript software interfered with Echo Loader by  appending inappropriate tags to a page head element. Yepnope library used under the hood of Echo Loader was [patched](https://github.com/EchoAppsTeam/js-sdk/commit/554f5681a2d8ac5cc396ff4812f462820b5b27b5) to handle such situations.
+
+* We also updated Echo Loader library to use only http and https protocols while loading dependencies. It allows to embed Echo applications inside native mobile apps.
+
+* We made a few updates to application rendering mechanics to prevent XSS vectors to be executed by using malicious application data.
+
+* The [“appsInit”](http://echoappsteam.github.io/js-sdk/docs/#!/api/Echo.Canvas-cfg-appsInit) config parameter was introduced in the [Echo.Canvas](http://echoappsteam.github.io/js-sdk/docs/#!/api/Echo.Canvas) class. It helps to specify the way how to bootstrap applications inside a canvas: either synchronously one-by-one or simultaneously (asynchronously). Sync mode is intended to provide better user experience for the applications with long initialization time while async mode should take less overall time for a canvas to be ready.
+
+* The [“appInitTimeout”](http://echoappsteam.github.io/js-sdk/docs/#!/api/Echo.Canvas-cfg-appInitTimeout) config parameter is now available for customization. It constrains the timeframe of an application startup procedure within the apps bootstrapping queue. After this period is expired the app is considered to be ready despite its actual state and the next app in the queue is being provisioned. The default value is 5 seconds for each application. With the help of “appInitTimeout” we protect users from the heavy canvases containing several apps being stuck. Note: this parameter works only for JS SDK based applications.
+
+* The canvas rendering ideology was greatly altered. Previously canvas was rendered after each application finished its initialization correctly. The negative side effect of such approach was that the canvas would freeze if any of the apps did not startup for some reason. Now a canvas is considered to be an independent apps container and is rendered before any application bootstrap procedure is executed. This change helps to provide better user experience.
+
 ##v3.0.27 - October 8, 2014
 
 * We have added a new method called “updateLayout” to the Echo.Canvas
