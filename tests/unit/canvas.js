@@ -14,67 +14,147 @@ Echo.Tests.renderersTest("Echo.Canvas", {
 	}
 });
 
-Echo.Tests.asyncTest("common workflow", function() {
-	var target = $("#qunit-fixture");
-	target.append('<div id="echo-canvas" data-canvas-id="js-sdk-tests/test-canvas-001#some-id_001"></div>');
-	var deferred = $.map(["Stream", "Submit"], function(name) {
-		var def = $.Deferred();
-		Echo.Events.subscribe({
-			"topic": "Echo.StreamServer.Controls." + name + ".onReady",
-			"once": true,
-			"handler": function() {
-				def.resolve();
-			}
+var getCommonWorkflowTest = function(appsInit) {
+	return function() {
+		var target = $("#qunit-fixture");
+		target.append('<div id="echo-canvas" data-canvas-id="js-sdk-tests/test-canvas-001#some-id_001" data-canvas-appsInit="' + appsInit + '"></div>');
+		var deferred = $.map(["Stream", "Submit"], function(name) {
+			var def = $.Deferred();
+			Echo.Events.subscribe({
+				"topic": "Echo.StreamServer.Controls." + name + ".onReady",
+				"once": true,
+				"handler": function() {
+					def.resolve();
+				}
+			});
+			return def.promise();
 		});
-		return def.promise();
+		Echo.Loader.canvases.push(new Echo.Canvas({
+			"target": $("#echo-canvas"),
+			"ready": function() {
+				$.when.apply($, deferred).then($.proxy(function() {
+					QUnit.ok(true, "Check that component is initialized");
+					Echo.Loader.canvases.pop();
+					QUnit.ok(this.apps["stream"], "Check that Stream is initialized");
+					QUnit.ok(this.apps["submit"], "Check thet Submit is initialized");
+					QUnit.ok(
+						this.config.get("target").is(".echo-canvas-js-sdk-tests-test-canvas-001"),
+						"Check that target is marked with CSS class based on canvas ID"
+					);
+					QUnit.ok(
+						this.config.get("target").is(".echo-canvas-js-sdk-tests-test-canvas-001-some-id-001"),
+						"Check that target is marked with CSS class based on canvas ID and additional ID separated with #"
+					);
+					QUnit.ok(
+						$.map(this.apps, function(app) {
+							return app.instance.config.get("canvasId") === "js-sdk-tests/test-canvas-001#some-id_001" ? app : undefined;
+						}).length === 2,
+						"Check that all apps received the canvas ID"
+					);
+					QUnit.ok(
+						$.map(this.apps, function(app) {
+							return !!~app.instance.config.get("target").attr("class").indexOf("echo-canvas-appId-") ? app : undefined;
+						}).length === 2,
+						"Check that all apps marked with appId"
+					);
+					QUnit.ok(
+						this.config.get("target").data("echo-canvas-initialized"),
+						"Check that target marked as initialized canvas"
+					);
+					var apps = $.extend(true, {}, this.apps);
+					this.destroy();
+					QUnit.ok(
+						!this.config.get("target").data("echo-canvas-initialized"),
+						"Check that target is not marked as initialized canvas"
+					);
+					QUnit.ok(
+						$.map(apps, function(app) {
+							return $.isEmptyObject(app.instance.subscriptionIDs) ? app : undefined;
+						}).length === 2,
+						"Check all apps unsubscribed from all events after destroy canvas"
+					);
+					QUnit.start();
+				}, this));
+			}
+		}));
+	};
+};
+
+Echo.Tests.asyncTest("common workflow (async apps initialization)", getCommonWorkflowTest("async"));
+
+Echo.Tests.asyncTest("common workflow (sync apps initialization)", getCommonWorkflowTest("sync"));
+
+(function() {
+
+Echo.Variables.appsInitialization = "";
+
+var TestApp = Echo.Control.manifest("TestCanvasApp");
+
+TestApp.init = function() {
+	this.ready();
+	Echo.Variables.appsInitialization += this.name;
+};
+
+Echo.Control.create(TestApp);
+
+var LongInitializingApp = Echo.Control.manifest("LongInitializingApp");
+
+LongInitializingApp.init = function() {
+	var self = this;
+	setTimeout(function() {
+		self.ready();
+		Echo.Variables.appsInitialization += self.name;
+	}, 500);
+};
+
+Echo.Control.create(LongInitializingApp);
+
+})();
+
+Echo.Tests.asyncTest("apps initialization (corner cases)", function() {
+	var layout = [
+		{"row": 1, "col": 1, "size_x": 1, "app": "TestCanvasApp"},
+		{"row": 2, "col": 1, "size_x": 1, "app": "LongInitializingApp"},
+		{"row": 3, "col": 1, "size_x": 1, "app": "LongInitializingApp"}
+	];
+	var apps = [
+		{"component": "TestCanvasApp", "id": "TestCanvasApp"},
+		{"component": "LongInitializingApp", "id": "LongInitializingApp"},
+		{"component": "LongInitializingApp", "id": "LongInitializingApp"}
+	];
+	var init = function(type, timeout) {
+		var deferred = $.Deferred();
+		new Echo.Canvas({
+			"target": $("<div>").appendTo("#qunit-fixture"),
+			"appsInit": type,
+			"appInitTimeout": timeout || 5000,
+			"data": {
+				"apps": apps,
+				"layout": layout
+			},
+			"ready": deferred.resolve.bind(null, (new Date()).getTime())
+		});
+		return deferred.promise();
+	};
+
+	init("async").done(function(time) {
+		QUnit.ok((new Date()).getTime() - time < 1000, "Check that async apps initialization works as expected (simultenously)");
+	}).done(function() {
+		init("sync").done(function(time) {
+			QUnit.ok((new Date()).getTime() - time >= 1000, "Check that async apps initialization works as expected (one-by-one)");
+			Echo.Variables.appsInitialization = "";
+			init("sync", 250).done(function(time) {
+				QUnit.ok((new Date()).getTime() - time < 750, "Check that async apps initialization works as expected in case of long running app initialization");
+				Echo.Variables.appsInitialization = "";
+				layout.unshift({"row": 2, "col": 2, "size_x": 1, "app": "LongInitializingApp"});
+				apps.unshift({"component": "LongInitializingApp", "id": "LongInitializingApp"});
+				init("sync").done(function() {
+					QUnit.strictEqual(Echo.Variables.appsInitialization, "TestCanvasAppLongInitializingAppLongInitializingAppLongInitializingApp", "Check apps initialization order");
+					QUnit.start();
+				});
+			});
+		});
 	});
-	Echo.Loader.canvases.push(new Echo.Canvas({
-		"target": $("#echo-canvas"),
-		"ready": function() {
-			$.when.apply($, deferred).then($.proxy(function() {
-				QUnit.ok(true, "Check that component is initialized");
-				Echo.Loader.canvases.pop();
-				QUnit.ok(this.apps["stream"], "Check that Stream is initialized");
-				QUnit.ok(this.apps["submit"], "Check thet Submit is initialized");
-				QUnit.ok(
-					this.config.get("target").is(".echo-canvas-js-sdk-tests-test-canvas-001"),
-					"Check that target is marked with CSS class based on canvas ID"
-				);
-				QUnit.ok(
-					this.config.get("target").is(".echo-canvas-js-sdk-tests-test-canvas-001-some-id-001"),
-					"Check that target is marked with CSS class based on canvas ID and additional ID separated with #"
-				);
-				QUnit.ok(
-					$.map(this.apps, function(app) {
-						return app.instance.config.get("canvasId") === "js-sdk-tests/test-canvas-001#some-id_001" ? app : undefined;
-					}).length === 2,
-					"Check that all apps received the canvas ID"
-				);
-				QUnit.ok(
-					$.map(this.apps, function(app) {
-						return !!~app.instance.config.get("target").attr("class").indexOf("echo-canvas-appId-") ? app : undefined;
-					}).length === 2,
-					"Check that all apps marked with appId"
-				);
-				QUnit.ok(
-					this.config.get("target").data("echo-canvas-initialized"),
-					"Check that target marked as initialized canvas"
-				);
-				this.destroy();
-				QUnit.ok(
-					!this.config.get("target").data("echo-canvas-initialized"),
-					"Check that target is not marked as initialized canvas"
-				);
-				QUnit.ok(
-					$.map(this.apps, function(app) {
-						return $.isEmptyObject(app.instance.subscriptionIDs) ? app : undefined;
-					}).length === 2,
-					"Check all apps unsubscribed from all events after destroy canvas"
-				);
-				QUnit.start();
-			}, this));
-		}
-	}));
 });
 
 Echo.Tests.asyncTest("select app script url", function() {
@@ -224,6 +304,7 @@ SampleApp.apps = {};
 SampleApp.prototype.destroy = function() {
 	SampleApp.apps[this.config.appId].destroyed += 1;
 };
+
 Echo.Variables.SampleApp = SampleApp;
 
 Echo.Tests.asyncTest("Canvas initialization without layout", function() {
@@ -299,7 +380,7 @@ Echo.Tests.asyncTest("Canvas layout #2", function() {
 		"target": $("<div>").css("width", "100px").appendTo("#qunit-fixture"),
 		"data": {
 			"apps": $.map(new Array(8), function(_, id) {
-				return {"id": id + 1, "component": "Echo.Variables.SampleApp", "config": {"appId": id + 1}};
+				return {"id": "" + (id + 1), "component": "Echo.Variables.SampleApp", "config": {"appId": id + 1}};
 			}),
 			"layout": [
 				{"row": 1, "col": 1, "size_x": 1, "app": "1"}, //  ---     -------
@@ -398,7 +479,7 @@ Echo.Tests.asyncTest("updateLayout method", function() {
 							3, "Layout changed (there are three rows now)"
 						);
 						$.map(["first", "second", "third"], function(appId) {
-							QUnit.equal(SampleApp.apps[appId].initialized, 1, appId + " nasn'nasn't been re-initializedd.");
+							QUnit.equal(SampleApp.apps[appId].initialized, 1, appId + " hasn't been re-initialized.");
 						});
 						callback();
 					});
@@ -417,7 +498,7 @@ Echo.Tests.asyncTest("updateLayout method", function() {
 				},
 				function(callback) {
 					apps = $.extend(true, [], apps);
-					apps.splice(2); // remove third app, it should be destroyed
+					apps.splice(2, 1); // remove third app, it should be destroyed
 					canvas.updateLayout(apps, layout).then(function() {
 						QUnit.ok(true, "updateLayout method callback called");
 						QUnit.equal(SampleApp.apps["first"].destroyed, 0, "first app hasn't been destroyed");

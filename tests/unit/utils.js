@@ -966,7 +966,7 @@ Echo.Tests.asyncTest("loadImage()", function() {
 	], function() {
 		QUnit.start();
 	});
-});
+}, {"timeout": 20000});
 
 Echo.Tests.test("testing templateSubstitution regexp", function() {
 	var browser = Echo.Tests.browser;

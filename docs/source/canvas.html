@@ -111,7 +111,14 @@ canvas.init = function() {
 	target.data(&quot;echo-canvas-initialized&quot;, true);
 
 	// extending Canvas config with the parameters defined in the target
-	var overrides = this._getOverrides(target, [&quot;id&quot;, &quot;useSecureAPI&quot;, &quot;mode&quot;, &quot;provider&quot;, &quot;maxConfigFetchingRetries&quot;]);
+	var overrides = this._getOverrides(target, [
+		&quot;id&quot;,
+		&quot;mode&quot;,
+		&quot;provider&quot;,
+		&quot;useSecureAPI&quot;,
+		&quot;appsInit&quot;,
+		&quot;maxConfigFetchingRetries&quot;
+	]);
 	if (!$.isEmptyObject(overrides)) {
 		this.config.extend(overrides);
 	}
@@ -152,6 +159,31 @@ canvas.init = function() {
 };
 
 canvas.config = {
+<span id='Echo-Canvas-cfg-appsInit'>	/**
+</span>	 * @cfg {String} [appsInit]
+	 * This parameter specifies the mode in which applications will be initialized.
+	 * There are two possible values for this parameter:
+	 *
+	 * + &quot;async&quot; - in this case applications initialize simultaneously
+	 * + &quot;sync&quot; - in this case applications initialize synchronously one-by-one
+	 *
+	 * The value of this parameter can be overridden by specifying the &quot;data-canvas-appsInit&quot;
+	 * target DOM element attribute.
+	 * More information about HTML attributes of the target DOM element can be found [here](#!/guide/how_to_deploy_an_app_using_a_canvas)
+	 */
+	&quot;appsInit&quot;: &quot;async&quot;,
+
+<span id='Echo-Canvas-cfg-appInitTimeout'>	/**
+</span>	 * @cfg {Number} [appInitTimeout]
+	 * This parameter specifies the interval in milliseconds in which
+	 * each application can be executed during initialization process.
+	 *
+	 * The value of this parameter can be overridden by specifying the &quot;data-canvas-appInitTimeout&quot;
+	 * target DOM element attribute.
+	 * More information about HTML attributes of the target DOM element can be found [here](#!/guide/how_to_deploy_an_app_using_a_canvas)
+	 */
+	&quot;appInitTimeout&quot;: 5000,
+
 <span id='Echo-Canvas-cfg-id'>	/**
 </span>	 * @cfg {String} [id]
 	 * Unique ID of the Canvas, used by the Echo.Canvas instance
@@ -274,7 +306,7 @@ canvas.templates.column =
  */
 canvas.templates.app =
 	&#39;&lt;div class=&quot;{class:appContainer}&quot;&gt;&#39; +
-		&#39;&lt;div class=&quot;{class:appHeader}&quot;&gt;{data:caption}&lt;/div&gt;&#39; +
+		&#39;&lt;div class=&quot;{class:appHeader}&quot;&gt;&lt;/div&gt;&#39; +
 		&#39;&lt;div class=&quot;{class:appBody}&quot;&gt;&lt;/div&gt;&#39; +
 	&#39;&lt;/div&gt;&#39;;
 
@@ -289,7 +321,7 @@ canvas.destroy = function() {
 </span> * @echo_renderer
  */
 canvas.renderers.container = function(element) {
-	return this._buildGrid(this.get(&quot;data.layout&quot;), this.apps, element.empty());
+	return this._buildGrid(this.get(&quot;data.apps&quot;, []), this.get(&quot;data.layout&quot;, []), element);
 };
 
 <span id='Echo-Canvas-method-updateLayout'>/**
@@ -339,94 +371,206 @@ canvas.renderers.container = function(element) {
  * layout is built
  */
 canvas.methods.updateLayout = function(apps, layout) {
-	var self = this;
-	return Echo.Utils.pipe($.Deferred().resolve(apps), [
-		$.proxy(this._loadAppResources, this),
+	var render = function(apps) {
+		this.render();
+		return apps;
+	};
+	this.set(&quot;data.apps&quot;, apps);
+	this.set(&quot;data.layout&quot;, layout);
+	return Echo.Utils.pipe([
+		$.proxy(this._loadAppResources, this, apps),
+		$.proxy(this._destroyOutdatedApps, this),
+		$.proxy(this._prepareAppsView, this),
+		$.proxy(render, this),
+		$.proxy(this._sortAppsByLayout, this),
 		$.proxy(this._initApps, this)
-	]).then(function() {
-		self.set(&quot;data.apps&quot;, apps);
-		self.set(&quot;data.layout&quot;, layout);
-		self.render();
+	]);
+};
+
+// destroy apps which are initialized but not specified in apps.
+canvas.methods._destroyOutdatedApps = function(apps) {
+	var self = this;
+	$.each(this.apps, function(appId, app) {
+		var found = self._indexOfApp(appId, apps) &gt; -1;
+		if (!found) self._destroyApp(app);
 	});
+	return apps;
+};
+
+canvas.methods._indexOfApp = function(id, apps) {
+	var index = -1;
+	$.each(apps, function(i, app) {
+		if (id === app.id) {
+			index = i;
+			return false;
+		}
+	});
+	return index;
+};
+
+// since applications can be placed in a row, we want to sort them
+// in the order they need to be initialized and visually displayed,
+// i.e. left -&gt; right, top -&gt; bottom
+canvas.methods._sortAppsByLayout = function(apps) {
+	var self = this;
+	var layout = this.get(&quot;data.layout&quot;, [])
+		.sort(function(a, b) { return a.row - b.row || a.col - b.col; });
+	var sorted = Echo.Utils.foldl([], layout, function(item, acc, i) {
+		var appId = item.app;
+		var index = self._indexOfApp(appId, apps);
+		if (index === -1) return acc;
+		if (i &gt; 0 &amp;&amp; acc[i - 1]) {
+			acc[i] = apps[index];
+		} else {
+			acc.push(apps[index]);
+		}
+		apps.splice(index, 1);
+		return acc;
+	});
+	return sorted.concat(apps);
+};
+
+canvas.methods._isAppInitRequired = function(app) {
+	return !this.apps[app.id] || !this.apps[app.id].instance;
+};
+
+canvas.methods._isAppReInitRequired = function(app) {
+	return !Echo.Utils.deepEqual(app, this.apps[app.id].data);
 };
 
 canvas.methods._initApps = function(apps) {
 	var self = this;
-	var deferred = $.Deferred();
+	var appsObject = this.apps;
+	var initApp = $.proxy(this._initApp, this);
+	var reInitApp = $.proxy(this._reInitApp, this);
+	var isSyncAppsInit = this.config.get(&quot;appsInit&quot;) === &quot;sync&quot;;
 
-	// destroy apps which are initialized but not specified in apps.
-	$.each(this.apps, function(appId, app) {
-		var found = $.grep(apps, function(a) {
-			return a.id === appId;
-		}).length;
-		if (!found) self._destroyApp(app);
-	});
-	this.apps = Echo.Utils.foldl({}, apps, function(app, acc, id) {
-		var appId = app.id || id;
-		if (!self.apps[appId]) {
-			acc[appId] = self._initApp(app, appId);
-		} else if (!Echo.Utils.deepEqual(app, self.apps[appId].data)) {
-			self._destroyApp(self.apps[appId]);
-			acc[appId] = self._initApp(app, appId);
-		} else {
-			acc[appId] = self.apps[appId];
+	var iterator = function(init, app) {
+		appsObject[app.id].data = $.extend(true, {}, app);
+		var wrapper = function() {
+			return init(app).done(function(instance) {
+				appsObject[app.id].instance = instance;
+				return instance;
+			});
+		};
+		return isSyncAppsInit ? wrapper : wrapper();
+	};
+	var promises = $.map(apps, function(app) {
+		if (self._isAppInitRequired(app)) {
+			return iterator(initApp, app);
+		} else if (self._isAppReInitRequired(app)) {
+			return iterator(reInitApp, app);
 		}
+		return iterator(function() {
+			return $.Deferred()
+				.resolve(appsObject[app.id].instance)
+				.promise();
+		}, app);
 	});
-	return deferred.resolve(apps).promise();
+	return isSyncAppsInit
+		? Echo.Utils.pipe(promises)
+		: $.when.apply($, promises);
 };
 
-canvas.methods._initApp = function(data, id) {
-	var self = this;
-	var Application = Echo.Utils.getComponent(data.component);
+canvas.methods._reInitApp = function(app) {
+	var obj = {};
+	var appContainer = this.apps[app.id];
+	obj.view = appContainer.view;
+	obj.data = appContainer.data;
+	this._destroyApp(this.apps[app.id]);
+	this.apps[app.id] = obj;
+	return this._initApp(app);
+};
+
+canvas.methods._initApp = function(app) {
+	var deferred = $.Deferred();
+	var Application = Echo.Utils.getComponent(app.component);
 	if (!Application) {
 		this._error({
-			&quot;args&quot;: {&quot;app&quot;: data},
+			&quot;args&quot;: {&quot;app&quot;: app},
 			&quot;code&quot;: &quot;no_suitable_app_class&quot;
 		});
-		return;
+		deferred.reject(app);
+		return deferred.promise();
 	}
 
-	var app = $.extend(true, {
-		&quot;id&quot;: id,
-		&quot;config&quot;: {
-			&quot;canvasId&quot;: this.config.get(&quot;id&quot;)
-		}
-	}, data);
-
-	var view = this.view.fork({
-		&quot;renderer&quot;: null,
-		&quot;renderers&quot;: {
-			&quot;appHeader&quot;: function(element) {
-				// show|hide app header depending on the caption existance
-				return element[app.caption ? &quot;show&quot; : &quot;hide&quot;]();
-			},
-			&quot;appBody&quot;: function(element) {
-				var className = self.get(&quot;cssPrefix&quot;) + &quot;appId-&quot; + app.id;
-				return element.addClass(className);
-			}
-		}
-	});
-	var appContainer = view.render({
-		&quot;data&quot;: app,
-		&quot;template&quot;: this.templates.app
-	});
-
-	app.config.target = view.get(&quot;appBody&quot;);
-
 	var overrides = this.config.get(&quot;overrides&quot;)[app.id];
+
+	app.config.target = this.apps[app.id].view.get(&quot;appBody&quot;);
+
 	var config = overrides
 		? $.extend(true, app.config, overrides)
 		: app.config;
-	return {
-		&quot;container&quot;: appContainer,
-		&quot;data&quot;: data,
-		&quot;instance&quot;: new Application(config)
+	var ready = config.ready || $.noop;
+	var timeoutId;
+	var resolve = function(instance) {
+		clearTimeout(timeoutId);
+		return deferred.resolve(instance);
 	};
+
+	// determine if Application is the Echo specific
+	if (Application._manifest) {
+		var instance = new Application(
+			$.extend(config, {
+				&quot;ready&quot;: function() {
+					ready.apply(this, arguments);
+					resolve(this);
+				}
+			})
+		);
+		timeoutId = setTimeout(function() {
+			resolve(instance);
+		}, this.config.get(&quot;appInitTimeout&quot;));
+	} else {
+		resolve(new Application(config));
+	}
+
+	return deferred.promise();
 };
 
-canvas.methods._buildGrid = function(grid, apps, container) {
+canvas.methods._normalizeApp = function(app) {
+	return $.extend(true, {
+		&quot;id&quot;: Echo.Utils.getUniqueString(),
+		&quot;config&quot;: {
+			&quot;canvasId&quot;: this.config.get(&quot;id&quot;)
+		}
+	}, app);
+};
+
+canvas.methods._prepareAppsView = function(apps) {
 	var self = this;
-	grid = grid || [];
+	return $.map(apps, function(app) {
+		app = self._normalizeApp(app);
+		if (self._isAppInitRequired(app) || self._isAppReInitRequired(app)) {
+			var appClassName = self.get(&quot;cssPrefix&quot;) + &quot;appId-&quot; + app.id;
+			var view = self.view.fork({
+				&quot;renderer&quot;: null,
+				&quot;renderers&quot;: {
+					&quot;appHeader&quot;: function(element) {
+						return app.caption
+							? element.text(Echo.Utils.sanitize(app.caption, &quot;plainText&quot;)).show()
+							: element.hide();
+					},
+					&quot;appBody&quot;: function(element) {
+						return element.addClass(appClassName);
+					}
+				}
+			});
+
+			view.render({
+				&quot;data&quot;: app,
+				&quot;template&quot;: self.templates.app
+			});
+
+			self.apps[app.id] = self.apps[app.id] || {};
+			self.apps[app.id].view = view;
+		}
+		return app;
+	});
+};
+
+canvas.methods._buildGrid = function(apps, grid, container) {
+	var self = this;
 	var totalColumns = Math.max.apply(null, $.map(grid, function(item) {
 		return item.col + item.size_x - 1;
 	}).concat(0));
@@ -488,13 +632,14 @@ canvas.methods._buildGrid = function(grid, apps, container) {
 		rows.push(tmpRow);
 	});
 
-	apps = $.extend({}, apps);
+	var appsObject = $.extend({}, this.apps);
+
 	(function buildDom(items, container, depth) {
 		depth = depth || 0;
 		$.each(items || [], function(k, item) {
-			if (item.app &amp;&amp; apps[item.app]) {
-				container.append(apps[item.app].container);
-				delete apps[item.app];
+			if (item.app &amp;&amp; appsObject[item.app]) {
+				container.append(appsObject[item.app].view.get(&quot;appContainer&quot;));
+				delete appsObject[item.app];
 			} else if (item.type) {
 				var template = self.templates[item.type];
 				var element = $(self.substitute({&quot;template&quot;: template}));
@@ -503,11 +648,11 @@ canvas.methods._buildGrid = function(grid, apps, container) {
 				container.append(element);
 			}
 		});
-		if (!depth &amp;&amp; !$.isEmptyObject(apps)) {
+		if (!depth &amp;&amp; !$.isEmptyObject(appsObject)) {
 			// Put all apps from the canvas that were not mentioned in layout to the very end of container.
 			// Useful for backwards complatibility and apps added to canvas through API call.
-			$.each(apps, function(k, app) {
-				container.append(app.container);
+			$.each(appsObject, function(k, app) {
+				container.append(app.view.get(&quot;appContainer&quot;));
 			});
 		}
 	})(rows, container);
@@ -516,6 +661,7 @@ canvas.methods._buildGrid = function(grid, apps, container) {
 
 canvas.methods._destroyApp = function(app) {
 	if (app &amp;&amp; app.instance &amp;&amp; $.isFunction(app.instance.destroy)) app.instance.destroy();
+	return (delete this.apps[app.data.id]);
 };
 
 canvas.methods._isManuallyConfigured = function() {
@@ -689,6 +835,7 @@ for (var totalColumns = 1; totalColumns &lt;= 8; totalColumns++) {
 }
 
 canvas.css =
+	&#39;.{class:appHeader} { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }&#39; +
 	&#39;@media (min-width: 400px) {&#39; +
 		&#39;.{class:row} { display: table; table-layout: fixed; width: 100%; }&#39; +
 		&#39;.{class:column} { display: table-cell; vertical-align: top; }&#39; +
