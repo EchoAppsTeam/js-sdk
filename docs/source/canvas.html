@@ -376,7 +376,7 @@ canvas.methods.updateLayout = function(apps, layout) {
 		return apps;
 	};
 	this.set(&quot;data.apps&quot;, apps);
-	this.set(&quot;data.layout&quot;, layout);
+	this.set(&quot;data.layout&quot;, layout || []);
 	return Echo.Utils.pipe([
 		$.proxy(this._loadAppResources, this, apps),
 		$.proxy(this._destroyOutdatedApps, this),
