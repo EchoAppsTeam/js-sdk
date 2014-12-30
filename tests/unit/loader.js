@@ -334,10 +334,37 @@ Echo.Tests.asyncTest("yepnope corner cases", function() {
 			"src": "{%=baseURLs.sdk%}/loader.js"
 		});
 	});
-	QUnit.expect(4);
+	var removingFirstNodeParent = Echo.Tests.isolate(function(callback) {
+		// Steps (all in iframe):
+		// 1. wrap script in a div container and append one to the HEAD element
+		// 2. append "loader" script to the BODY element
+		// 3. once it's loaded, remove first script container
+		// 4. try to download something
+		var frame = this;
+		var container = $("<div>");
+		var script = $("<script>");
+		container.append(script).appendTo(this.document.body);
+		$("<script>").on("load readystatechange", function() {
+			$(this).off("load readystatechange");
+			container.remove();
+			frame.Echo.Loader.download([{
+				"url": Echo.Tests.baseURL +
+					"fixtures/resources/loader/check-removing-first-script-container.js"
+			}], function() {
+				QUnit.ok(frame.firstScriptContainerRemoved,
+					"Check if removing of firstNode's parent doesn't cause side effects");
+				callback();
+			});
+		}).appendTo(this.document.body).attr({
+			"type": "text/javascript",
+			"src": "{%=baseURLs.sdk%}/loader.js"
+		});
+	});
+	QUnit.expect(5);
 	Echo.Utils.sequentialCall([
 		raceConditions,
-		removingFirstNode
+		removingFirstNode,
+		removingFirstNodeParent
 	], function() {
 		QUnit.start();
 	});
