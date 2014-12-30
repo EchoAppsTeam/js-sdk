@@ -58,7 +58,7 @@ Echo.Tests.test("public interface", function() {
 	view.render({
 		"template": templates.small,
 		"data": {
-			"title": "test\"title"
+			"title": "test'\"title"
 		}
 	});
 	QUnit.ok(!view.get("container"),
@@ -66,8 +66,9 @@ Echo.Tests.test("public interface", function() {
 	QUnit.ok(!!view.get("wrapper"),
 		"Checking if new elements are available after the second \"render\" function call with another template");
 	QUnit.equal(
-		view.get("wrapper").html(),
-		'<div title="test&quot;title">test"title</div>',
+		// toLowerCase is for IE8 only (it likes to use capital letters for tag names)
+		view.get("wrapper").html().toLowerCase(),
+		'<div title="test\'&quot;title">test\'"title</div>',
 		"Checking if normalizer properly escapes HTML attributes in \"substitute\" method"
 	);
 });
