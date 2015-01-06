@@ -323,10 +323,7 @@ Echo.View.prototype._compileTemplate = function(args) {
 	var template = Echo.Utils.substitute({
 		&quot;data&quot;: args.data,
 		&quot;template&quot;: args.template,
-		&quot;instructions&quot;: this.config.substitutions,
-		&quot;normalizer&quot;: function(v) {
-			return v.toString().replace(/&quot;/g, &quot;&amp;quot;&quot;);
-		}
+		&quot;instructions&quot;: this.config.substitutions
 	});
 	return $(&#39;&lt;div class=&quot;echo-tmp-wrapper&quot;/&gt;&#39;).html(template);
 };

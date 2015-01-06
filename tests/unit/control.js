@@ -176,17 +176,6 @@ suite.prototype.cases.basicOperations = function(callback) {
 				"Checking \"substitute\" method in a strict mode, pattern #" + (id + 1));
 		});
 
-		QUnit.equal(
-			self.substitute({
-				"template": '<div title="{data:title}">{data:title}</div>',
-				"data": {
-					"title": "test\"title"
-				}
-			}),
-			'<div title="test&quot;title">test&quot;title</div>',
-			"Checking if normalizer properly escapes HTML attributes in \"substitute\" method"
-		);
-
 		// checking "dependent" method
 		QUnit.ok(!this.dependent(),
 			"Checking if a given control was initialized within another control");
