@@ -1056,6 +1056,19 @@ Echo.Utils.capitalize = function(string) {
  * @param {Object} [args.instructions]
  * Object containing the list of extra instructions to be applied during template compilation.
  *
+ * @param {Function} [args.normalizer]
+ * Allows to normalize data values before putting them into template. This function
+ * is not applied if args.strict is set to *true*.
+ *
+ * @param {Mixed} args.normalizer.value
+ * Value to normalize.
+ *
+ * @param {String} args.normalizer.previousContext
+ * String preceding the placeholder that is going to be replaced.
+ *
+ * @param {Mixed} args.normalizer.return
+ * Normalized value.
+ *
  * @return {String}
  * Compiled string value.
  */
@@ -1089,12 +1102,16 @@ Echo.Utils.substitute = function(args) {
 		}
 	}
 
+	var normalizer = args.normalizer || function(v) { return v; };
+
 	// perform regular string substitution
-	return template.replace(utils.cache.regexps.multiple, function(match, key, value) {
+	return template.replace(utils.cache.regexps.multiple, function(match, key, value, pos, str) {
 		if (!instructions[key]) return match;
 		var result = instructions[key](value, "");
 		var allowed = {"number": true, "string": true, "boolean": true};
-		return allowed[typeof result] ? result : "";
+		return allowed[typeof result]
+			? normalizer(result, str.substr(0, pos))
+			: "";
 	});
 };
 
