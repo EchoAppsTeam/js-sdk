@@ -131,6 +131,28 @@ canvas.init = function() {
 
 	// fetch canvas config from remote storage
 	this._fetchConfig(function() {
+		/**
+		 * @echo_event Echo.Canvas.onDataReceive
+		 * Event which is triggered when data received from the storage.
+		 *
+		 * @param {String} topic
+		 * Name of the event produced.
+		 *
+		 * @param {Object} data
+		 *
+		 * @param {String} id
+		 * Unique ID of the Canvas.
+		 *
+		 * @param {Object} config
+		 * Object which contains received config.
+		 */
+		self.events.publish({
+			"topic": "onDataReceive",
+			"data": {
+				"id": self.config.get("id"),
+				"config": self.get("data")
+			}
+		});
 		var backplane = self.get("data.backplane");
 		if (backplane) {
 			Backplane.init(backplane);
