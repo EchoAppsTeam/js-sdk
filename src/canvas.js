@@ -140,10 +140,10 @@ canvas.init = function() {
 		 *
 		 * @param {Object} data
 		 *
-		 * @param {String} id
+		 * @param {String} data.id
 		 * Unique ID of the Canvas.
 		 *
-		 * @param {Object} config
+		 * @param {Object} data.config
 		 * Object which contains received config.
 		 */
 		self.events.publish({
