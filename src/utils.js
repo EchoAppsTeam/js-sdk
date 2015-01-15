@@ -1063,8 +1063,11 @@ Echo.Utils.capitalize = function(string) {
  * @param {Mixed} args.normalizer.value
  * Value to normalize.
  *
- * @param {String} args.normalizer.previousContext
- * String preceding the placeholder that is going to be replaced.
+ * @param {String} args.normalizer.string
+ * The whole template string.
+ *
+ * @param {Number} args.normalizer.pos
+ * Placeholder position inside the template string.
  *
  * @param {Mixed} args.normalizer.return
  * Normalized value.
@@ -1110,7 +1113,7 @@ Echo.Utils.substitute = function(args) {
 		var result = instructions[key](value, "");
 		var allowed = {"number": true, "string": true, "boolean": true};
 		return allowed[typeof result]
-			? normalizer(result, str.substr(0, pos))
+			? normalizer(result, str, pos)
 			: "";
 	});
 };

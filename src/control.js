@@ -247,9 +247,10 @@ Echo.Control.prototype.substitute = function(args) {
 	args.instructions = args.instructions
 		? $.extend(instructions, args.instructions)
 		: instructions;
-	args.normalizer = args.normalizer || function(v, previousContext) {
+	args.normalizer = args.normalizer || function(v, string, pos) {
 		// check if the string in template right before this value
 		// looks similar to opened HTML attribute
+		var previousContext = string.substr(0, pos);
 		return previousContext && /<[^>]+=\s*"[^>"]*$/.test(previousContext)
 			? v.toString().replace(/"/g, "&quot;")
 			: v;
