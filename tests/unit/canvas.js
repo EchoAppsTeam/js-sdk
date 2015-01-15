@@ -221,6 +221,27 @@ Echo.Tests.asyncTest("select app script url", function() {
 	}));
 });
 
+Echo.Tests.asyncTest("onDataReceive event", function() {
+	var target = $("#qunit-fixture");
+	target.append('<div id="echo-canvas" data-canvas-id="js-sdk-tests/test-canvas-001"></div>');
+	Echo.Events.subscribe({
+		"topic": "Echo.Canvas.onDataReceive",
+		"once": true,
+		"handler": function(_, args) {
+			QUnit.ok(true, "Echo.Canvas.onDataReceive event published");
+			QUnit.equal(args.id, "js-sdk-tests/test-canvas-001", "Data contains canvas id");
+			QUnit.equal(args.config.id, "test.canvas.001", "Data contains canvas config");
+			QUnit.start();
+		}
+	});
+	Echo.Loader.canvases.push(new Echo.Canvas({
+		"target": $("#echo-canvas"),
+		"ready": function() {
+			this.destroy();
+		}
+	}));
+});
+
 Echo.Tests.test("canvas contract", function() {
 	var target = $("<div>").data("canvas-id", "js-sdk-test").appendTo("#qunit-fixture");
 
