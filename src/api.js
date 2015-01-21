@@ -481,9 +481,14 @@ if (!jQuery.support.cors && window.XDomainRequest) {
 						"text": xdr.responseText
 					});
 				};
-				var postData = typeof userOptions.data === "string"
-					? userOptions.data
-					: $.param(userOptions.data || "");
+
+				var postData = "";
+				if ($.isPlainObject(userOptions.data) || $.isArray(userOptions.data)) {
+					postData = $.param(userOptions.data);
+				} else if (typeof userOptions.data === "string") {
+					postData = userOptions.data;
+				}
+
 				xdr.open(options.type, options.url);
 				xdr.send(postData);
 			},
