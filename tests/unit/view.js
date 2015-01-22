@@ -55,11 +55,22 @@ Echo.Tests.test("public interface", function() {
 	QUnit.ok(!view.get("footer"),
 		"Checking if the element was removed from the collection after the \"remove\" function call (with the jQuery element argument type)");
 
-	view.render({"template": templates.small});
+	view.render({
+		"template": templates.small,
+		"data": {
+			"title": "test'\"title"
+		}
+	});
 	QUnit.ok(!view.get("container"),
 		"Checking if no elements available after the second \"render\" function call with another template");
 	QUnit.ok(!!view.get("wrapper"),
 		"Checking if new elements are available after the second \"render\" function call with another template");
+	QUnit.equal(
+		// toLowerCase is for IE8 only (it likes to use capital letters for tag names)
+		view.get("wrapper").html().toLowerCase(),
+		'<div title="test\'&quot;title">test\'"title</div>',
+		"Checking if normalizer properly escapes HTML attributes in \"substitute\" method"
+	);
 });
 
 Echo.Tests.test("rendering with partial or incorrect config", function() {
@@ -238,7 +249,9 @@ templates.simple =
 	'</div>';
 
 templates.small =
-	'<div class="echo-wrapper"></div>';
+	'<div class="echo-wrapper">' +
+		'<div title="{data:title}">{data:title}</div>' +
+	'</div>';
 
 templates.incorrect =
 	'<div class="echo-container">' +

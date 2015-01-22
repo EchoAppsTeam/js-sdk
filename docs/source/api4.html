@@ -498,9 +498,14 @@ if (!jQuery.support.cors &amp;&amp; window.XDomainRequest) {
 						&quot;text&quot;: xdr.responseText
 					});
 				};
-				var postData = typeof userOptions.data === &quot;string&quot;
-					? userOptions.data
-					: $.param(userOptions.data || &quot;&quot;);
+
+				var postData = &quot;&quot;;
+				if ($.isPlainObject(userOptions.data) || $.isArray(userOptions.data)) {
+					postData = $.param(userOptions.data);
+				} else if (typeof userOptions.data === &quot;string&quot;) {
+					postData = userOptions.data;
+				}
+
 				xdr.open(options.type, options.url);
 				xdr.send(postData);
 			},

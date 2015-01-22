@@ -323,7 +323,15 @@ Echo.View.prototype._compileTemplate = function(args) {
 	var template = Echo.Utils.substitute({
 		&quot;data&quot;: args.data,
 		&quot;template&quot;: args.template,
-		&quot;instructions&quot;: this.config.substitutions
+		&quot;instructions&quot;: this.config.substitutions,
+		&quot;normalizer&quot;: function(v, string, pos) {
+			// check if the string in template right before this value
+			// looks similar to opened HTML attribute
+			var previousContext = string.substr(0, pos);
+			return previousContext &amp;&amp; /&lt;[^&gt;]+=\s*&quot;[^&gt;&quot;]*$/.test(previousContext)
+				? v.toString().replace(/&quot;/g, &quot;&amp;quot;&quot;)
+				: v;
+		}
 	});
 	return $(&#39;&lt;div class=&quot;echo-tmp-wrapper&quot;/&gt;&#39;).html(template);
 };

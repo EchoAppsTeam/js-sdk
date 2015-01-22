@@ -85,6 +85,7 @@ suite.prototype.tests.PublicInterfaceTests = {
 
 		this.sequentialAsyncTests([
 			"basicOperations",
+			"substitutions",
 			"initializationWithInvalidParams",
 			"incomingConfigHandling",
 			"controlRendering",
@@ -153,28 +154,6 @@ suite.prototype.cases.basicOperations = function(callback) {
 		this.remove("myField", "myValue");
 		QUnit.strictEqual(this.get("myField"), undefined,
 			"Checking field remove operation");
-
-		// checking "substitute" method in a regular mode
-		$.each(suite.data.substitutions, function(id, substitution) {
-			QUnit.equal(
-				self.substitute({
-					"template": substitution[0],
-					"instructions": substitution[2]
-				}),
-				substitution[1],
-				"Checking \"substitute\" method in a regular mode, pattern #" + (id + 1));
-		});
-
-		// checking "substitute" method in a strict mode
-		$.each(suite.data.strictSubstitutions, function(id, substitution) {
-			QUnit[substitution[2] || "equal"](
-				self.substitute({
-					"template": substitution[0],
-					"strict": true
-				}),
-				substitution[1],
-				"Checking \"substitute\" method in a strict mode, pattern #" + (id + 1));
-		});
 
 		// checking "dependent" method
 		QUnit.ok(!this.dependent(),
@@ -279,6 +258,159 @@ suite.prototype.cases.basicOperations = function(callback) {
 			"requiredParam1": true,
 			"requiredParam2": true
 		}],
+		"ready": check
+	});
+};
+
+suite.prototype.cases.substitutions = function(callback) {
+	var basic = [[
+		"",
+		""
+	], [
+		"test string with no substitutions",
+		"test string with no substitutions"
+	], [
+		"<div>HTML text with no <b>substitutions</b></div>",
+		"<div>HTML text with no <b>substitutions</b></div>"
+	], [
+		".css-classes-with-no-subs { text-align: right; color: red; }",
+		".css-classes-with-no-subs { text-align: right; color: red; }"
+	], [
+		"test string with substitutions {label:label1}",
+		"test string with substitutions label1 value"
+	], [
+		"bad pattern should not break the string {label:} {config:} {self:}",
+		"bad pattern should not break the string {label:} {config:} {self:}"
+	], [
+		"non existing label extraction {label:nonexisting}, shoud return key",
+		"non existing label extraction nonexisting, shoud return key"
+	], [
+		"<div class=\"{class:test}\">div with css class name defined</div>",
+		"<div class=\"echo-streamserver-controls-mytestcontrol-test\">div with css class name defined</div>"
+	], [
+		"<div class=\"{class:test} {class:test1} {class:test2}\">div with multiple css class names defined</div>",
+		"<div class=\"echo-streamserver-controls-mytestcontrol-test echo-streamserver-controls-mytestcontrol-test1 echo-streamserver-controls-mytestcontrol-test2\">div with multiple css class names defined</div>"
+	], [
+		"<div class=\"{class:test}\">{data:key3.key3nested}</div>",
+		"<div class=\"echo-streamserver-controls-mytestcontrol-test\">nested value for key 3</div>"
+	], [
+		"<div class=\"{class:test}\">{self:data.key3.key3nested}</div>",
+		"<div class=\"echo-streamserver-controls-mytestcontrol-test\">nested value for key 3</div>"
+	], [
+		"<div class=\"{class:test}\">{label:label1}{label:label2}{self:data.key3.key3nested}{class:example} - mix of multiple patterns</div>",
+		"<div class=\"echo-streamserver-controls-mytestcontrol-test\">label1 valuelabel2 valuenested value for key 3echo-streamserver-controls-mytestcontrol-example - mix of multiple patterns</div>"
+	], [
+		"{config:stringParam}-{config:nonexistingkey}-{config:integerParam}-{config:objectParam.param1}",
+		"Some test value--15-param1.value"
+	]];
+	var custom = [[
+		"<div>{mysubs:key}</div><span>{mysubs:key.key1.key2}</span><div>{mysub.sub.nested.sub:key.key1}</div>",
+		"<div>mysubs key, key value</div><span>mysubs key, key.key1.key2 value</span><div>mysub.sub.nested.sub key, key.key1 value</div>",
+		{
+			"mysubs": function(value) {
+				return "mysubs key, " + value + " value";
+			},
+			"mysub.sub.nested.sub": function(value) {
+				return "mysub.sub.nested.sub key, " + value + " value";
+			}
+		}
+	], [
+		// non-supported types of values, we should process them as ""
+		"{d:arrayVal}{d:objectVal}{d:functionVal}{d:undefinedVal}",
+		"",
+		{"d": function(key) {
+			var data = {
+				"arrayVal": [1, 2, 3, 4, 5],
+				"objectVal": {"key1": "value1", "key2": "value2"},
+				"functionVal": function() { return "test"; },
+				"undefinedVal": undefined
+			};
+			return data[key];
+		}}
+	]];
+	var strict = [[
+		"{config:zeroParam}",
+		0,
+		"strictEqual"
+	], [
+		"{config:booleanTrueParam}",
+		true,
+		"strictEqual"
+	], [
+		"{config:undefinedParam}",
+		undefined,
+		"strictEqual"
+	], [
+		"{config:objectParam}",
+		suite.data.config.objectParam,
+		"deepEqual"
+	]];
+
+	var check = function() {
+		var self = this;
+		var template = [
+			'<div class="wrapper {data:class}" style="font: {data:font}">',
+				'statement "2 <= 3" is {data:result}',
+				'<input type="{data:type}"{data:attr}>',
+				'{data:html}',
+				'<div title = "{data:title}">{data:title}</div>',
+			'</div>'
+		].join("\n");
+		var expected = [
+			'<div class="wrapper with\'&quot;quotes" style="font: Open\'&quot;Sans">',
+				'statement "2 <= 3" is true\'"?',
+				'<input type="hid\'&quot;den"/disabled\'" required>',
+				'<span class="embedded">\'text&quot;</span>',
+				'<div title = "test\'&quot;title">test\'"title</div>',
+			'</div>'
+		].join("\n");
+		var result = this.substitute({
+			"template": template,
+			"data": {
+				"class": "with'\"quotes",
+				"font": "Open'\"Sans",
+				"result": "true'\"?",
+				"type": "hid'\"den",
+				"attr": "/disabled'\" required",
+				"html": '<span class="embedded">\'text&quot;</span>',
+				"title": "test'\"title"
+			}
+		});
+		QUnit.equal(
+			result,
+			expected,
+			"Checking if normalizer properly escapes HTML attributes in \"substitute\" method"
+		);
+
+		// checking "substitute" method in a regular mode
+		$.each(custom.concat(basic), function(i, substitution) {
+			QUnit.equal(
+				self.substitute({
+					"template": substitution[0],
+					"instructions": substitution[2]
+				}),
+				substitution[1],
+				"\"substitute\" method in a regular mode, pattern #" + (i + 1)
+			);
+		});
+
+		// checking "substitute" method in a strict mode
+		$.each(strict.concat(basic), function(i, substitution) {
+			QUnit[substitution[2] || "equal"](
+				self.substitute({
+					"template": substitution[0],
+					"strict": true
+				}),
+				substitution[1],
+				"\"substitute\" method in a strict mode, pattern #" + (i + 1)
+			);
+		});
+
+		this.destroy();
+		callback && callback();
+	};
+	suite.initTestControl({
+		"data": suite.data.config.data,
 		"ready": check
 	});
 };
@@ -1343,67 +1475,6 @@ suite.prototype.tests.TestAsyncMethods = {
 
 suite.data = {};
 
-suite.data.substitutions = [[
-	"",
-	""
-], [
-	"test string with no substitutions",
-	"test string with no substitutions"
-], [
-	"<div>HTML text with no <b>substitutions</b></div>",
-	"<div>HTML text with no <b>substitutions</b></div>"
-], [
-	".css-classes-with-no-subs { text-align: right; color: red; }",
-	".css-classes-with-no-subs { text-align: right; color: red; }"
-], [
-	"test string with substitutions {label:label1}",
-	"test string with substitutions label1 value"
-], [
-	"bad pattern should not break the string {label:} {config:} {self:}",
-	"bad pattern should not break the string {label:} {config:} {self:}"
-], [
-	"non existing label extraction {label:nonexisting}, shoud return key",
-	"non existing label extraction nonexisting, shoud return key"
-], [
-	"<div class=\"{class:test}\">div with css class name defined</div>",
-	"<div class=\"echo-streamserver-controls-mytestcontrol-test\">div with css class name defined</div>"
-], [
-	"<div class=\"{class:test} {class:test1} {class:test2}\">div with multiple css class names defined</div>",
-	"<div class=\"echo-streamserver-controls-mytestcontrol-test echo-streamserver-controls-mytestcontrol-test1 echo-streamserver-controls-mytestcontrol-test2\">div with multiple css class names defined</div>"
-], [
-	"<div class=\"{class:test}\">{data:key3.key3nested}</div>",
-	"<div class=\"echo-streamserver-controls-mytestcontrol-test\">nested value for key 3</div>"
-], [
-	"<div class=\"{class:test}\">{self:data.key3.key3nested}</div>",
-	"<div class=\"echo-streamserver-controls-mytestcontrol-test\">nested value for key 3</div>"
-], [
-	"<div class=\"{class:test}\">{label:label1}{label:label2}{self:data.key3.key3nested}{class:example} - mix of multiple patterns</div>",
-	"<div class=\"echo-streamserver-controls-mytestcontrol-test\">label1 valuelabel2 valuenested value for key 3echo-streamserver-controls-mytestcontrol-example - mix of multiple patterns</div>"
-], [
-	"{config:stringParam}-{config:nonexistingkey}-{config:integerParam}-{config:objectParam.param1}",
-	"Some test value--15-param1.value"
-], [
-	"<div>{mysubs:key}</div><span>{mysubs:key.key1.key2}</span><div>{mysub.sub.nested.sub:key.key1}</div>",
-	"<div>mysubs key, key value</div><span>mysubs key, key.key1.key2 value</span><div>mysub.sub.nested.sub key, key.key1 value</div>",
-	{
-	 "mysubs": function(value) { return "mysubs key, " + value + " value"; },
-	 "mysub.sub.nested.sub": function(value) { return "mysub.sub.nested.sub key, " + value + " value"; }
-	}
-], [
-	// non-supported types of values, we should process them as ""
-	"{d:arrayVal}{d:objectVal}{d:functionVal}{d:undefinedVal}",
-	"",
-	{"d": function(key) {
-		var data = {
-			"arrayVal": [1,2,3,4,5],
-			"objectVal": {"key1": "value1", "key2": "value2"},
-			"functionVal": function() { return "test"; },
-			"undefinedVal": undefined
-		};
-		return data[key];
-	}}
-]];
-
 suite.data.template =
 	'<div class="{class:container}">' +
 		'<div class="{class:testRenderer}"></div>' +
@@ -1473,27 +1544,6 @@ suite.data.config = {
 		}
 	}
 };
-
-suite.data.strictSubstitutions = [[
-	"{config:zeroParam}",
-	0,
-	"strictEqual"
-], [
-	"{config:booleanTrueParam}",
-	true,
-	"strictEqual"
-], [
-	"{config:undefinedParam}",
-	undefined,
-	"strictEqual"
-], [
-	"{config:objectParam}",
-	suite.data.config.objectParam,
-	"deepEqual"
-
-// adding basic substitution tests for the strict processing
-// to make sure that the strict mode process regular templates corectly
-]].concat(suite.data.substitutions.slice(0, 12));
 
 // test helper functions 
 
