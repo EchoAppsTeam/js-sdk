@@ -1,5 +1,13 @@
 # Echo JS SDK CHANGELOG:
 
+##v3.0.29 - January 22, 2015
+
+* We updated parameter normalization logic used in the "substitute" method of Echo.Utils and Echo.Control classes to prevent output HTML string from corruption.
+
+* We introduced new ["onDataReceive"](http://echoappsteam.github.io/js-sdk/docs/#!/api/Echo.Canvas-echo_event-onDataReceive) event for Echo.Canvas class. It allows to access Canvas data received from the storage before Project rendering.
+
+* The logic that handles parameters normalization before executing API call was updated to be more fault-tolerant in IE9 browser.
+
 ##v3.0.28 - December 29, 2014
 
 * We updated [Echo Loader](http://echoappsteam.github.io/js-sdk/docs/#!/api/Echo.Loader) library which is responsible for dependency management and resource loading across all Echo JS SDK based applications and components. Sometimes third-party JavaScript software interfered with Echo Loader by  appending inappropriate tags to a page head element. Yepnope library used under the hood of Echo Loader was [patched](https://github.com/EchoAppsTeam/js-sdk/commit/554f5681a2d8ac5cc396ff4812f462820b5b27b5) to handle such situations.
