@@ -8,15 +8,15 @@
 
 * We made a few updates to application rendering mechanics to prevent XSS vectors to be executed by using malicious application data.
 
-* The [“appsInit”](http://echoappsteam.github.io/js-sdk/docs/#!/api/Echo.Canvas-cfg-appsInit) config parameter was introduced in the [Echo.Canvas](http://echoappsteam.github.io/js-sdk/docs/#!/api/Echo.Canvas) class. It helps to specify the way how to bootstrap applications inside a canvas: either synchronously one-by-one or simultaneously (asynchronously). Sync mode is intended to provide better user experience for the applications with long initialization time while async mode should take less overall time for a canvas to be ready.
+* The ["appsInit"](http://echoappsteam.github.io/js-sdk/docs/#!/api/Echo.Canvas-cfg-appsInit) config parameter was introduced in the [Echo.Canvas](http://echoappsteam.github.io/js-sdk/docs/#!/api/Echo.Canvas) class. It helps to specify the way how to bootstrap applications inside a canvas: either synchronously one-by-one or simultaneously (asynchronously). Sync mode is intended to provide better user experience for the applications with long initialization time while async mode should take less overall time for a canvas to be ready.
 
-* The [“appInitTimeout”](http://echoappsteam.github.io/js-sdk/docs/#!/api/Echo.Canvas-cfg-appInitTimeout) config parameter is now available for customization. It constrains the timeframe of an application startup procedure within the apps bootstrapping queue. After this period is expired the app is considered to be ready despite its actual state and the next app in the queue is being provisioned. The default value is 5 seconds for each application. With the help of “appInitTimeout” we protect users from the heavy canvases containing several apps being stuck. Note: this parameter works only for JS SDK based applications.
+* The ["appInitTimeout"](http://echoappsteam.github.io/js-sdk/docs/#!/api/Echo.Canvas-cfg-appInitTimeout) config parameter is now available for customization. It constrains the timeframe of an application startup procedure within the apps bootstrapping queue. After this period is expired the app is considered to be ready despite its actual state and the next app in the queue is being provisioned. The default value is 5 seconds for each application. With the help of "appInitTimeout" we protect users from the heavy canvases containing several apps being stuck. Note: this parameter works only for JS SDK based applications.
 
 * The canvas rendering ideology was greatly altered. Previously canvas was rendered after each application finished its initialization correctly. The negative side effect of such approach was that the canvas would freeze if any of the apps did not startup for some reason. Now a canvas is considered to be an independent apps container and is rendered before any application bootstrap procedure is executed. This change helps to provide better user experience.
 
 ##v3.0.27 - October 8, 2014
 
-* We have added a new method called “updateLayout” to the Echo.Canvas
+* We have added a new method called "updateLayout" to the Echo.Canvas
   class. This method allows to perform granular layout updates, i.e.
   update apps that were changed. The rest of apps remains untouched. This
   function allows us to increase the performance of layout update
