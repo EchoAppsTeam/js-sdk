@@ -18,6 +18,7 @@ module.exports = function(grunt) {
 	grunt.loadNpmTasks("grunt-express");
 	grunt.loadNpmTasks("grunt-recess");
 	grunt.loadNpmTasks("grunt-newer");
+	grunt.loadNpmTasks("grunt-bump");
 	grunt.loadNpmTasks("grunt-saucelabs");
 	grunt.loadNpmTasks("sphere");
 
@@ -268,6 +269,12 @@ module.exports = function(grunt) {
 			" *\n" +
 			" * Version: <%= pkg.version %> (<%= grunt.template.today(\"UTC:yyyy-mm-dd HH:MM:ss Z\") %>)\n" +
 			" */\n",
+		"bump": {
+			"options": {
+				"commitMessage": "Bump version to v%VERSION%",
+				"pushTo": "origin"
+			}
+		},
 		"clean": {
 			"build": [
 				"<%= dirs.build %>/*"
